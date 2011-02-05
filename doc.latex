@@ -1,0 +1,94 @@
+﻿\documentclass[10pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\title{802.16-2009 OFDM PHY baseband}
+\author{Jonathan Huang \and Cody Schafer \and Luke Steepy}
+\date{1/31/2011 }
+\begin{document}
+\maketitle 
+\newpage
+\section{Revision History}
+\begin{tabular}{|c|c|c|}
+\hline
+Revision & Date & Comments \\ \hline
+1.00 & 1/31/2011 & First revision \\ \hline
+1.01 & 2/3/2011 & \\ \hline
+\end{tabular}
+\newpage
+\section{Project Overview}
+\subsection{End Market Expectations}
+Currently IEEE 802.16, also known as “WiMAX”, has seen little deployment in the United States and western Europe while being moderately deployed in Asia nations and Eastern European markets. To be useful in western areas, WiMAX has to effectively compete with both consumer owned Wifi hot-spots and the various cell phone networks. Given the impressively low cost of both cellular and Wifi (802.11) systems combined with the expectation that they work well in mobile devices, this physical layer (PHY) targets both simplicity (to reduce cost) and reduced power consumption.
+\subsection{Degree of standards compliance and scope limitations}
+The 802.16 standard specifies multiple layers of a WiMAX device, including a “Service-specific convergence sublayer” (Section 5), a MAC sublayer (Section 6), a Security sublayer (Section 7), and the Physical layer (Section 8). While the PHY is described within section 8 of the 802.16-2009 document, other sections may apply to the design of the PHY and thus were considered to the minimal extent to which they apply to design of the PHY component.
+Within the PHY layer implementers are further given the choice of three (3) different PHY types: SC (single carrier), OFDM (orthogonal frequency division multiplexing), and OFDMA (orthogonal frequency division multiple access). In the interest of developing a product which is applicable to the larger consumer market and follows with our design goal of simplicity, OFDM was chosen as the modulation method to be implemented as it is significantly simpler in design than OFDMA and is designed for use on unlicensed and licenced bands. OFDM is detailed in section 8.3 of [1]
+FFT size fixed at 256
+% Need to figure out how to include images in Latex
+%\newpage
+%\section{Block Diagrams}
+%\subsection{Transmitter}
+% Sample includegraphics implementation
+%\begin{figure}[here]
+%\includegraphics[width=0.9\textwidth]{images/JobInformationDialog.jp%g}
+%\caption{A prototype of the Job Information dialog}
+%\label{fig:jobInfoDialog}
+%\end{figure}
+%\subsection{Receiver}
+\newpage
+\section{Product Description}
+\subsection{Device Usage}
+This device implements only the PHY layer of the IEEE 802.16 standard, and therefore it requires an existing MAC implementation to process its I/O. As can be seen from Figures 1 and 2 %[needs reference to section Block Diagram]
+, both the Transmitter and Receiver require MAC level inputs into the Control Logic blocks for the PHY implementation to function correctly.
+\subsubsection{Transmitter MAC/PHY}
+The transmitter portion of this device requires multiple inputs into the Control Logic block as well as the frame(s) to be transmitted by the device from the MAC. 
+The Control Block will send a “Ready for Frame” signal to the MAC to indicate that the PHY layer is ready to receive a frame. As the MAC sends the frame to a Header Parser block, it also sends a Sending frame signal to the Control Block. The Header Parser block takes the frame and sends relevant information from the frame header to the Control Logic block. The frame is then passed on to the first operating block of the PHY layer, the Randomizer.  
+%These signals are tabulated in Table 1. %[needs numbering]
+%\begin{tabular}{|c|c|}
+%\hline
+%Signal name & Description \\ \hline
+%Sending Frame & Indicates if a frame is currently being sent \\ %\hline
+%BSID & Base Station ID \\ \hline
+%Frame Number & \\ \hline
+%DIUC or UIUC & Downlink/Uplink Internal Usage Code \\ \hline
+%Modulation Type & Rate\_ID. Defines type of Constellation Mapping \\ %\hline
+%New Burst & \\ \hline
+%\end{tabular}
+\subsubsection{Transmitter PHY}
+After receiving the signals from the MAC, the transmitter will push the frame through various operations until it reaches the RF radio. 
+The frame is pushed through the following blocks :
+%
+%\begin{tabular}{|c|c|c|}
+%\hline
+%Block Name & Description & Required Inputs \\ \hline
+%Randomizer & Each frame of data is put through a Randomizer which utilizes a PRBS \newline
+% 
+%(Psuedo Random Binary Sequence) generator \newline with $1+x^{14}+x^{15}$ & From Header Parser : Contents of the frame \newline
+%From Control Logic : Randomizer Initialization Vector and Reset Control \\ \hline
+%FEC & Forward Error Correction consisting of Concatenated Reed Solomon-Convolution Code & From Randomizer : New random bit stream and Sending Data signal \newline
+% 
+%From FEC Calculation : RS Code and CC Code Rate \\ \hline
+%Circular Buffer & Holds blocks of encoded bits for the Interleaver & From FEC : Encoded bits and Sending Data signal \\ \hline
+%Interleaver & Interleaves data blocks & From Circular Buffer : Blocks of data \\ \hline
+%Constellation Mapping & Maps bits according to the modulation type & From Interleaver : Interleaved Bits and Sending Data signal \newline
+% 
+%From Control Logic : Subchannelization information \\ \hline
+%Pilot Subcarrier insertion & & From Constellation Mapping : Subcarrier mappings (I and Q) \\ \hline
+%IFFT & Inverse Fast Fourier Transform & From Pilo Subcarrier insertion : Subcarrier mappings with Pilots \\ \hline
+% 
+%Cyclic Prefix & Appends the Cyclic Prefix to the signal & From IFFT : I and Q Transform 
+% 
+%From Control Logic : Cyclic Prefix size
+% 
+%DAC Converter / Wave Modulation & & \\ \hline
+%\end{tabular}
+\subsubsection{Receiver MAC/PHY}
+%The receiver portion of this device 
+%
+%\subsection{Pin outs}
+%XC3S200-FT256
+%//Top and Bottom View Package FT256 -   %http://www.xilinx.com/support/documentation/package_specs/ft256.pdf 
+% \newpage
+% \section{Datasheet(Spartan-3 FPGA}
+% \subsection{Electrical Characteristics}
+% \begin{tabular}
+% \end{tabular}
+\end{document}

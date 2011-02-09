@@ -47,36 +47,7 @@
 	%\end{figure}
 	%\subsection{Receiver}
 
-\section{Product Description}
-	\subsection{Device Usage}
-	This device implements only the PHY layer of the IEEE 802.16 standard, and
-	therefore it requires an existing MAC implementation to process its I/O. As can
-	be seen from Figures 1 and 2 %[needs reference to section Block Diagram] , both
-	the Transmitter and Receiver require MAC level inputs into the Control Logic
-	blocks for the PHY implementation to function correctly.
-
-	\subsubsection{Transmitter MAC/PHY}
-	The transmitter portion of this device requires multiple inputs into the
-	Control Logic block as well as the frame(s) to be transmitted by the device
-	from the MAC.  The Control Block will send a “Ready for Frame” signal to the
-	MAC to indicate that the PHY layer is ready to receive a frame. As the MAC
-	sends the frame to a Header Parser block, it also sends a Sending frame signal
-	to the Control Block. The Header Parser block takes the frame and sends
-	relevant information from the frame header to the Control Logic block. The
-	frame is then passed on to the first operating block of the PHY layer, the
-	Randomizer.
-%These signals are tabulated in Table 1. %[needs numbering]
-%\begin{tabular}{|c|c|}
-%\hline
-%Signal name & Description \\ \hline
-%Sending Frame & Indicates if a frame is currently being sent \\ %\hline
-%BSID & Base Station ID \\ \hline
-%Frame Number & \\ \hline
-%DIUC or UIUC & Downlink/Uplink Internal Usage Code \\ \hline
-%Modulation Type & Rate\_ID. Defines type of Constellation Mapping \\ %\hline
-%New Burst & \\ \hline
-%\end{tabular}
-\subsection{Transmitter PHY}
+\section{Transmitter PHY}
 All voltages of logic levels are defined by the FPGA on which the product's
 code is placed.
 
@@ -86,7 +57,7 @@ bit stream is done on the positive clock edge only when the corresponding
 $load\_*$ control line is high. All PHY componets are clocked via the
 $phy\_clock$.
 
-	\subsubsection{MAC - PHY interface}
+	\subsection{MAC - PHY interface}
 	The MAC interfaces with the PHY module by sending frames (with the
 	appropriate headers and padding included) as a stream of bits. These
 	bits are clocked via the $mac\_clk\_in$ line, and must only be sent
@@ -100,7 +71,7 @@ $phy\_clock$.
 	The $phy\_ready$ line is a signal to the mac that it is ready for a
 	new frame to be inputed, and should not be ignored.
 
-	\subsubsection{Header Decoder}
+	\subsection{Header Decoder}
 	The \cite{Randomizer} requires the locations of the PDUs (packet data
 	units, 2 per frame) within each frame as well as the locations of
 	'Bursts' within each PDU to reinitialize itself at various points in
@@ -115,7 +86,7 @@ $phy\_clock$.
 	No enable used. Reset via $header\_reset$. Bit stream out:
 	$bits\_norm$ (indicating their clocking is now normalized).
 
-	\subsubsection{Randomizer}
+	\subsection{Randomizer}
 	The randomizer operates as a shift register with an initial value
 	determined by the PDU (packet data unit, one half of a frame) header
 	and whether it is a UL (uplink) or DL (downlink) PDU. 

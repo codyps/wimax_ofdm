@@ -1,6 +1,9 @@
 \documentclass[10pt]{article}
 \usepackage[utf8]{inputenc}
 \usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage[all]{hypcap}
+
 \title{802.16-2009 OFDM PHY baseband}
 \author{Jonathan Huang \and Cody Schafer \and Luke Steepy}
 \date{2/3/2011}
@@ -47,7 +50,7 @@
 	%\end{figure}
 	%\subsection{Receiver}
 
-\section{Transmitter PHY}
+\section{Hardware Description of WiMAX PHY}
 All voltages of logic levels are defined by the FPGA on which the product's
 code is placed.
 
@@ -58,6 +61,7 @@ $load\_*$ control line is high. All PHY componets are clocked via the
 $phy\_clock$.
 
 	\subsection{MAC - PHY interface}
+	\label{sec:mac_phy}
 	The MAC interfaces with the PHY module by sending frames (with the
 	appropriate headers and padding included) as a stream of bits. These
 	bits are clocked via the $mac\_clk\_in$ line, and must only be sent
@@ -72,24 +76,47 @@ $phy\_clock$.
 	new frame to be inputed, and should not be ignored.
 
 	\subsection{Header Decoder}
-	The \cite{Randomizer} requires the locations of the PDUs (packet data
-	units, 2 per frame) within each frame as well as the locations of
-	'Bursts' within each PDU to reinitialize itself at various points in
-	the bit stream. As all of this data is contained in the PDU headers,
-	this block determines the values of the needed fields and forwards
-	them to the \cite{Control Logic} block.
+	\label{sec:header}
+	The Randomizer [\hyperref{sec:rand}] requires the locations of the
+	PDUs (packet data units, 2 per frame) within each frame as well as the
+	locations of 'Bursts' within each PDU to reinitialize itself at
+	various points in the bit stream. As all of this data is contained in
+	the PDU headers, this block determines the values of the needed fields
+	and forwards them to the Control Logic block [\hyperref{sec:ctrl}]. 
 
 	This block has the unique chalenge of additionally reading it's
 	bitstream at the clock specified by the MAC, $mac\_clk\_in$.
 
-	Bit stream in: $mac\_bits$, clocked via $mac\_clk\_in$.
-	No enable used. Reset via $header\_reset$. Bit stream out:
-	$bits\_norm$ (indicating their clocking is now normalized).
+	Bit stream in: $mac\_bits$, clocked via $mac\_clk\_in$.  No enable
+	used. Reset via $header\_reset$. Bit stream out: $bits\_norm$
+	(indicating their clocking is now normalized).
 
 	\subsection{Randomizer}
+	\label{sec:rand}
 	The randomizer operates as a shift register with an initial value
 	determined by the PDU (packet data unit, one half of a frame) header
 	and whether it is a UL (uplink) or DL (downlink) PDU. 
+
+	\subsection{Forward Error Corection}
+	\label{sec:fec}
+	This is a Reed-solomon and convolution coding combination which is
+	applied per frame. Within the standard, different RS (Reed-Solomon)
+	codes and CC (convolution code) rates are used for varying modulation
+	types. As we have fixed the modulation to QPSK, only two of the RS
+	code and CC rate pairs are needed, as indicated in the \autoref{tbl:fec}.
+
+	\begin{tabular}{|c|c|c|c|c|c|}
+	\label{tbl:fec}
+		Modulation & Uncoded block size (bytes) & Coded block size (bytes) &
+		Overall coding rate & RS code & CC code rate \\
+
+		QPSK & 24 & 48 & 1/2 & (32,24,4) & 2/3 \\
+		QPSK & 36 & 48 & 3/4 & (40,36,2) & 5/6
+	\end{tabular}
+
+
+	\subsection{Control Logic}
+	\label{sec:ctrl}
 
 %
 %\begin{tabular}{|c|c|c|}

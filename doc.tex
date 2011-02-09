@@ -3,42 +3,68 @@
 \usepackage{amsmath}
 \title{802.16-2009 OFDM PHY baseband}
 \author{Jonathan Huang \and Cody Schafer \and Luke Steepy}
-\date{1/31/2011}
+\date{2/3/2011}
 \begin{document}
-\maketitle 
-\section{Revision History}
-\begin{tabular}{|c|c|c|}
-\hline
-Revision & Date & Comments \\ \hline
-1.00 & 1/31/2011 & First revision \\ \hline
-1.01 & 2/3/2011 & \\ \hline
-\end{tabular}
+\maketitle
 \section{Project Overview}
-\subsection{End Market Expectations}
-Currently IEEE 802.16, also known as “WiMAX”, has seen little deployment in the United States and western Europe while being moderately deployed in Asia nations and Eastern European markets. To be useful in western areas, WiMAX has to effectively compete with both consumer owned Wifi hot-spots and the various cell phone networks. Given the impressively low cost of both cellular and Wifi (802.11) systems combined with the expectation that they work well in mobile devices, this physical layer (PHY) targets both simplicity (to reduce cost) and reduced power consumption.
-\subsection{Degree of standards compliance and scope limitations}
-The 802.16 standard specifies multiple layers of a WiMAX device, including a “Service-specific convergence sublayer” (Section 5), a MAC sublayer (Section 6), a Security sublayer (Section 7), and the Physical layer (Section 8). While the PHY is described within section 8 of the 802.16-2009 document, other sections may apply to the design of the PHY and thus were considered to the minimal extent to which they apply to design of the PHY component.
-Within the PHY layer implementers are further given the choice of three (3) different PHY types: SC (single carrier), OFDM (orthogonal frequency division multiplexing), and OFDMA (orthogonal frequency division multiple access). In the interest of developing a product which is applicable to the larger consumer market and follows with our design goal of simplicity, OFDM was chosen as the modulation method to be implemented as it is significantly simpler in design than OFDMA and is designed for use on unlicensed and licenced bands. OFDM is detailed in section 8.3 of [1]
-FFT size fixed at 256
-% Need to figure out how to include images in Latex
-%\newpage
-%\section{Block Diagrams}
-%\subsection{Transmitter}
-% Sample includegraphics implementation
-%\begin{figure}[here]
-%\includegraphics[width=0.9\textwidth]{images/JobInformationDialog.jp%g}
-%\caption{A prototype of the Job Information dialog}
-%\label{fig:jobInfoDialog}
-%\end{figure}
-%\subsection{Receiver}
-\newpage
+	\subsection{End Market Expectations}
+	Currently IEEE 802.16, also known as “WiMAX”, has seen little deployment in the
+	United States and western Europe while being moderately deployed in Asia
+	nations and Eastern European markets. To be useful in western areas, WiMAX has
+	to effectively compete with both consumer owned Wifi hot-spots and the various
+	cell phone networks. Given the impressively low cost of both cellular and Wifi
+	(802.11) systems combined with the expectation that they work well in mobile
+	devices, this physical layer (PHY) targets both simplicity (to reduce cost) and
+	reduced power consumption.
+
+	\subsection{Degree of standards compliance and scope limitations}
+	The 802.16 standard specifies multiple layers of a WiMAX device, including a
+	“Service-specific convergence sublayer” (Section 5), a MAC sublayer (Section
+	6), a Security sublayer (Section 7), and the Physical layer (Section 8). While
+	the PHY is described within section 8 of the 802.16-2009 document, other
+	sections may apply to the design of the PHY and thus were considered to the
+	minimal extent to which they apply to design of the PHY component.  Within the
+	PHY layer implementers are further given the choice of three (3) different PHY
+	types: SC (single carrier), OFDM (orthogonal frequency division multiplexing),
+	and OFDMA (orthogonal frequency division multiple access). In the interest of
+	developing a product which is applicable to the larger consumer market and
+	follows with our design goal of simplicity, OFDM was chosen as the modulation
+	method to be implemented as it is significantly simpler in design than OFDMA
+	and is designed for use on unlicensed and licenced bands. OFDM is detailed in
+	section 8.3 of [1]
+
+	FFT size fixed at 256
+
+	% Need to figure out how to include images in Latex
+	%\newpage
+	%\section{Block Diagrams}
+	%\subsection{Transmitter}
+	% Sample includegraphics implementation
+	%\begin{figure}[here]
+	%\includegraphics[width=0.9\textwidth]{images/JobInformationDialog.jp%g}
+	%\caption{A prototype of the Job Information dialog}
+	%\label{fig:jobInfoDialog}
+	%\end{figure}
+	%\subsection{Receiver}
+
 \section{Product Description}
-\subsection{Device Usage}
-This device implements only the PHY layer of the IEEE 802.16 standard, and therefore it requires an existing MAC implementation to process its I/O. As can be seen from Figures 1 and 2 %[needs reference to section Block Diagram]
-, both the Transmitter and Receiver require MAC level inputs into the Control Logic blocks for the PHY implementation to function correctly.
-\subsubsection{Transmitter MAC/PHY}
-The transmitter portion of this device requires multiple inputs into the Control Logic block as well as the frame(s) to be transmitted by the device from the MAC. 
-The Control Block will send a “Ready for Frame” signal to the MAC to indicate that the PHY layer is ready to receive a frame. As the MAC sends the frame to a Header Parser block, it also sends a Sending frame signal to the Control Block. The Header Parser block takes the frame and sends relevant information from the frame header to the Control Logic block. The frame is then passed on to the first operating block of the PHY layer, the Randomizer.  
+	\subsection{Device Usage}
+	This device implements only the PHY layer of the IEEE 802.16 standard, and
+	therefore it requires an existing MAC implementation to process its I/O. As can
+	be seen from Figures 1 and 2 %[needs reference to section Block Diagram] , both
+	the Transmitter and Receiver require MAC level inputs into the Control Logic
+	blocks for the PHY implementation to function correctly.
+
+	\subsubsection{Transmitter MAC/PHY}
+	The transmitter portion of this device requires multiple inputs into the
+	Control Logic block as well as the frame(s) to be transmitted by the device
+	from the MAC.  The Control Block will send a “Ready for Frame” signal to the
+	MAC to indicate that the PHY layer is ready to receive a frame. As the MAC
+	sends the frame to a Header Parser block, it also sends a Sending frame signal
+	to the Control Block. The Header Parser block takes the frame and sends
+	relevant information from the frame header to the Control Logic block. The
+	frame is then passed on to the first operating block of the PHY layer, the
+	Randomizer.
 %These signals are tabulated in Table 1. %[needs numbering]
 %\begin{tabular}{|c|c|}
 %\hline
@@ -50,9 +76,50 @@ The Control Block will send a “Ready for Frame” signal to the MAC to indicat
 %Modulation Type & Rate\_ID. Defines type of Constellation Mapping \\ %\hline
 %New Burst & \\ \hline
 %\end{tabular}
-\subsubsection{Transmitter PHY}
-After receiving the signals from the MAC, the transmitter will push the frame through various operations until it reaches the RF radio. 
-The frame is pushed through the following blocks :
+\subsection{Transmitter PHY}
+All voltages of logic levels are defined by the FPGA on which the product's
+code is placed.
+
+Each block of the transmitter connected via direct wiring (without a buffer)
+is given the same clock. Except where explicitly mentiond, reading of an input
+bit stream is done on the positive clock edge only when the corresponding
+$load\_*$ control line is high. All PHY componets are clocked via the
+$phy\_clock$.
+
+	\subsubsection{MAC - PHY interface}
+	The MAC interfaces with the PHY module by sending frames (with the
+	appropriate headers and padding included) as a stream of bits. These
+	bits are clocked via the $mac\_clk\_in$ line, and must only be sent
+	when the $mac\_sending\_frame$ line is high. The state of the
+	$mac\_sending\_frame$ line must be low when not sending a frame, and
+	must be lowered and raised between frames that would otherwise be
+	abutting. The frequency of $mac\_clk\_in$ must be less than
+	half of the $phy\_clock$ unless both clocks share their phase, in
+	which case $mac\_clk\_in$ may be equal to the full $phy\_clock$.
+
+	The $phy\_ready$ line is a signal to the mac that it is ready for a
+	new frame to be inputed, and should not be ignored.
+
+	\subsubsection{Header Decoder}
+	The \cite{Randomizer} requires the locations of the PDUs (packet data
+	units, 2 per frame) within each frame as well as the locations of
+	'Bursts' within each PDU to reinitialize itself at various points in
+	the bit stream. As all of this data is contained in the PDU headers,
+	this block determines the values of the needed fields and forwards
+	them to the \cite{Control Logic} block.
+
+	This block has the unique chalenge of additionally reading it's
+	bitstream at the clock specified by the MAC, $mac\_clk\_in$.
+
+	Bit stream in: $mac\_bits$, clocked via $mac\_clk\_in$.
+	No enable used. Reset via $header\_reset$. Bit stream out:
+	$bits\_norm$ (indicating their clocking is now normalized).
+
+	\subsubsection{Randomizer}
+	The randomizer operates as a shift register with an initial value
+	determined by the PDU (packet data unit, one half of a frame) header
+	and whether it is a UL (uplink) or DL (downlink) PDU. 
+
 %
 %\begin{tabular}{|c|c|c|}
 %\hline

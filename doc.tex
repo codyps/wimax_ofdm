@@ -85,17 +85,26 @@ $phy\_clock$.
 	and forwards them to the Control Logic block [\hyperref{sec:ctrl}]. 
 
 	This block has the unique chalenge of additionally reading it's
-	bitstream at the clock specified by the MAC, $mac\_clk\_in$.
+	bitstream at the clock specified by the MAC, $mac\_bit\_clk\_in$.
 
-	Bit stream in: $mac\_bits$, clocked via $mac\_clk\_in$.  No enable
-	used. Reset via $header\_reset$. Bit stream out: $bits\_norm$
-	(indicating their clocking is now normalized).
+	Inptus:
+	Bit stream in: $bits\_to\_phy$, clocked via $mac\_bit\_clk\_in$.  No enable
+	used. Reset via $header\_reset$.
+	
+	Outputs
+	Bit stream out: $bits\_to\_rand$, Bit out enable: $en\_to\_rand$
 
 	\subsection{Randomizer}
 	\label{sec:rand}
 	The randomizer operates as a shift register with an initial value
 	determined by the PDU (packet data unit, one half of a frame) header
-	and whether it is a UL (uplink) or DL (downlink) PDU. 
+	and whether it is a UL (uplink) or DL (downlink) PDU.
+
+	Inputs:
+	Bit stream: $bits\_to\_rand$, bits input enable: $en\_to\_rand$.
+
+	Outputs:
+	Bit stream:
 
 	\subsection{Forward Error Corection}
 	\label{sec:fec}
@@ -114,6 +123,8 @@ $phy\_clock$.
 		QPSK & 36 & 48 & 3/4 & (40,36,2) & 5/6
 	\end{tabular}
 
+	Bit stream in: $bits\_norm$ (from Header decoder [\hyperref{sec:header}]),
+	enable in: $
 
 	\subsection{Control Logic}
 	\label{sec:ctrl}

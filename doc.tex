@@ -3,7 +3,6 @@
 \usepackage{amsmath}
 \usepackage{hyperref}
 \usepackage[all]{hypcap}
-
 \title{802.16-2009 OFDM PHY baseband}
 \author{Jonathan Huang \and Cody Schafer \and Luke Steepy}
 \date{2/3/2011}
@@ -58,7 +57,10 @@ Each block of the transmitter connected via direct wiring (without a buffer)
 is given the same clock. Except where explicitly mentiond, reading of an input
 bit stream is done on the positive clock edge only when the corresponding
 $load\_*$ control line is high. All PHY componets are clocked via the
-$phy\_clock$.
+$phy\_clock$. All wires noted as $enable$s (also: '$en$') are active high, and
+remain high for the duration where the input stream is valid. Others indicated
+as $flag$s are set on the first clock where they are valid, and will be
+cleared on the next unless reasserted by the sending hardware.
 
 	\subsection{MAC - PHY interface}
 	\label{sec:mac_phy}
@@ -68,9 +70,8 @@ $phy\_clock$.
 	when the $mac\_sending\_frame$ line is high. The state of the
 	$mac\_sending\_frame$ line must be low when not sending a frame, and
 	must be lowered and raised between frames that would otherwise be
-	abutting. The frequency of $mac\_clk\_in$ must be less than
-	half of the $phy\_clock$ unless both clocks share their phase, in
-	which case $mac\_clk\_in$ may be equal to the full $phy\_clock$.
+	abutting. The frequency of $mac\_clk\_in$ must be less than or equal
+	to half of the $phy\_clock$.
 
 	The $phy\_ready$ line is a signal to the mac that it is ready for a
 	new frame to be inputed, and should not be ignored.
@@ -102,9 +103,11 @@ $phy\_clock$.
 
 	Inputs:
 	Bit stream: $bits\_to\_rand$, bits input enable: $en\_to\_rand$.
+	$burst\_change\_flag$ (indicates a reload of the register is needed,
+	only high for a single bit).
 
 	Outputs:
-	Bit stream:
+	Bit stream: $bits\_to\_fec$, bits output enable: $en\_to\_fec$.
 
 	\subsection{Forward Error Corection}
 	\label{sec:fec}
@@ -123,38 +126,33 @@ $phy\_clock$.
 		QPSK & 36 & 48 & 3/4 & (40,36,2) & 5/6
 	\end{tabular}
 
-	Bit stream in: $bits\_norm$ (from Header decoder [\hyperref{sec:header}]),
-	enable in: $
+	Bit stream in: $bits\_to\_fec$ (from Header decoder [\hyperref{sec:header}]),
+	enable in: $en\_to\_fec$
+
+	Bit stream out: $bits\_from\_fec$, $en\_from\_fec$.
+
+	\subsection{FEC to Interleaving Circular buffer}
+	\label{sec:fec_buffer}
+
+	\subsection{Interleaving}
+	\label{sec:interleaving}
+
+	\subsection{Constellation Mapping}
+	\label{sec:constellation}
+
+	\subsection{Pilot Subcarrier Insertion}
+	\label{sec:pilot}
+
+	\subsection{Subcarrier to IFFT Buffer}
+	\label{sec:ifft_in_buffer}
+
+	\subsection{Cyclic Prefix}
+	\label{sec:cyclic_prefix}
 
 	\subsection{Control Logic}
 	\label{sec:ctrl}
 
-%
-%\begin{tabular}{|c|c|c|}
-%\hline
-%Block Name & Description & Required Inputs \\ \hline
-%Randomizer & Each frame of data is put through a Randomizer which utilizes a PRBS \newline
-% 
-%(Psuedo Random Binary Sequence) generator \newline with $1+x^{14}+x^{15}$ & From Header Parser : Contents of the frame \newline
-%From Control Logic : Randomizer Initialization Vector and Reset Control \\ \hline
-%FEC & Forward Error Correction consisting of Concatenated Reed Solomon-Convolution Code & From Randomizer : New random bit stream and Sending Data signal \newline
-% 
-%From FEC Calculation : RS Code and CC Code Rate \\ \hline
-%Circular Buffer & Holds blocks of encoded bits for the Interleaver & From FEC : Encoded bits and Sending Data signal \\ \hline
-%Interleaver & Interleaves data blocks & From Circular Buffer : Blocks of data \\ \hline
-%Constellation Mapping & Maps bits according to the modulation type & From Interleaver : Interleaved Bits and Sending Data signal \newline
-% 
-%From Control Logic : Subchannelization information \\ \hline
-%Pilot Subcarrier insertion & & From Constellation Mapping : Subcarrier mappings (I and Q) \\ \hline
-%IFFT & Inverse Fast Fourier Transform & From Pilo Subcarrier insertion : Subcarrier mappings with Pilots \\ \hline
-% 
-%Cyclic Prefix & Appends the Cyclic Prefix to the signal & From IFFT : I and Q Transform 
-% 
-%From Control Logic : Cyclic Prefix size
-% 
-%DAC Converter / Wave Modulation & & \\ \hline
-%\end{tabular}
-\subsubsection{Receiver MAC/PHY}
+\section{Receiver PHY}
 %The receiver portion of this device 
 %
 %\subsection{Pin outs}

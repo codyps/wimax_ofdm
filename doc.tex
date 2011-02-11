@@ -83,14 +83,15 @@ hardware.
 	This block has the unique chalenge of additionally reading it's
 	bitstream at the clock specified by the MAC, $mac\_bit\_clk\_in$.
 
-	Inptus:
-	Bit stream in: $bits\_to\_phy$, clocked via $mac\_bit\_clk\_in$.  No enable
-	used. Reset via $header\_reset$.
+	Inptus: \\
+	Bit stream in: $bits\_to\_phy$, clocked via $mac\_bit\_clk\_in$.  No
+	enable used. Uses $mac\_frame\_flag$ to determine when a new frame is
+	inbound.
 	
-	Outputs
+	Outputs: \\
 	Bit stream out: $bits\_to\_rand$, Bit out enable: $en\_to\_rand$
 
-	Estimated gates: 1k
+	Estimated gates: 1k \\
 	Responsible person: Cody
 
 	\subsection{Randomizer}
@@ -99,15 +100,15 @@ hardware.
 	determined by the PDU (packet data unit, one half of a frame) header
 	and whether it is a UL (uplink) or DL (downlink) PDU.
 
-	Inputs:
+	Inputs: \\
 	Bit stream: $bits\_to\_rand$, bits input enable: $en\_to\_rand$.
 	$burst\_change\_flag$ (indicates a reload of the register is needed,
 	only high for a single bit).
 
-	Outputs:
+	Outputs: \\
 	Bit stream: $bits\_to\_fec$, bits output enable: $en\_to\_fec$.
 
-	Estimated Gates: 1k
+	Estimated Gates: 1k \\
 	Responsible Person: Cody.
 
 	\subsection{Forward Error Corection}
@@ -117,6 +118,8 @@ hardware.
 	codes and CC (convolution code) rates are used for varying modulation
 	types. As we have fixed the modulation to QPSK, only two of the RS
 	code and CC rate pairs are needed, as indicated in the \autoref{tbl:fec}.
+	
+	
 
 	%\begin{table}
 		\begin{tabular}{p{2cm}|p{2cm}|p{2cm}|p{2cm}|p{2cm}|p{2cm}}
@@ -129,36 +132,50 @@ hardware.
 	%	\caption{}
 	%\end{table}
 
+
 	Bit stream in: $bits\_to\_fec$ (from Header decoder, \autoref{sec:header}),
 	enable in: $en\_to\_fec$
 
 	Bit stream out: $bits\_from\_fec$, $en\_from\_fec$.
 
-	Estimated Gates: 2k
+	Estimated Gates: 2k \\
 	Responsible Person: Luke.
 
 	\subsection{FEC to Interleaving Circular buffer}
 	\label{sec:fec_buffer}
 
-	Estimated Gates: 1K
+	Takes $bits\_from\_fec$ (triggered via $en\_from\_fec$) and places them
+	in a circular buffer. When the number of buffered bits equals the block
+	size of the Interleaver. Sets the $fec\_buffer\_done$ flag when enough
+	data is filled. Data is outputed via $fec\_buffer\_out$ with a width
+	equal to the block size of the interleaver.
+
+	Estimated Gates: 1K \\
 	Responsible Person: Cody
 
 	\subsection{Interleaving}
 	\label{sec:interleaving}
 
-	Estimated Gates: 2K
+	Two step type operation, swaps bits around.
+
+	Estimated Gates: 2K \\
 	Responsible Person: Cody
 
 	\subsection{Constellation Mapping}
 	\label{sec:constellation}
 
-	Estimated Gates: 4K
+	Input is bit stream, output is I \& Q pair.
+
+	Estimated Gates: 4K \\
 	Responsible Person: Cody
 
 	\subsection{Pilot Subcarrier Insertion}
 	\label{sec:pilot}
 
-	Estimated Gates: 1K
+	Input is I \& Q pair, output is I \& Q pair with pilot subcarriers
+	inserted at some points (fixed).
+
+	Estimated Gates: 1K \\
 	Responsible Person: Cody
 
 	\subsection{Subcarrier to IFFT Buffer}
@@ -225,8 +242,6 @@ hardware.
 
 	\subsection{Constelation DeMapping}
 
-	\subsection{}<++>
-	
 	%\subsection{Pin outs}
 	%XC3S200-FT256
 	%//Top and Bottom View Package FT256 -   %http://www.xilinx.com/support/documentation/package_specs/ft256.pdf 

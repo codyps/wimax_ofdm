@@ -12,7 +12,7 @@
 \maketitle
 \section{Project Overview}
 We are developing a minimal 802.16-2009 OFDM PHY supporting only QPSK
-modulation and only components relevent to unlicenced bands. All
+modulation and only components relevant to unlicensed bands. All
 optional items are omitted.
 
 	\subsection{End Market Expectations}
@@ -38,7 +38,7 @@ optional items are omitted.
 	developing a product which is applicable to the larger consumer market and
 	follows with our design goal of simplicity, OFDM was chosen as the modulation
 	method to be implemented as it is significantly simpler in design than OFDMA
-	and is designed for use on unlicensed and licenced bands. OFDM is detailed in
+	and is designed for use on unlicensed and licensed bands. OFDM is detailed in
 	section 8.3 of 802.16-2009.
 
 \section{Transmitter}
@@ -47,10 +47,10 @@ code is placed.
 
 Each block of the transmitter connected via direct wiring (without a buffer) is
 given the same clock. Each block reads its inputs on alternating clock edges
-such that two adjacent units read and write on differnet edges. This is done so
-that outputed data does not change while being read. Except where explicitly
-mentiond, reading of an input bit stream is done on the positive clock edge
-only when the corresponding $load\_*$ control line is high. All PHY componets
+such that two adjacent units read and write on different edges. This is done so
+that outputted data does not change while being read. Except where explicitly
+mentioned, reading of an input bit stream is done on the positive clock edge
+only when the corresponding $load\_*$ control line is high. All PHY components
 are clocked via the $phy\_clock$. All wires noted as $enable$s (also: '$en$')
 are active high, and remain high for the duration where the input stream is
 valid. Others indicated as $flag$s are set on the first clock where they are
@@ -80,10 +80,10 @@ hardware.
 	the PDU headers, this block determines the values of the needed fields
 	and forwards them to the Control Logic block (\autoref{sec:ctrl}). 
 
-	This block has the unique chalenge of additionally reading it's
-	bitstream at the clock specified by the MAC, $mac\_bit\_clk\_in$.
+	This block has the unique challenge of additionally reading it's
+	bit-stream at the clock specified by the MAC, $mac\_bit\_clk\_in$.
 
-	Inptus: \\
+	Inputs: \\
 	Bit stream in: $bits\_to\_phy$, clocked via $mac\_bit\_clk\_in$.  No
 	enable used. Uses $mac\_frame\_flag$ to determine when a new frame is
 	inbound.
@@ -111,9 +111,9 @@ hardware.
 	Estimated Gates: 1k \\
 	Responsible Person: Cody.
 
-	\subsection{Forward Error Corection}
+	\subsection{Forward Error Correction}
 	\label{sec:fec}
-	This is a Reed-solomon and convolution coding combination which is
+	This is a Reed-Solomon and convolution coding combination which is
 	applied per frame. Within the standard, different RS (Reed-Solomon)
 	codes and CC (convolution code) rates are used for varying modulation
 	types. As we have fixed the modulation to QPSK, only two of the RS
@@ -147,7 +147,7 @@ hardware.
 	Takes $bits\_from\_fec$ (triggered via $en\_from\_fec$) and places them
 	in a circular buffer. When the number of buffered bits equals the block
 	size of the Interleaver. Sets the $fec\_buffer\_done$ flag when enough
-	data is filled. Data is outputed via $fec\_buffer\_out$ with a width
+	data is filled. Data is outputted via $fec\_buffer\_out$ with a width
 	equal to the block size of the interleaver.
 
 	Estimated Gates: 1K \\
@@ -225,7 +225,7 @@ hardware.
 	Appends the last Tg items of the previous frame to the start of the
 	present frame.  Reads 256 2 bit items from the IFFT, appending Tg items
 	to the start of it. It also stores the last Tg items so that they may
-	be appeanded to the next frame from the IFFT.
+	be appended to the next frame from the IFFT.
 
 	Estimated Gates: 2k.
 	Responsible Person: Cody.
@@ -234,13 +234,13 @@ hardware.
 	\label{sec:ctrl}
 
 \section{Receiver PHY}
-	\subsection{Pilot Locator}
+	\subsection{Pilot Locater}
 
-	\subsection{Pilot locator to FFT buffer}
+	\subsection{Pilot locater to FFT buffer}
 
 	\subsection{FFT}
 
-	\subsection{Constelation DeMapping}
+	\subsection{Constellation De-mapping}
 
 	%\subsection{Pin outs}
 	%XC3S200-FT256

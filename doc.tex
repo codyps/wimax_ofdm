@@ -241,7 +241,43 @@ hardware.
 	\subsection{FFT}
 
 	\subsection{Constellation De-mapping}
-
+	
+\section{FPGA Implementation}
+  \subsection{Sampling and Clock Rate}
+    From the IEEE 802.16 standards document, the sampling rate for 256-OFDM is defined as
+    \begin{equation}
+    F_s = BW * 7/6
+    \end{equation}
+  
+  \begin{center}
+  \begin{tabular}{|c|c|}
+  Channel Bandwidth & Sampling Rate \\ \hline
+  14 MHz & 16.333 MHz \\
+  7 MHz & 8.166 MHz \\
+  3.5 MHz & 4.083 MHz \\
+  1.75 MHz & 2.042 MHz \\ \hline
+  \end{tabular}
+  \end{center}
+  
+  This design should be able to run on both the Spartan-3 FPGA and Virtex 4 LX60
+  FPGA as they both supply a 500 MHz clock.
+  
+  \subsection{Power Calculation}
+  
+  Calculate power based on required clock frequency for the device as well as the
+  FPGA specifications for voltage inputs.
+  
+  Absolute Maximum rating for V_{in} : 4.4 V
+  
+  Clock frequency required for a 3.5 MHz channel bandwidth : 4.083 MHz
+  
+  Input capacitance over recommended operating conditions : 10 pF
+  \begin{center}
+  \begin{equation}
+  P =C * V^2 * f = 10 pF * (4.4 V)^2 * 4.083 MHz = 0.18 mW
+  \end{equation}
+  \end{center}
+  
 	%\subsection{Pin outs}
 	%XC3S200-FT256
 	%//Top and Bottom View Package FT256 -   %http://www.xilinx.com/support/documentation/package_specs/ft256.pdf 

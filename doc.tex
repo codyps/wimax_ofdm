@@ -7,7 +7,7 @@
 \usepackage[all]{hypcap}
 \title{802.16-2009 OFDM PHY baseband}
 \author{Jonathan Huang \and Cody Schafer \and Luke Steepy}
-\date{2/3/2011}
+\date{2/14/2011}
 \begin{document}
 \maketitle
 \section{Project Overview}
@@ -17,7 +17,7 @@ optional items are omitted.
 
 	\subsection{End Market Expectations}
 	Currently IEEE 802.16, also known as ``WiMAX'', has seen little deployment in the
-	United States and western Europe while being moderately deployed in Asia
+	United States and western Europe while being moderately deployed in Asian
 	nations and Eastern European markets. To be useful in western areas, WiMAX has
 	to effectively compete with both consumer owned Wifi hot-spots and the various
 	cell phone networks. Given the impressively low cost of both cellular and Wifi
@@ -32,14 +32,14 @@ optional items are omitted.
 	the PHY is described within section 8 of the 802.16-2009 document, other
 	sections may apply to the design of the PHY and thus were considered to the
 	minimal extent to which they apply to design of the PHY component.  Within the
-	PHY layer implementers are further given the choice of three (3) different PHY
+	PHY layer, implementers are further given the choice of three (3) different PHY
 	types: SC (single carrier), OFDM (orthogonal frequency division multiplexing),
 	and OFDMA (orthogonal frequency division multiple access). In the interest of
 	developing a product which is applicable to the larger consumer market and
 	follows with our design goal of simplicity, OFDM was chosen as the modulation
 	method to be implemented as it is significantly simpler in design than OFDMA
 	and is designed for use on unlicensed and licensed bands. OFDM is detailed in
-	section 8.3 of 802.16-2009.
+	section 8.3 of the 802.16-2009 document.
 
 \section{Transmitter}
 All voltages of logic levels are defined by the FPGA on which the product's

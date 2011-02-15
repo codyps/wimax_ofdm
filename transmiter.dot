@@ -9,7 +9,7 @@ digraph transmitter {
 	ctrl [label="Control Hardware"]
 	head [label="Header Parser"]
 	rand [label="Randomizer"]
-	fec  [label="Forward Error Correction\nConcatenated Reed Solomon Convolution Code"]
+	fec  [label="Forward Error Correction\nConcatenated Reed\nSolomon Convolution Code"]
 	buf_fec_inter [label="buffer from\nFEC to Interleaver"]
 	interleaver [label="Interleaving\n[block based operation]"]
 	const_map [label="Constellation\nMapping"]

@@ -3,6 +3,7 @@ TRASH  := $(TARGET).pdf \
           $(TARGET).dvi \
           $(TARGET).aux \
           $(TARGET).log \
+	  transmiter.dot.eps
 
 .PHONY: all clean
 .SUFFIXES:
@@ -19,4 +20,10 @@ clean :
 %.dvi : %.tex
 	latex -interaction=nonstopmode $<
 	latex -interaction=nonstopmode $<
+
+
+dot : transmiter.dot.eps
+
+%.dot.eps : %.dot
+	dot -Teps $< > $@
 

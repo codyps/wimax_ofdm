@@ -1,8 +1,14 @@
 digraph transmitter {
 	//	page="8.5,11"
 	//	rankdir=LR
+	/* graph [
+		splines=ortho
+	] */
 
-	node [shape=box]
+	node [
+		shape=box
+	]
+
 
 	mac [label="MAC", shape=square]
 	clk [label="Clock Generator"]
@@ -22,6 +28,9 @@ digraph transmitter {
 	rf [label="RF", shape=oval]
 
 
+	edge [
+		weight=1
+	]
 
 	clk -> rand [label="clk"]
 	clk -> fec [label="clk"]
@@ -33,6 +42,9 @@ digraph transmitter {
 	clk -> ifft [label="clk"]
 	clk -> cp [label="clk"]
 
+	edge [
+		weight=20
+	]
 
 	mac -> head [label="bits_to_phy"]
 	mac -> head [label="mac_bit_clk_in"]

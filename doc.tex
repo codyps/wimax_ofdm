@@ -1,3 +1,5 @@
+% 
+
 \documentclass[10pt]{article}
 \usepackage[utf8]{inputenc}
 \usepackage{amsmath}
@@ -7,7 +9,7 @@
 \usepackage[all]{hypcap}
 \title{802.16-2009 OFDM PHY baseband}
 \author{Jonathan Huang \and Cody Schafer \and Luke Steepy}
-\date{2/14/2011}
+\date{\today}
 \begin{document}
 \maketitle
 \section{Project Overview}
@@ -100,127 +102,170 @@ hardware.
 	determined by the PDU (packet data unit, one half of a frame) header
 	and whether it is a UL (uplink) or DL (downlink) PDU.
 
-	Inputs: \\
-	Bit stream: $bits\_to\_rand$, bits input enable: $en\_to\_rand$.
-	$burst\_change\_flag$ (indicates a reload of the register is needed,
-	only high for a single bit).
-
-	Outputs: \\
-	Bit stream: $bits\_to\_fec$, bits output enable: $en\_to\_fec$.
+	\begin{description}
+		\item{Inputs:}
+		\begin{description}
+			\item[bits\_to\_rand], the input bitsream
+			\item[en\_to\_rand], indicates the input bitsream
+				is valid.
+			\item[reset\_rand], indicates a reload of the
+				register is needed, only high for a single
+				bit. Causes the reading of \textbf{rand\_iv}
+				into an internal register.
+			\item[rand\_iv{[15]}], a new vector to load into
+				the shift register.
+		\end{description}
+		\item{Outputs:}
+		\begin{description}
+			\item[bits\_to\_fec], bit stream clocked via the
+				main clock.
+			\item[en\_to\_fec], indicates that the incomming
+				bitstream is valid.
+		\end{description}
+	\end{description}
 
 	Estimated Gates: 1k \\
 	Responsible Person: Cody.
 
 	\subsection{Forward Error Correction}
-	\label{sec:fec}
-	This is a Reed-Solomon and convolution coding combination which is
-	applied per frame. Within the standard, different RS (Reed-Solomon)
-	codes and CC (convolution code) rates are used for varying modulation
-	types. As we have fixed the modulation to QPSK, only two of the RS
-	code and CC rate pairs are needed, as indicated in the \autoref{tbl:fec}.
-	
-	
+		\label{sec:fec}
+		This is a Reed-Solomon and convolution coding combination
+		which is applied per frame. Within the standard, different
+		RS (Reed-Solomon) codes and CC (convolution code) rates are
+		used for varying modulation types. As we have fixed the
+		modulation to QPSK, only two of the RS code and CC rate
+		pairs are needed, as indicated in the \autoref{tbl:fec}.
+		
+		
 
-	%\begin{table}
-		\begin{tabular}{p{2cm}|p{2cm}|p{2cm}|p{2cm}|p{2cm}|p{2cm}}
-		\label{tbl:fec}
-			Modulation & Uncoded block size (bytes) & Coded block size (bytes) &
-			Overall coding rate & RS code & CC code rate \\ \hline
-			QPSK & 24 & 48 & 1/2 & (32,24,4) & 2/3 \\
-			QPSK & 36 & 48 & 3/4 & (40,36,2) & 5/6
-		\end{tabular}
-	%	\caption{}
-	%\end{table}
+		%\begin{table}
+			\begin{tabular}{p{2cm}|p{2cm}|p{2cm}|p{2cm}|p{2cm}|p{2cm}}
+			\label{tbl:fec}
+				Modulation & Uncoded block size (bytes) &
+				Coded block size (bytes) & Overall coding
+				rate & RS code & CC code rate \\ \hline
+				QPSK & 24 & 48 & 1/2 & (32,24,4) & 2/3 \\
+				QPSK & 36 & 48 & 3/4 & (40,36,2) & 5/6
+			\end{tabular}
+		%	\caption{}
+		%\end{table}
 
 
-	Bit stream in: $bits\_to\_fec$ (from Header decoder, \autoref{sec:header}),
-	enable in: $en\_to\_fec$
+		\begin{description}
+			\item[Inputs:] \begin{description}
+				\item[bits\_to\_fec], from header decoder
+					(\autoref{sec:header})
+				\item[en\_to\_fec], indicates the incomming
+					bitstream is valid.
+			\end{description}
+			\item[Outputs:] \begin{description}
+				\item[bits\_from\_fec], output bitstream
+				\item[en\_from\_fec], set high to indicate
+					output bitstream is valid.
+			\end{description}
+		\end{description}
 
-	Bit stream out: $bits\_from\_fec$, $en\_from\_fec$.
-
-	Estimated Gates: 2k \\
-	Responsible Person: Luke.
+		Estimated Gates: 2k \\
+		Responsible Person: Luke.
 
 	\subsection{FEC to Interleaving Circular buffer}
-	\label{sec:fec_buffer}
+		\label{sec:fec_buffer}
 
-	Takes $bits\_from\_fec$ (triggered via $en\_from\_fec$) and places them
-	in a circular buffer. When the number of buffered bits equals the block
-	size of the Interleaver. Sets the $fec\_buffer\_done$ flag when enough
-	data is filled. Data is outputted via $fec\_buffer\_out$ with a width
-	equal to the block size of the interleaver.
+		Takes $bits\_from\_fec$ (triggered via $en\_from\_fec$) and
+		places them in a circular buffer. When the number of
+		buffered bits equals the block size of the Interleaver.
+		Sets the $fec\_buffer\_done$ flag when enough data is
+		filled. Data is outputted via $fec\_buffer\_out$ with a
+		width equal to the block size of the interleaver.
 
-	Estimated Gates: 1K \\
-	Responsible Person: Cody
+		Estimated Gates: 1K \\
+		Responsible Person: Cody
 
 	\subsection{Interleaving}
-	\label{sec:interleaving}
+		\label{sec:interleaving}
 
-	Two step type operation, swaps bits around.
+		Two step type operation, swaps bits around.
 
-	Estimated Gates: 2K \\
-	Responsible Person: Cody
+		Estimated Gates: 2K \\
+		Responsible Person: John
 
 	\subsection{Constellation Mapping}
-	\label{sec:constellation}
+		\label{sec:constellation}
 
-	Input is bit stream, output is I \& Q pair.
+		Input is bit stream, output is (I,Q).
 
-	Estimated Gates: 4K \\
-	Responsible Person: Cody
+		Estimated Gates: 4K \\
+		Responsible Person: John
 
 	\subsection{Pilot Subcarrier Insertion}
-	\label{sec:pilot}
+		\label{sec:pilot}
 
-	Input is I \& Q pair, output is I \& Q pair with pilot subcarriers
-	inserted at some points (fixed).
+		Input is (I,Q) pair, output is (I,Q) pair with pilot subcarriers
+		inserted at some points (fixed).
 
-	Estimated Gates: 1K \\
-	Responsible Person: Cody
+		Estimated Gates: 1K \\
+		Responsible Person: Cody
 
 	\subsection{Subcarrier to IFFT Buffer}
-	\label{sec:ifft-buffer}
-	Insertion into this buffer is ordered but will have random jumps around
-	different UL \& DL bursts.
+		\label{sec:ifft-buffer}
+		Insertion into this buffer is ordered but will have random
+		jumps around different UL \& DL bursts.
 
-	Block Size = blk\_siz = 200 (the total number of used subcarriers)
-	
-	Buffers blk\_size items each of which has
-	width 2 bits. QPSK utilizes both I and Q, amplitude and phase, each with a
-	granularity of 2. This means that each item (a pair of I \& Q) has 4
-	possible values and thus 2 bits are needed for each.
+		Block Size = blk\_siz = 200 (the total number of used
+		subcarriers)
+		
+		Buffers blk\_size items each of which has width 2 bits.
+		QPSK utilizes both I and Q, amplitude and phase, each with
+		a granularity of 2. This means that each item (a pair of I
+		\& Q) has 4 possible values and thus 2 bits are needed for
+		each.
 
-	Estimated Gates: 2k
-	Responsible Person: Cody.
+		Estimated Gates: 2k \\
+		Responsible Person: Cody.
 
 	\subsection{IFFT}
 	\label{sec:ifft}
-	IFFT Size: 256 items (each being a 
-	Inputs: 
-		$ifft\_buf\_has\_block$ (the count of the last block
-		present in the Sub to IFFT buffer (\autoref{sec:ifft-buffer})
+	IFFT Size: 256 items (each being a complex number)
+	\begin{description}
+		\item{Inputs:}
+		\begin{description}
+			\item[ifft\_buf\_has\_block] The count of the last
+				block present in the Sub to IFFT buffer
+				(\autoref{sec:ifft-buffer})
+			
+			\item[ifft\_buf\_data{[200][2][??ndepth]}] access
+				to the data at the present 'tail' location
+				in the buffer
+		\end{description}
 		
-		$ifft\_buf\_data[200][2]$ (access to the data at the present 'tail' location
-		in the buffer
-	
-	Outputs:
-		$ifft\_data\_ready$ high when the IFFT has processed data.
+		\item{Outputs:}
+		\begin{description}
+			\item[ifft\_data\_ready] high when the IFFT has
+				processed data.
+		\end{description}
+	\end{description}
 
 	Estimated Gates: 10k.
 	Responsible Person: John.
 
 	\subsection{Cyclic Prefix}
 	\label{sec:cyclic_prefix}
-
-	Inputs:
-		$ifft\_done$ : indicates the IFFT has data to be read out.
-		$ifft\_data$ : single bit of data from the IFFT.
-
-	Output:
-		$ifft\_shift\_clk$: clocks out the data from the IFFT.
-		$bits\_cyclic\_appended[2]$: sequence of I\&Q with the prefix appended.
-			This is sent directly to the ADC.
-
+	\begin{description}
+		\item{Inputs:}
+		\begin{description}
+			\item[ifft\_done] indicates the IFFT has
+				data to be read out.
+			\item[ifft\_data] : single bit of data from
+				the IFFT.
+		\end{description}
+		\item{Outputs:}
+		\begin{description}
+			\item[ifft\_shift\_clk] clocks out the data from the IFFT.
+			\item[bits\_cyclic\_appended{[2]}]: sequence of
+				I\&Q with the prefix appended.
+				This is sent directly to the ADC.
+		\end{description}
+	\end{description}
 
 	Appends the last Tg items of the previous frame to the start of the
 	present frame.  Reads 256 2 bit items from the IFFT, appending Tg items
@@ -228,22 +273,12 @@ hardware.
 	be appended to the next frame from the IFFT.
 
 	Estimated Gates: 2k.
-	Responsible Person: Cody.
+	Responsible Person: John.
 
 	\subsection{Control Logic}
 	\label{sec:ctrl}
 
-\section{Receiver PHY}
-	\subsection{Pilot Locater}
-
-	\subsection{Pilot locater to FFT buffer}
-
-	\subsection{FFT}
-
-	\subsection{Constellation De-mapping}
 \section{Testing Considerations}
-	
-
 \section{Economic Analysis}
 \section{Power Consumption}
 \section{FPGA Implementation}
@@ -254,7 +289,7 @@ hardware.
     \end{equation}
   
   \begin{center}
-  \begin{tabular}{|c|c|}
+  \begin{tabular}{c|c}
   Channel Bandwidth & Sampling Rate \\ \hline
   14 MHz & 16.333 MHz \\
   7 MHz & 8.166 MHz \\
@@ -278,7 +313,7 @@ hardware.
   Input capacitance over recommended operating conditions : 10 pF
   \begin{center}
   \begin{equation}
-  P =C * V^2 * f = 10 pF * (4.4 V)^2 * 4.083 MHz = 0.18 mW
+  P = C * V^2 * f = 10 pF * (4.4 V)^2 * 4.083 MHz = 0.18 mW
   \end{equation}
   \end{center}
   

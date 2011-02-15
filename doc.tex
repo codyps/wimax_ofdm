@@ -2,20 +2,22 @@
 \usepackage[utf8]{inputenc}
 \usepackage{amsmath}
 \usepackage{hyperref}
+\usepackage[english]{babel}
+\usepackage{fullpage}
 \usepackage[all]{hypcap}
 \title{802.16-2009 OFDM PHY baseband}
 \author{Jonathan Huang \and Cody Schafer \and Luke Steepy}
-\date{2/3/2011}
+\date{2/14/2011}
 \begin{document}
 \maketitle
 \section{Project Overview}
 We are developing a minimal 802.16-2009 OFDM PHY supporting only QPSK
-modulation and only components relevent to unlicenced bands. All
+modulation and only components relevant to unlicensed bands. All
 optional items are omitted.
 
 	\subsection{End Market Expectations}
 	Currently IEEE 802.16, also known as ``WiMAX'', has seen little deployment in the
-	United States and western Europe while being moderately deployed in Asia
+	United States and western Europe while being moderately deployed in Asian
 	nations and Eastern European markets. To be useful in western areas, WiMAX has
 	to effectively compete with both consumer owned Wifi hot-spots and the various
 	cell phone networks. Given the impressively low cost of both cellular and Wifi
@@ -25,19 +27,19 @@ optional items are omitted.
 
 	\subsection{Degree of standards compliance and scope limitations}
 	The 802.16 standard specifies multiple layers of a WiMAX device, including a
-	“Service-specific convergence sublayer” (Section 5), a MAC sublayer (Section
+	``Service-specific convergence sublayer'' (Section 5), a MAC sublayer (Section
 	6), a Security sublayer (Section 7), and the Physical layer (Section 8). While
 	the PHY is described within section 8 of the 802.16-2009 document, other
 	sections may apply to the design of the PHY and thus were considered to the
 	minimal extent to which they apply to design of the PHY component.  Within the
-	PHY layer implementers are further given the choice of three (3) different PHY
+	PHY layer, implementers are further given the choice of three (3) different PHY
 	types: SC (single carrier), OFDM (orthogonal frequency division multiplexing),
 	and OFDMA (orthogonal frequency division multiple access). In the interest of
 	developing a product which is applicable to the larger consumer market and
 	follows with our design goal of simplicity, OFDM was chosen as the modulation
 	method to be implemented as it is significantly simpler in design than OFDMA
-	and is designed for use on unlicensed and licenced bands. OFDM is detailed in
-	section 8.3 of 802.16-2009.
+	and is designed for use on unlicensed and licensed bands. OFDM is detailed in
+	section 8.3 of the 802.16-2009 document.
 
 \section{Transmitter}
 All voltages of logic levels are defined by the FPGA on which the product's
@@ -45,10 +47,10 @@ code is placed.
 
 Each block of the transmitter connected via direct wiring (without a buffer) is
 given the same clock. Each block reads its inputs on alternating clock edges
-such that two adjacent units read and write on differnet edges. This is done so
-that outputed data does not change while being read. Except where explicitly
-mentiond, reading of an input bit stream is done on the positive clock edge
-only when the corresponding $load\_*$ control line is high. All PHY componets
+such that two adjacent units read and write on different edges. This is done so
+that outputted data does not change while being read. Except where explicitly
+mentioned, reading of an input bit stream is done on the positive clock edge
+only when the corresponding $load\_*$ control line is high. All PHY components
 are clocked via the $phy\_clock$. All wires noted as $enable$s (also: '$en$')
 are active high, and remain high for the duration where the input stream is
 valid. Others indicated as $flag$s are set on the first clock where they are
@@ -71,24 +73,25 @@ hardware.
 
 	\subsection{Header Decoder}
 	\label{sec:header}
-	The Randomizer [\hyperref{sec:rand}] requires the locations of the
+	The Randomizer (\autoref{sec:rand}) requires the locations of the
 	PDUs (packet data units, 2 per frame) within each frame as well as the
 	locations of 'Bursts' within each PDU to reinitialize itself at
 	various points in the bit stream. As all of this data is contained in
 	the PDU headers, this block determines the values of the needed fields
-	and forwards them to the Control Logic block (\hyperref{sec:ctrl}). 
+	and forwards them to the Control Logic block (\autoref{sec:ctrl}). 
 
-	This block has the unique chalenge of additionally reading it's
-	bitstream at the clock specified by the MAC, $mac\_bit\_clk\_in$.
+	This block has the unique challenge of additionally reading it's
+	bit-stream at the clock specified by the MAC, $mac\_bit\_clk\_in$.
 
-	Inptus:
-	Bit stream in: $bits\_to\_phy$, clocked via $mac\_bit\_clk\_in$.  No enable
-	used. Reset via $header\_reset$.
+	Inputs: \\
+	Bit stream in: $bits\_to\_phy$, clocked via $mac\_bit\_clk\_in$.  No
+	enable used. Uses $mac\_frame\_flag$ to determine when a new frame is
+	inbound.
 	
-	Outputs
+	Outputs: \\
 	Bit stream out: $bits\_to\_rand$, Bit out enable: $en\_to\_rand$
 
-	Estimated gates: 1k
+	Estimated gates: 1k \\
 	Responsible person: Cody
 
 	\subsection{Randomizer}
@@ -97,68 +100,86 @@ hardware.
 	determined by the PDU (packet data unit, one half of a frame) header
 	and whether it is a UL (uplink) or DL (downlink) PDU.
 
-	Inputs:
+	Inputs: \\
 	Bit stream: $bits\_to\_rand$, bits input enable: $en\_to\_rand$.
 	$burst\_change\_flag$ (indicates a reload of the register is needed,
 	only high for a single bit).
 
-	Outputs:
+	Outputs: \\
 	Bit stream: $bits\_to\_fec$, bits output enable: $en\_to\_fec$.
 
-	Estimated Gates: 1k
+	Estimated Gates: 1k \\
 	Responsible Person: Cody.
 
-	\subsection{Forward Error Corection}
+	\subsection{Forward Error Correction}
 	\label{sec:fec}
-	This is a Reed-solomon and convolution coding combination which is
+	This is a Reed-Solomon and convolution coding combination which is
 	applied per frame. Within the standard, different RS (Reed-Solomon)
 	codes and CC (convolution code) rates are used for varying modulation
 	types. As we have fixed the modulation to QPSK, only two of the RS
 	code and CC rate pairs are needed, as indicated in the \autoref{tbl:fec}.
+	
+	
 
-	\begin{tabular}{|c|c|c|c|c|c|}
-	\label{tbl:fec}
-		Modulation & Uncoded block size (bytes) & Coded block size (bytes) &
-		Overall coding rate & RS code & CC code rate \\
+	%\begin{table}
+		\begin{tabular}{p{2cm}|p{2cm}|p{2cm}|p{2cm}|p{2cm}|p{2cm}}
+		\label{tbl:fec}
+			Modulation & Uncoded block size (bytes) & Coded block size (bytes) &
+			Overall coding rate & RS code & CC code rate \\ \hline
+			QPSK & 24 & 48 & 1/2 & (32,24,4) & 2/3 \\
+			QPSK & 36 & 48 & 3/4 & (40,36,2) & 5/6
+		\end{tabular}
+	%	\caption{}
+	%\end{table}
 
-		QPSK & 24 & 48 & 1/2 & (32,24,4) & 2/3 \\
-		QPSK & 36 & 48 & 3/4 & (40,36,2) & 5/6
-	\end{tabular}
 
-	Bit stream in: $bits\_to\_fec$ (from Header decoder [\hyperref{sec:header}]),
+	Bit stream in: $bits\_to\_fec$ (from Header decoder, \autoref{sec:header}),
 	enable in: $en\_to\_fec$
 
 	Bit stream out: $bits\_from\_fec$, $en\_from\_fec$.
 
-	Estimated Gates: 2k
+	Estimated Gates: 2k \\
 	Responsible Person: Luke.
 
 	\subsection{FEC to Interleaving Circular buffer}
 	\label{sec:fec_buffer}
 
-	Estimated Gates: 1K
+	Takes $bits\_from\_fec$ (triggered via $en\_from\_fec$) and places them
+	in a circular buffer. When the number of buffered bits equals the block
+	size of the Interleaver. Sets the $fec\_buffer\_done$ flag when enough
+	data is filled. Data is outputted via $fec\_buffer\_out$ with a width
+	equal to the block size of the interleaver.
+
+	Estimated Gates: 1K \\
 	Responsible Person: Cody
 
 	\subsection{Interleaving}
 	\label{sec:interleaving}
 
-	Estimated Gates: 2K
+	Two step type operation, swaps bits around.
+
+	Estimated Gates: 2K \\
 	Responsible Person: Cody
 
 	\subsection{Constellation Mapping}
 	\label{sec:constellation}
 
-	Estimated Gates: 4K
+	Input is bit stream, output is I \& Q pair.
+
+	Estimated Gates: 4K \\
 	Responsible Person: Cody
 
 	\subsection{Pilot Subcarrier Insertion}
 	\label{sec:pilot}
 
-	Estimated Gates: 1K
+	Input is I \& Q pair, output is I \& Q pair with pilot subcarriers
+	inserted at some points (fixed).
+
+	Estimated Gates: 1K \\
 	Responsible Person: Cody
 
 	\subsection{Subcarrier to IFFT Buffer}
-	\label{sec:ifft\_buffer}
+	\label{sec:ifft-buffer}
 	Insertion into this buffer is ordered but will have random jumps around
 	different UL \& DL bursts.
 
@@ -177,12 +198,13 @@ hardware.
 	IFFT Size: 256 items (each being a 
 	Inputs: 
 		$ifft\_buf\_has\_block$ (the count of the last block
-		present in the Sub to IFFT buffer (\hyperref{sec:ifft\_in\_buffer})
+		present in the Sub to IFFT buffer (\autoref{sec:ifft-buffer})
 		
 		$ifft\_buf\_data[200][2]$ (access to the data at the present 'tail' location
 		in the buffer
 	
-	Outputs: $
+	Outputs:
+		$ifft\_data\_ready$ high when the IFFT has processed data.
 
 	Estimated Gates: 10k.
 	Responsible Person: John.
@@ -203,7 +225,7 @@ hardware.
 	Appends the last Tg items of the previous frame to the start of the
 	present frame.  Reads 256 2 bit items from the IFFT, appending Tg items
 	to the start of it. It also stores the last Tg items so that they may
-	be appeanded to the next frame from the IFFT.
+	be appended to the next frame from the IFFT.
 
 	Estimated Gates: 2k.
 	Responsible Person: Cody.
@@ -212,16 +234,50 @@ hardware.
 	\label{sec:ctrl}
 
 \section{Receiver PHY}
-	\subsection{Pilot Locator}
+	\subsection{Pilot Locater}
 
-	\subsection{Pilot locator to FFT buffer}
+	\subsection{Pilot locater to FFT buffer}
 
 	\subsection{FFT}
 
-	\subsection{Constelation DeMapping}
-
-	\subsection{}<++>
+	\subsection{Constellation De-mapping}
 	
+\section{FPGA Implementation}
+  \subsection{Sampling and Clock Rate}
+    From the IEEE 802.16 standards document, the sampling rate for 256-OFDM is defined as
+    \begin{equation}
+    F_s = BW * 7/6
+    \end{equation}
+  
+  \begin{center}
+  \begin{tabular}{|c|c|}
+  Channel Bandwidth & Sampling Rate \\ \hline
+  14 MHz & 16.333 MHz \\
+  7 MHz & 8.166 MHz \\
+  3.5 MHz & 4.083 MHz \\
+  1.75 MHz & 2.042 MHz \\ \hline
+  \end{tabular}
+  \end{center}
+  
+  This design should be able to run on both the Spartan-3 FPGA and Virtex 4 LX60
+  FPGA as they both supply a 500 MHz clock.
+  
+  \subsection{Power Calculation}
+  
+  Calculate power based on required clock frequency for the device as well as the
+  FPGA specifications for voltage inputs.
+  
+  Absolute Maximum rating for V_{in} : 4.4 V
+  
+  Clock frequency required for a 3.5 MHz channel bandwidth : 4.083 MHz
+  
+  Input capacitance over recommended operating conditions : 10 pF
+  \begin{center}
+  \begin{equation}
+  P =C * V^2 * f = 10 pF * (4.4 V)^2 * 4.083 MHz = 0.18 mW
+  \end{equation}
+  \end{center}
+  
 	%\subsection{Pin outs}
 	%XC3S200-FT256
 	%//Top and Bottom View Package FT256 -   %http://www.xilinx.com/support/documentation/package_specs/ft256.pdf 

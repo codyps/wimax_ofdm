@@ -1,0 +1,52 @@
+digraph transmitter {
+	//	page="8.5,11"
+	//	rankdir=LR
+
+	node [shape=box]
+
+	mac [label="MAC", shape=square]
+	clk [label="Clock Generator"]
+	ctrl [label="Control Hardware"]
+	head [label="Header Parser"]
+	rand [label="Randomizer"]
+	fec  [label="Forward Error Correction\nConcatenated Reed Solomon Convolution Code"]
+	buf_fec_inter [label="buffer from\nFEC to Interleaver"]
+	interleaver [label="Interleaving\n[block based operation]"]
+	const_map [label="Constellation\nMapping"]
+	pilot_ins [label="Pilot subcarrier\ninsertion"]
+	ifft [label="IFFT"]
+	cp [label="Cyclic Prefix\n(track and append)"]
+	
+	dac [label="Digital Analog\nConverter and\nWave Modulation", shape=circle]
+	rf [label="RF", shape=circle]
+
+
+
+	clk -> rand [label="clk"]
+	clk -> fec [label="clk"]
+	clk -> buf_fec_inter [label="clk"]
+	clk -> interleaver [label="clk"]
+	clk -> const_map [label="clk"]
+	clk -> pilot_ins [label="clk"]
+	clk -> ifft [label="clk"]
+	clk -> cp [label="clk"]
+
+
+	mac -> head [label="bits_to_phy"]
+	mac -> head [label="mac_bit_clk_in"]
+	mac -> ctrl [label="mac_sending_frame"]
+	
+	ctrl -> mac [label="phy_ready"]
+	ctrl -> head [label="mac_frame_flag"]
+	ctrl -> rand [label="reset"]
+	ctrl -> rand [label="rand_iv[??width]"]
+
+	head -> rand [label="bits_to_rand"]
+	head -> rand [label="en_to_rand"]
+
+	rand -> fec  [label="bits_to_fec"]
+	rand -> fec  [label="en_to_fec"]
+
+
+
+}

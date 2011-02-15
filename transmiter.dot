@@ -14,11 +14,12 @@ digraph transmitter {
 	interleaver [label="Interleaving\n[block based operation]"]
 	const_map [label="Constellation\nMapping"]
 	pilot_ins [label="Pilot subcarrier\ninsertion"]
+	buf_pilot_ifft [label="buffer\nPilot to IFFT"]
 	ifft [label="IFFT"]
 	cp [label="Cyclic Prefix\n(track and append)"]
 	
-	dac [label="Digital Analog\nConverter and\nWave Modulation", shape=circle]
-	rf [label="RF", shape=circle]
+	dac [label="Digital Analog\nConverter and\nWave Modulation", shape=oval]
+	rf [label="RF", shape=oval]
 
 
 
@@ -28,6 +29,7 @@ digraph transmitter {
 	clk -> interleaver [label="clk"]
 	clk -> const_map [label="clk"]
 	clk -> pilot_ins [label="clk"]
+	clk -> buf_pilot_ifft [label="clk"]
 	clk -> ifft [label="clk"]
 	clk -> cp [label="clk"]
 
@@ -47,6 +49,28 @@ digraph transmitter {
 	rand -> fec  [label="bits_to_fec"]
 	rand -> fec  [label="en_to_fec"]
 
+	fec -> buf_fec_inter
+	fec -> buf_fec_inter
 
+	buf_fec_inter -> interleaver
+	buf_fec_inter -> interleaver
+
+	interleaver -> const_map
+	interleaver -> const_map
+
+	const_map -> pilot_ins
+	const_map -> pilot_ins
+
+	pilot_ins -> buf_pilot_ifft
+	pilot_ins -> buf_pilot_ifft
+
+	buf_pilot_ifft -> ifft
+	buf_pilot_ifft -> ifft
+
+	ifft -> cp
+	ifft -> cp
+
+	cp -> dac
+	dac -> rf
 
 }

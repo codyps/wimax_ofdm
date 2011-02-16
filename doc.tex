@@ -18,46 +18,49 @@ modulation and only components relevant to unlicensed bands. All
 optional items are omitted.
 
 	\subsection{End Market Expectations}
-	Currently IEEE 802.16, also known as ``WiMAX'', has seen little deployment in the
-	United States and western Europe while being moderately deployed in Asian
-	nations and Eastern European markets. To be useful in western areas, WiMAX has
-	to effectively compete with both consumer owned Wifi hot-spots and the various
-	cell phone networks. Given the impressively low cost of both cellular and Wifi
-	(802.11) systems combined with the expectation that they work well in mobile
-	devices, this physical layer (PHY) targets both simplicity (to reduce cost) and
-	reduced power consumption.
+	Currently IEEE 802.16, also known as ``WiMAX'', has seen little
+	deployment in the United States and western Europe while being
+	moderately deployed in Asian nations and Eastern European markets.
+	To be useful in western areas, WiMAX has to effectively compete
+	with both consumer owned Wifi hot-spots and the various cell phone
+	networks. Given the impressively low cost of both cellular and Wifi
+	(802.11) systems combined with the expectation that they work well
+	in mobile devices, this physical layer (PHY) targets both
+	simplicity (to reduce cost) and reduced power consumption.
 
 	\subsection{Degree of standards compliance and scope limitations}
-	The 802.16 standard specifies multiple layers of a WiMAX device, including a
-	``Service-specific convergence sublayer'' (Section 5), a MAC sublayer (Section
-	6), a Security sublayer (Section 7), and the Physical layer (Section 8). While
-	the PHY is described within section 8 of the 802.16-2009 document, other
-	sections may apply to the design of the PHY and thus were considered to the
-	minimal extent to which they apply to design of the PHY component.  Within the
-	PHY layer, implementers are further given the choice of three (3) different PHY
-	types: SC (single carrier), OFDM (orthogonal frequency division multiplexing),
-	and OFDMA (orthogonal frequency division multiple access). In the interest of
-	developing a product which is applicable to the larger consumer market and
-	follows with our design goal of simplicity, OFDM was chosen as the modulation
-	method to be implemented as it is significantly simpler in design than OFDMA
-	and is designed for use on unlicensed and licensed bands. OFDM is detailed in
-	section 8.3 of the 802.16-2009 document.
+	The 802.16 standard specifies multiple layers of a WiMAX device,
+	including a ``Service-specific convergence sublayer'' (Section 5),
+	a MAC sublayer (Section 6), a Security sublayer (Section 7), and
+	the Physical layer (Section 8). While the PHY is described within
+	section 8 of the 802.16-2009 document, other sections may apply to
+	the design of the PHY and thus were considered to the minimal
+	extent to which they apply to design of the PHY component.  Within
+	the PHY layer, implementers are further given the choice of three
+	(3) different PHY types: SC (single carrier), OFDM (orthogonal
+	frequency division multiplexing), and OFDMA (orthogonal frequency
+	division multiple access). In the interest of developing a product
+	which is applicable to the larger consumer market and follows with
+	our design goal of simplicity, OFDM was chosen as the modulation
+	method to be implemented as it is significantly simpler in design
+	than OFDMA and is designed for use on unlicensed and licensed
+	bands. OFDM is detailed in section 8.3 of the 802.16-2009 document.
 
 \section{Transmitter}
 All voltages of logic levels are defined by the FPGA on which the product's
 code is placed.
 
-Each block of the transmitter connected via direct wiring (without a buffer) is
-given the same clock. Each block reads its inputs on alternating clock edges
-such that two adjacent units read and write on different edges. This is done so
-that outputted data does not change while being read. Except where explicitly
-mentioned, reading of an input bit stream is done on the positive clock edge
-only when the corresponding $load\_*$ control line is high. All PHY components
-are clocked via the $phy\_clock$. All wires noted as $enable$s (also: '$en$')
-are active high, and remain high for the duration where the input stream is
-valid. Others indicated as $flag$s are set on the first clock where they are
-valid, and will be cleared on the next unless reasserted by the sending
-hardware.
+Each block of the transmitter connected via direct wiring (without a
+buffer) is given the same clock. Each block reads its inputs on alternating
+clock edges such that two adjacent units read and write on different edges.
+This is done so that outputted data does not change while being read.
+Except where explicitly mentioned, reading of an input bit stream is done
+on the positive clock edge only when the corresponding $load\_*$ control
+line is high. All PHY components are clocked via the $phy\_clock$. All
+wires noted as $enable$s (also: '$en$') are active high, and remain high
+for the duration where the input stream is valid. Others indicated as
+$flag$s are set on the first clock where they are valid, and will be
+cleared on the next unless reasserted by the sending hardware.
 
 	\subsection{MAC - PHY interface}
 	\label{sec:mac_phy}
@@ -76,22 +79,36 @@ hardware.
 	\subsection{Header Decoder}
 	\label{sec:header}
 	The Randomizer (\autoref{sec:rand}) requires the locations of the
-	PDUs (packet data units, 2 per frame) within each frame as well as the
-	locations of 'Bursts' within each PDU to reinitialize itself at
-	various points in the bit stream. As all of this data is contained in
-	the PDU headers, this block determines the values of the needed fields
-	and forwards them to the Control Logic block (\autoref{sec:ctrl}). 
+	PDUs (packet data units, 2 per frame) within each frame as well as
+	the locations of 'Bursts' within each PDU to reinitialize itself at
+	various points in the bit stream. As all of this data is contained
+	in the PDU headers, this block determines the values of the needed
+	fields and forwards them to the Control Logic block
+	(\autoref{sec:ctrl}). 
 
 	This block has the unique challenge of additionally reading it's
-	bit-stream at the clock specified by the MAC, $mac\_bit\_clk\_in$.
+	bit-stream at the clock specified by the MAC,
+	\textbf{mac\_bit\_clk\_in}.
 
-	Inputs: \\
-	Bit stream in: $bits\_to\_phy$, clocked via $mac\_bit\_clk\_in$.  No
-	enable used. Uses $mac\_frame\_flag$ to determine when a new frame is
-	inbound.
-	
-	Outputs: \\
-	Bit stream out: $bits\_to\_rand$, Bit out enable: $en\_to\_rand$
+	\begin{description}
+		\item{Inputs:} \begin{description}
+			\item[bits\_to\_phy], input bitstream,  clocked via
+				\textbf{mac\_bit\_clk\_in}.  No enable
+				used. Uses \textbf{mac\_frame\_flag} to
+				determine when a new frame is inbound.
+			\item[mac\_bit\_clk\_in], as idicated above.
+		\end{description}
+		\item{Outputs:} \begin{description}
+			\item[bits\_to\_rand] is the output bitstream.
+			\item[en\_to\_rand] indicates the output bitstream
+				is valid.
+			\item[??] all of the data in some format, sent to
+				the control logic so that it can reset the
+				randomizer at the appropriate times and
+				forward the subchannelization data to other
+				blocks of logic.
+		\end{description}
+	\end{description}
 
 	Estimated gates: 1k \\
 	Responsible person: Cody
@@ -268,9 +285,11 @@ hardware.
 	\end{description}
 
 	Appends the last Tg items of the previous frame to the start of the
-	present frame.  Reads 256 2 bit items from the IFFT, appending Tg items
-	to the start of it. It also stores the last Tg items so that they may
-	be appended to the next frame from the IFFT.
+	present frame.  Reads 256 2 bit items from the IFFT, appending Tg
+	items to the start of it. It also stores the last Tg items so that
+	they may be appended to the next frame from the IFFT.
+
+	Size is fixed at ??
 
 	Estimated Gates: 2k.
 	Responsible Person: John.

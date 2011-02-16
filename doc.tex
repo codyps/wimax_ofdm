@@ -1,6 +1,6 @@
 % 
 
-\documentclass[10pt]{article}
+\documentclass[10pt,twocolumn]{article}
 \usepackage[utf8]{inputenc}
 \usepackage{amsmath}
 \usepackage{hyperref}
@@ -50,31 +50,32 @@ optional items are omitted.
 All voltages of logic levels are defined by the FPGA on which the product's
 code is placed.
 
-Each block of the transmitter connected via direct wiring (without a
-buffer) is given the same clock. Each block reads its inputs on alternating
-clock edges such that two adjacent units read and write on different edges.
-This is done so that outputted data does not change while being read.
-Except where explicitly mentioned, reading of an input bit stream is done
-on the positive clock edge only when the corresponding $load\_*$ control
-line is high. All PHY components are clocked via the $phy\_clock$. All
-wires noted as $enable$s (also: '$en$') are active high, and remain high
-for the duration where the input stream is valid. Others indicated as
-$flag$s are set on the first clock where they are valid, and will be
-cleared on the next unless reasserted by the sending hardware.
+Each block of the transmitter connected via direct wiring (without a buffer) is
+given the same clock. Each block reads its inputs on alternating clock edges
+such that two adjacent units read and write on different edges.  This is done
+so that outputted data does not change while being read.  Except where
+explicitly mentioned, reading of an input bit stream is done on the positive
+clock edge only when the corresponding \textbf{load\_*} control line is high.
+All PHY components are clocked via the \textbf{phy\_clock}. All wires noted as
+\textbf{enable}s (also: '\textbf{en}') are active high, and remain high for the
+duration where the input stream is valid. Others indicated as \textbf{flag}s
+are set on the first clock where they are valid, and will be cleared on the
+next unless reasserted by the sending hardware.
 
 	\subsection{MAC - PHY interface}
 	\label{sec:mac_phy}
-	The MAC interfaces with the PHY module by sending frames (with the
-	appropriate headers and padding included) as a stream of bits. These
-	bits are clocked via the $mac\_clk\_in$ line, and must only be sent
-	when the $mac\_sending\_frame$ line is high. The state of the
-	$mac\_sending\_frame$ line must be low when not sending a frame, and
-	must be lowered and raised between frames that would otherwise be
-	abutting. The frequency of $mac\_clk\_in$ must be less than or equal
-	to half of the $phy\_clock$.
 
-	The $phy\_ready$ line is a signal to the mac that it is ready for a
-	new frame to be inputed, and should not be ignored.
+	The MAC interfaces with the PHY module by sending frames (with
+	the appropriate headers and padding included) as a stream of bits. These bits
+	are clocked via the \textbf{mac\_clk\_in} line, and must only be sent when the
+	\textbf{mac\_sending\_frame} line is high. The state of the
+	\textbf{mac\_sending\_frame} line must be low when not sending a frame, and
+	must be lowered and raised between frames that would otherwise be abutting. The
+	frequency of \textbf{mac\_clk\_in} must be less than or equal to half of the
+	\textbf{phy\_clock}.
+
+	The \textbf{phy\_ready} line is a signal to the mac that it is ready
+	for a new frame to be inputed, and should not be ignored.
 
 	\subsection{Header Decoder}
 	\label{sec:header}
@@ -153,9 +154,7 @@ cleared on the next unless reasserted by the sending hardware.
 		modulation to QPSK, only two of the RS code and CC rate
 		pairs are needed, as indicated in the \autoref{tbl:fec}.
 		
-		
-
-		%\begin{table}
+		\begin{table}
 			\begin{tabular}{p{2cm}|p{2cm}|p{2cm}|p{2cm}|p{2cm}|p{2cm}}
 			\label{tbl:fec}
 				Modulation & Uncoded block size (bytes) &
@@ -164,18 +163,17 @@ cleared on the next unless reasserted by the sending hardware.
 				QPSK & 24 & 48 & 1/2 & (32,24,4) & 2/3 \\
 				QPSK & 36 & 48 & 3/4 & (40,36,2) & 5/6
 			\end{tabular}
-		%	\caption{}
-		%\end{table}
-
+			\caption{Forward Error correction rates}
+		\end{table}
 
 		\begin{description}
-			\item[Inputs:] \begin{description}
+			\item{Inputs:} \begin{description}
 				\item[bits\_to\_fec], from header decoder
 					(\autoref{sec:header})
 				\item[en\_to\_fec], indicates the incomming
 					bitstream is valid.
 			\end{description}
-			\item[Outputs:] \begin{description}
+			\item{Outputs:} \begin{description}
 				\item[bits\_from\_fec], output bitstream
 				\item[en\_from\_fec], set high to indicate
 					output bitstream is valid.
@@ -188,12 +186,28 @@ cleared on the next unless reasserted by the sending hardware.
 	\subsection{FEC to Interleaving Circular buffer}
 		\label{sec:fec_buffer}
 
-		Takes $bits\_from\_fec$ (triggered via $en\_from\_fec$) and
+		\begin{description}
+			\item{Inputs:} \begin{description}
+				\item[bits\_from\_fec]
+				\item[en\_from\_fec], indicates the incomming
+					bitstream is valid
+				\item[fec\_buf\_adv\_flag] set high for a
+					single clock cycle by the consumer to
+					indicate it has consumed the
+					presently outputed data block.
+			\end{description}
+			\item{Outputs:} \begin{description}
+				\item[fec\_buffer\_flag], 
+				\item[fec\_buffer\_out{[96]}], set high to indicate
+					output bitstream is valid.
+			\end{description}
+		\end{description}
+
+		Takes \textbf{bits\_from\_fec} (triggered via \textbf{en\_from\_fec}) and
 		places them in a circular buffer. When the number of
-		buffered bits equals the block size of the Interleaver.
-		Sets the $fec\_buffer\_done$ flag when enough data is
-		filled. Data is outputted via $fec\_buffer\_out$ with a
-		width equal to the block size of the interleaver.
+		buffered bits equals the block size of the Interleaver (set
+		at 96 bytes or 768 bits), the \textbf{fec\_buffer\_done}
+		flag is set. Data is outputted via \textbf{fec\_buffer\_out[96]}
 
 		Estimated Gates: 1K \\
 		Responsible Person: Cody

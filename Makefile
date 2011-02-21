@@ -17,9 +17,11 @@ clean :
 %.pdf : %.dvi
 	dvipdf $< $@
 
-%.dvi : %.tex
-	latex -interaction=nonstopmode $<
-	latex -interaction=nonstopmode $<
+%.dvi : %.tex %.bib
+	latex -interaction=nonstopmode $*
+	bibtex $*
+	latex -interaction=nonstopmode $*
+	latex -interaction=nonstopmode $*
 
 
 dot : transmiter.dot.eps

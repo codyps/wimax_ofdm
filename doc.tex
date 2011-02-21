@@ -1,4 +1,4 @@
-% 
+% ex: tw=74 
 \documentclass[dvips,10pt,twocolumn]{article}
 \usepackage[utf8]{inputenc}
 \usepackage{amsmath}
@@ -10,6 +10,7 @@
 \usepackage[english]{babel}
 \usepackage{fullpage}
 \usepackage{tabulary}
+\usepackage{natbib}
 \usepackage[all]{hypcap}
 \title{802.16-2009 OFDM PHY baseband}
 \author{Jonathan Huang \and Cody Schafer \and Luke Steepy}
@@ -40,23 +41,19 @@ expectations (\autoref{sec:comply}) to be met.
 	\subsection{Degree of standards compliance and scope limitations}
 	\label{sec:comply}
 	The 802.16 standard specifies multiple layers of a WiMAX device,
-	including a ``Service-specific convergence sublayer'' (\cite{IEEE:801.16}, section 5),
-	a MAC sublayer (Section 6), a Security sublayer (Section 7), and
-	the Physical layer (Section 8). While the PHY is described within
-	section 8 of the 802.16-2009 document, other sections may apply to
-	the design of the PHY and thus were considered to the minimal
-	extent to which they apply to design of the PHY component.  Within
-	the PHY layer, implementers are further given the choice of three
-	(3) different PHY types: SC (single carrier), OFDM (orthogonal
-	frequency division multiplexing), and OFDMA (orthogonal frequency
-	division multiple access). In the interest of developing a product
-	which is applicable to the larger consumer market and follows with
-	our design goal of simplicity, OFDM was chosen as the modulation
-	method to be implemented as it is significantly simpler in design
-	than OFDMA and is designed for use on unlicensed and licensed
-	bands. OFDM is detailed in section 8.3 of the 802.16-2009 document.
+	including a ``Service-specific convergence
+	sublayer''~\cite[section 5]{IEEE:802.16}, a MAC
+	sublayer~\cite[section 6]{IEEE:802.16}, a Security
+	sublayer~\cite[section 7]{IEEE:802.16}, and the Physical
+	layer~\cite[section 8]{IEEE:802.16}. 
+	
+	The PHY, while being described within section 8 of the 802.16-2009
+	document, is additionally subject to certain constraints and
+	requirements stipulated within the other sections.  These sections
+	where only utilized to the extent to which they apply to design of
+	the PHY component.
 
-	Applicable sections of the IEEE 802.16-2009 standard.
+	Applicable sections of \cite{IEEE:802.16}.
 	\begin{itemize}
 		\item Section 8.3 - OFDM description
 		\item Section 8.3.3.4.1 - Data Modulation: implimenation

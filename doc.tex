@@ -1,9 +1,11 @@
 % 
-\documentclass[10pt,twocolumn]{article}
+\documentclass[dvips,10pt,twocolumn]{article}
 \usepackage[utf8]{inputenc}
 \usepackage{amsmath}
 \usepackage{hyperref}
+\hypersetup{backref,bookmarksnumbered}
 \usepackage{multirow}
+\usepackage{todonotes}
 \usepackage[english]{babel}
 \usepackage{fullpage}
 \usepackage[all]{hypcap}
@@ -62,10 +64,18 @@ expectations (\autoref{sec:comply}) to be met.
 			this section, only the QPSK-1/2 rate ID is supported.
 		\item 8.3.5.1.1 - DL subchannelization: Rate ID
 	\end{itemize}
-
-\section{Transmitter}
+\section{Electrical Characteristics}
 All voltages of logic levels are defined by the FPGA on which the product's
 code is placed.
+
+\section{Burst Interface}
+\label{sec:burst}
+	
+
+\section{Internal Interfaces}
+This section covers the interfaces for internal structures within the PHY
+transmitter which are not exposed for use by the MAC or any other interfacing
+hardware.
 
 Each block of the transmitter connected via direct wiring (without a
 buffer) is given the same clock. Each block reads its inputs on alternating
@@ -83,26 +93,28 @@ reasserted by the sending hardware.
 	\subsection{MAC - PHY interface}
 	\label{sec:mac_phy}
 
-	The MAC interfaces with the PHY module by sending frames (with
-	the appropriate headers and padding included) as a stream of bits. These bits
-	are clocked via the \textbf{mac\_clk\_in} line, and must only be sent when the
-	\textbf{mac\_sending\_frame} line is high. The state of the
-	\textbf{mac\_sending\_frame} line must be low when not sending a frame, and
-	must be lowered and raised between frames that would otherwise be abutting. The
-	frequency of \textbf{mac\_clk\_in} must be less than or equal to half of the
+	The MAC interfaces with the PHY module by sending frames (with the
+	appropriate headers and padding included) as a stream of bits.
+	These bits are clocked via the \textbf{mac\_clk\_in} line, and must
+	only be sent when the \textbf{mac\_sending\_frame} line is high.
+	The state of the \textbf{mac\_sending\_frame} line must be low when
+	not sending a frame, and must be lowered and raised between frames
+	that would otherwise be abutting. The frequency of
+	\textbf{mac\_clk\_in} must be less than or equal to half of the
 	\textbf{phy\_clock}.
 
-	The \textbf{phy\_ready} line is a signal to the mac that it is ready
-	for a new frame to be inputed, and should not be ignored.
+	The \textbf{phy\_ready} line is a signal to the mac that it is
+	ready for a new frame to be inputed, and should not be ignored.
 
-	The structure of individual frames detailed in section 8.3.5 of IEEE 802.16-2009.
-	Each frame contains a header, up to 4 DL subframes (each with their own structure
-	also defined in IEEE802.16-2009 section 8.3.5) and some number of UL subframes.
-	Note that due to fixing certain implimentation parameters, some fields are constrained
-	further than mentioned within the standard. 
+	The structure of individual frames detailed in section 8.3.5 of
+	IEEE 802.16-2009.  Each frame contains a header, up to 4 DL
+	subframes (each with their own structure also defined in
+	IEEE802.16-2009 section 8.3.5) and some number of UL subframes.
+	Note that due to fixing certain implimentation parameters, some
+	fields are constrained further than mentioned within the standard. 
 	\begin{description}
-		\item[Frame Header - Rate\_ID] is fixed at '1' indicating QPSK modulation with
-			a code rate of $1 over 2$.
+		\item[Frame Header - Rate\_ID] is fixed at '1' indicating
+			QPSK modulation with a code rate of $1 over 2$.
 		\item[]
 	\end{description}
 
@@ -232,11 +244,12 @@ reasserted by the sending hardware.
 			\end{description}
 		\end{description}
 
-		Takes \textbf{bits\_from\_fec} (triggered via \textbf{en\_from\_fec}) and
-		places them in a circular buffer. When the number of
-		buffered bits equals the block size of the Interleaver (set
-		at 96 bytes or 768 bits), the \textbf{fec\_buffer\_done}
-		flag is set. Data is outputted via \textbf{fec\_buffer\_out[96]}
+		Takes \textbf{bits\_from\_fec} (triggered via
+		\textbf{en\_from\_fec}) and places them in a circular
+		buffer. When the number of buffered bits equals the block
+		size of the Interleaver (set at 96 bytes or 768 bits), the
+		\textbf{fec\_buffer\_done} flag is set. Data is outputted
+		via \textbf{fec\_buffer\_out[96]}
 
 		Estimated Gates: 1K \\
 		Responsible Person: Cody
@@ -253,9 +266,9 @@ reasserted by the sending hardware.
 		\label{sec:constellation}
 
 		Input is bit stream, output is (I,Q).
-
+		
 		Estimated Gates: 4K \\
-		Responsible Person: John
+		Responsible Person: Luke
 
 	\subsection{Pilot Subcarrier Insertion}
 		\label{sec:pilot}

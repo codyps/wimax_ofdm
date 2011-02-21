@@ -1,9 +1,9 @@
 % 
-
 \documentclass[10pt,twocolumn]{article}
 \usepackage[utf8]{inputenc}
 \usepackage{amsmath}
 \usepackage{hyperref}
+\usepackage{multirow}
 \usepackage[english]{babel}
 \usepackage{fullpage}
 \usepackage[all]{hypcap}
@@ -13,9 +13,14 @@
 \begin{document}
 \maketitle
 \section{Project Overview}
-We are developing a minimal 802.16-2009 OFDM PHY.  This PHY supports only
-QPSK-1/2 modulation-convolution rate. Additionally, any components not
-relevant to unlicensed bands are omitted.  All optional items are omitted.
+We are developing a minimal 802.16-2009 OFDM Transmitter PHY.  This PHY
+supports only QPSK-1/2 modulation-convolution rate. Additionally, any
+components not relevant to unlicensed bands are omitted.  All optional items
+are omitted.
+
+This PHY requires the cooperation of a MAC layer implimentation which is
+compliant with the 802.16-2009 standard in order for the compliance
+expectations (\autoref{sec:comply}) to be met.
 
 	\subsection{End Market Expectations}
 	Currently IEEE 802.16, also known as ``WiMAX'', has seen little
@@ -29,6 +34,7 @@ relevant to unlicensed bands are omitted.  All optional items are omitted.
 	simplicity (to reduce cost) and reduced power consumption.
 
 	\subsection{Degree of standards compliance and scope limitations}
+	\label{sec:comply}
 	The 802.16 standard specifies multiple layers of a WiMAX device,
 	including a ``Service-specific convergence sublayer'' (Section 5),
 	a MAC sublayer (Section 6), a Security sublayer (Section 7), and

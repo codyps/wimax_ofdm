@@ -8,6 +8,7 @@
 \usepackage{todonotes}
 \usepackage[english]{babel}
 \usepackage{fullpage}
+\usepackage{tabulary}
 \usepackage[all]{hypcap}
 \title{802.16-2009 OFDM PHY baseband}
 \author{Jonathan Huang \and Cody Schafer \and Luke Steepy}
@@ -68,55 +69,76 @@ expectations (\autoref{sec:comply}) to be met.
 All voltages of logic levels are defined by the FPGA on which the product's
 code is placed.
 
+\section{Frame Interface}
+\label{sec:frame}
+The MAC interfaces with the PHY module by sending frames (with the
+appropriate headers and padding included) as a stream of bits.  These bits
+are clocked via the \textbf{mac\_clk\_in} line, and must only be sent when
+the \textbf{mac\_sending\_frame} line is high.  The state of the
+\textbf{mac\_sending\_frame} line must be low when not sending a frame, and
+must be lowered and raised between frames that would otherwise be abutting.
+The frequency of \textbf{mac\_clk\_in} must be less than or equal to half
+of the \textbf{phy\_clock}.
+
+The \textbf{phy\_ready} line is a signal to the mac that it is ready for a
+new frame to be inputed, and should not be ignored.
+
+The structure of individual frames detailed in section 8.3.5 of IEEE
+802.16-2009.  Each frame contains a header, up to 4 DL subframes (each with
+their own structure also defined in IEEE802.16-2009 section 8.3.5) and some
+number of UL subframes.  Note that due to fixing certain implimentation
+parameters, some fields are constrained further than mentioned within the
+standard.
+
+\begin{description}
+	
+	\item[Frame Header - Rate\_ID] is fixed at '1' indicating QPSK
+		modulation with a code rate of $1 over 2$.
+	
+	\item[] \end{description}
+
 \section{Burst Interface}
 \label{sec:burst}
-	
 
+Bursts are composed of multiple OFDM symbols. OFDM symbols are composed of
+multiple subchannels(??).
+
+	
 \section{Internal Interfaces}
 This section covers the interfaces for internal structures within the PHY
 transmitter which are not exposed for use by the MAC or any other interfacing
 hardware.
 
+\autoref{tbl:internal-common-wire} shows some of the common signals for
+the internal interfaces.
+
+\begin{table*}
+\begin{tabulary}{\textwidth}{c|C|L}
+	\label{tbl:internal-common-wire}
+	Name & Active Level & Meaning \\ \hline
+	
+	\textbf{*\_valid} & high & Indicate the source outputing the signal
+	is also outputing data (clocked via the \textbf{phy\_clock}) which
+	should be processed by the next item in the chain. \\
+
+	\textbf{*\_bits} & high & A serial stream of bits clocked by
+	\textbf{phy\_clock}. Only valid when the corresponding
+	\textbf{*\_valid} line is also active. \\
+
+	\textbf{*\_flag} & high & Set active for a single clock cycle
+	before becomming inactive again.
+\end{tabulary}
+\caption{Common signals used internally}
+\end{table*}
+
 Each block of the transmitter connected via direct wiring (without a
 buffer) is given the same clock. Each block reads its inputs on alternating
 clock edges such that two adjacent units read and write on different edges.
 This is done so that outputted data does not change while being read.
-Except where explicitly mentioned, reading of an input bit stream is done
-on the positive clock edge only when the corresponding \textbf{load\_*}
-control line is high.  All PHY components are clocked via the
-\textbf{phy\_clock}. All wires noted as \textbf{enable}s (also:
-'\textbf{en}') are active high, and remain high for the duration where the
-input stream is valid. Others indicated as \textbf{flag}s are set on the
-first clock where they are valid, and will be cleared on the next unless
-reasserted by the sending hardware.
 
 	\subsection{MAC - PHY interface}
 	\label{sec:mac_phy}
 
-	The MAC interfaces with the PHY module by sending frames (with the
-	appropriate headers and padding included) as a stream of bits.
-	These bits are clocked via the \textbf{mac\_clk\_in} line, and must
-	only be sent when the \textbf{mac\_sending\_frame} line is high.
-	The state of the \textbf{mac\_sending\_frame} line must be low when
-	not sending a frame, and must be lowered and raised between frames
-	that would otherwise be abutting. The frequency of
-	\textbf{mac\_clk\_in} must be less than or equal to half of the
-	\textbf{phy\_clock}.
-
-	The \textbf{phy\_ready} line is a signal to the mac that it is
-	ready for a new frame to be inputed, and should not be ignored.
-
-	The structure of individual frames detailed in section 8.3.5 of
-	IEEE 802.16-2009.  Each frame contains a header, up to 4 DL
-	subframes (each with their own structure also defined in
-	IEEE802.16-2009 section 8.3.5) and some number of UL subframes.
-	Note that due to fixing certain implimentation parameters, some
-	fields are constrained further than mentioned within the standard. 
-	\begin{description}
-		\item[Frame Header - Rate\_ID] is fixed at '1' indicating
-			QPSK modulation with a code rate of $1 over 2$.
-		\item[]
-	\end{description}
 
 	\subsection{Header Decoder}
 	\label{sec:header}

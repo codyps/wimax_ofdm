@@ -17,13 +17,14 @@
 \date{\today}
 \begin{document}
 \maketitle
+
 \section{Project Overview}
 We are developing a minimal 802.16-2009 OFDM Transmitter PHY.  This PHY
 supports only QPSK-1/2 modulation-convolution rate. Additionally, any
 components not relevant to unlicensed bands are omitted.  All optional items
 are omitted.
 
-This PHY requires the cooperation of a MAC layer implimentation which is
+This PHY requires the cooperation of a MAC layer implementation which is
 compliant with the 802.16-2009 standard in order for the compliance
 expectations (\autoref{sec:comply}) to be met.
 
@@ -56,13 +57,14 @@ expectations (\autoref{sec:comply}) to be met.
 	Applicable sections of \cite{IEEE:802.16}.
 	\begin{itemize}
 		\item Section 8.3 - OFDM description
-		\item Section 8.3.3.4.1 - Data Modulation: implimenation
+		\item Section 8.3.3.4.1 - Data Modulation: implementation
 			is not compliant with this section, only QPSK
 			modulation is supported.
 		\item 8.3.3.4.3 - Rate ID encodings: not compliant with
 			this section, only the QPSK-1/2 rate ID is supported.
 		\item 8.3.5.1.1 - DL subchannelization: Rate ID
 	\end{itemize}
+
 \section{Electrical Characteristics}
 All voltages of logic levels are defined by the FPGA on which the product's
 code is placed.
@@ -82,9 +84,9 @@ The \textbf{phy\_ready} line is a signal to the mac that it is ready for a
 new frame to be inputed, and should not be ignored.
 
 The structure of individual frames detailed in section 8.3.5 of IEEE
-802.16-2009.  Each frame contains a header, up to 4 DL subframes (each with
+802.16-2009.  Each frame contains a header, up to 4 DL sub-frames (each with
 their own structure also defined in IEEE802.16-2009 section 8.3.5) and some
-number of UL subframes.  Note that due to fixing certain implimentation
+number of UL sub-frames.  Note that due to fixing certain implementation
 parameters, some fields are constrained further than mentioned within the
 standard.
 
@@ -99,7 +101,15 @@ standard.
 \label{sec:burst}
 
 Bursts are composed of multiple OFDM symbols. OFDM symbols are composed of
-multiple subchannels(??).
+multiple sub-channels(??).
+
+\begin{table*}
+	\begin{tabulary}{\textwidth}{ }
+		\label{tbl:burst-io}
+
+	\end{tabulary}
+	\caption{Per Burst interface to transmit hardware}
+\end{table*}
 
 	
 \section{Internal Interfaces}
@@ -115,8 +125,8 @@ the internal interfaces.
 	\label{tbl:internal-common-wire}
 	Name & Active Level & Meaning \\ \hline
 	
-	\textbf{*\_valid} & high & Indicate the source outputing the signal
-	is also outputing data (clocked via the \textbf{phy\_clock}) which
+	\textbf{*\_valid} & high & Indicate the source outputting the signal
+	is also outputting data (clocked via the \textbf{phy\_clock}) which
 	should be processed by the next item in the chain. \\
 
 	\textbf{*\_bits} & high & A serial stream of bits clocked by
@@ -124,7 +134,7 @@ the internal interfaces.
 	\textbf{*\_valid} line is also active. \\
 
 	\textbf{*\_flag} & high & Set active for a single clock cycle
-	before becomming inactive again.
+	before becoming inactive again.
 \end{tabulary}
 \caption{Common signals used internally}
 \end{table*}
@@ -133,10 +143,6 @@ Each block of the transmitter connected via direct wiring (without a
 buffer) is given the same clock. Each block reads its inputs on alternating
 clock edges such that two adjacent units read and write on different edges.
 This is done so that outputted data does not change while being read.
-
-	\subsection{MAC - PHY interface}
-	\label{sec:mac_phy}
-
 
 	\subsection{Header Decoder}
 	\label{sec:header}
@@ -154,17 +160,17 @@ This is done so that outputted data does not change while being read.
 
 	\begin{description}
 		\item{Inputs:} \begin{description}
-			\item[bits\_to\_phy], input bitstream,  clocked via
+			\item[bits\_to\_phy], input bit-stream,  clocked via
 				\textbf{mac\_bit\_clk\_in}.  No enable
 				used. Uses \textbf{mac\_frame\_flag} to
 				determine when a new frame is inbound.
-			\item[mac\_bit\_clk\_in], as idicated above.
+			\item[mac\_bit\_clk\_in], as indicated above.
 		\end{description}
 		\item{Outputs:} \begin{description}
-			\item[bits\_to\_rand] is the output bitstream.
-			\item[en\_to\_rand] indicates the output bitstream
+			\item[bits\_to\_rand] is the output bit-stream.
+			\item[en\_to\_rand] indicates the output bit-stream
 				is valid.
-			\item[??] all of the data in some format, sent to
+			\item[??] All of the data in some format, sent to
 				the control logic so that it can reset the
 				randomizer at the appropriate times and
 				forward the subchannelization data to other
@@ -184,8 +190,8 @@ This is done so that outputted data does not change while being read.
 	\begin{description}
 		\item{Inputs:}
 		\begin{description}
-			\item[bits\_to\_rand], the input bitsream
-			\item[en\_to\_rand], indicates the input bitsream
+			\item[bits\_to\_rand], the input bit-stream
+			\item[en\_to\_rand], indicates the input bit-stream
 				is valid.
 			\item[reset\_rand], indicates a reload of the
 				register is needed, only high for a single
@@ -198,8 +204,8 @@ This is done so that outputted data does not change while being read.
 		\begin{description}
 			\item[bits\_to\_fec], bit stream clocked via the
 				main clock.
-			\item[en\_to\_fec], indicates that the incomming
-				bitstream is valid.
+			\item[en\_to\_fec], indicates that the incoming
+				bit-stream is valid.
 		\end{description}
 	\end{description}
 
@@ -207,114 +213,114 @@ This is done so that outputted data does not change while being read.
 	Responsible Person: Cody.
 
 	\subsection{Forward Error Correction}
-		\label{sec:fec}
-		This is a Reed-Solomon and convolution coding combination
-		which is applied per frame. Within the standard, different
-		RS (Reed-Solomon) codes and CC (convolution code) rates are
-		used for varying modulation types. As we have fixed the
-		modulation and code rate to QPSK-1/2, one two of the RS
-		code and CC rate pairs are needed, as indicated in the
-		\autoref{tbl:fec}.
-		
-		\begin{table*}
-			\begin{tabular}{p{2cm}|p{2cm}|p{2cm}|p{2cm}|p{2cm}|p{2cm}}
-			\label{tbl:fec}
-				Modulation & Uncoded block size (bytes) &
-				Coded block size (bytes) & Overall coding
-				rate & RS code & CC code rate \\ \hline
-				QPSK & 24 & 48 & 1/2 & (32,24,4) & 2/3 \\
-			\end{tabular}
-			\caption{Forward Error correction rates}
-		\end{table*}
+	\label{sec:fec}
+	This is a Reed-Solomon and convolution coding combination
+	which is applied per frame. Within the standard, different
+	RS (Reed-Solomon) codes and CC (convolution code) rates are
+	used for varying modulation types. As we have fixed the
+	modulation and code rate to QPSK-1/2, one two of the RS
+	code and CC rate pairs are needed, as indicated in the
+	\autoref{tbl:fec}.
+	
+	\begin{table*}
+		\begin{tabular}{p{2cm}|p{2cm}|p{2cm}|p{2cm}|p{2cm}|p{2cm}}
+		\label{tbl:fec}
+			Modulation & Uncoded block size (bytes) &
+			Coded block size (bytes) & Overall coding
+			rate & RS code & CC code rate \\ \hline
+			QPSK & 24 & 48 & 1/2 & (32,24,4) & 2/3 \\
+		\end{tabular}
+		\caption{Forward Error correction rates}
+	\end{table*}
 
-		\begin{description}
-			\item{Inputs:} \begin{description}
-				\item[bits\_to\_fec], from header decoder
-					(\autoref{sec:header})
-				\item[en\_to\_fec], indicates the incomming
-					bitstream is valid.
-			\end{description}
-			\item{Outputs:} \begin{description}
-				\item[bits\_from\_fec], output bitstream
-				\item[en\_from\_fec], set high to indicate
-					output bitstream is valid.
-			\end{description}
+	\begin{description}
+		\item{Inputs:} \begin{description}
+			\item[bits\_to\_fec], from header decoder
+				(\autoref{sec:header})
+			\item[en\_to\_fec], indicates the incoming
+				bit-stream is valid.
 		\end{description}
+		\item{Outputs:} \begin{description}
+			\item[bits\_from\_fec], output bit-stream
+			\item[en\_from\_fec], set high to indicate
+				output bit-stream is valid.
+		\end{description}
+	\end{description}
 
-		Estimated Gates: 2k \\
-		Responsible Person: Luke.
+	Estimated Gates: 2k \\
+	Responsible Person: Luke.
 
 	\subsection{FEC to Interleaving Circular buffer}
-		\label{sec:fec_buffer}
+	\label{sec:fec_buffer}
 
-		\begin{description}
-			\item{Inputs:} \begin{description}
-				\item[bits\_from\_fec]
-				\item[en\_from\_fec], indicates the incomming
-					bitstream is valid
-				\item[fec\_buf\_adv\_flag] set high for a
-					single clock cycle by the consumer to
-					indicate it has consumed the
-					presently outputed data block.
-			\end{description}
-			\item{Outputs:} \begin{description}
-				\item[fec\_buffer\_flag], 
-				\item[fec\_buffer\_out{[96]}], set high to indicate
-					output bitstream is valid.
-			\end{description}
+	\begin{description}
+		\item{Inputs:} \begin{description}
+			\item[bits\_from\_fec]
+			\item[en\_from\_fec], indicates the incoming
+				bit-stream is valid
+			\item[fec\_buf\_adv\_flag] set high for a
+				single clock cycle by the consumer to
+				indicate it has consumed the
+				presently outputted data block.
 		\end{description}
+		\item{Outputs:} \begin{description}
+			\item[fec\_buffer\_flag], 
+			\item[fec\_buffer\_out{[96]}], set high to indicate
+				output bit-stream is valid.
+		\end{description}
+	\end{description}
 
-		Takes \textbf{bits\_from\_fec} (triggered via
-		\textbf{en\_from\_fec}) and places them in a circular
-		buffer. When the number of buffered bits equals the block
-		size of the Interleaver (set at 96 bytes or 768 bits), the
-		\textbf{fec\_buffer\_done} flag is set. Data is outputted
-		via \textbf{fec\_buffer\_out[96]}
+	Takes \textbf{bits\_from\_fec} (triggered via
+	\textbf{en\_from\_fec}) and places them in a circular
+	buffer. When the number of buffered bits equals the block
+	size of the Interleaver (set at 96 bytes or 768 bits), the
+	\textbf{fec\_buffer\_done} flag is set. Data is outputted
+	via \textbf{fec\_buffer\_out[96]}
 
-		Estimated Gates: 1K \\
-		Responsible Person: Cody
+	Estimated Gates: 1K \\
+	Responsible Person: Cody
 
 	\subsection{Interleaving}
-		\label{sec:interleaving}
+	\label{sec:interleaving}
 
-		Two step type operation, swaps bits around.
+	Two step type operation, swaps bits around.
 
-		Estimated Gates: 2K \\
-		Responsible Person: John
+	Estimated Gates: 2K \\
+	Responsible Person: John
 
 	\subsection{Constellation Mapping}
-		\label{sec:constellation}
+	\label{sec:constellation}
 
-		Input is bit stream, output is (I,Q).
-		
-		Estimated Gates: 4K \\
-		Responsible Person: Luke
+	Input is bit stream, output is (I,Q).
+	
+	Estimated Gates: 4K \\
+	Responsible Person: Luke
 
-	\subsection{Pilot Subcarrier Insertion}
-		\label{sec:pilot}
+	\subsection{Pilot Sub-carrier Insertion}
+	\label{sec:pilot}
 
-		Input is (I,Q) pair, output is (I,Q) pair with pilot subcarriers
-		inserted at some points (fixed).
+	Input is (I,Q) pair, output is (I,Q) pair with pilot subcarriers
+	inserted at some points (fixed).
 
-		Estimated Gates: 1K \\
-		Responsible Person: Luke
+	Estimated Gates: 1K \\
+	Responsible Person: Luke
 
-	\subsection{Subcarrier to IFFT Buffer}
-		\label{sec:ifft-buffer}
-		Insertion into this buffer is ordered but will have random
-		jumps around different UL \& DL bursts.
+	\subsection{Sub-carrier to IFFT Buffer}
+	\label{sec:ifft-buffer}
+	Insertion into this buffer is ordered but will have random
+	jumps around different UL \& DL bursts.
 
-		Block Size = blk\_siz = 200 (the total number of used
-		subcarriers)
-		
-		Buffers blk\_size items each of which has width 2 bits.
-		QPSK utilizes both I and Q, amplitude and phase, each with
-		a granularity of 2. This means that each item (a pair of I
-		\& Q) has 4 possible values and thus 2 bits are needed for
-		each.
+	Block Size = blk\_siz = 200 (the total number of used
+	subcarriers)
+	
+	Buffers blk\_size items each of which has width 2 bits.
+	QPSK utilizes both I and Q, amplitude and phase, each with
+	a granularity of 2. This means that each item (a pair of I
+	\& Q) has 4 possible values and thus 2 bits are needed for
+	each.
 
-		Estimated Gates: 2k \\
-		Responsible Person: Cody.
+	Estimated Gates: 2k \\
+	Responsible Person: Cody.
 
 	\subsection{IFFT}
 	\label{sec:ifft}
@@ -378,7 +384,8 @@ This is done so that outputted data does not change while being read.
 \section{Power Consumption}
 \section{FPGA Implementation}
   \subsection{Sampling and Clock Rate}
-    From the IEEE 802.16 standards document, the sampling rate for 256-OFDM is defined as
+    From the IEEE 802.16 standards document, the sampling rate for
+    256-OFDM is defined as
     \begin{equation}
     F_s = BW * 7/6
     \end{equation}

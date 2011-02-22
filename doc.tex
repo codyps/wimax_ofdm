@@ -104,8 +104,16 @@ Bursts are composed of multiple OFDM symbols. OFDM symbols are composed of
 multiple sub-channels(??).
 
 \begin{table*}
-	\begin{tabulary}{\textwidth}{ }
+	\begin{tabulary}{\textwidth}{c|c|c|C}
 		\label{tbl:burst-io}
+		Name & Width & Direction & Description\\ \hline
+
+		iuc & 4 & I & The UIUC or DIUC field (depending on uplink
+		or downlink state). Used by randomizer\\
+		
+		bsid & 4 & I & Used by randomizer \\
+		
+		frame\_num & 4 & I & Used by randomizer \\
 
 	\end{tabulary}
 	\caption{Per Burst interface to transmit hardware}

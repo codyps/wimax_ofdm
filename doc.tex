@@ -10,6 +10,7 @@
 \usepackage[english]{babel}
 \usepackage{fullpage}
 \usepackage{tabulary}
+\usepackage{tabularx}
 \usepackage{natbib}
 \usepackage[all]{hypcap}
 \title{802.16-2009 OFDM PHY baseband}
@@ -104,18 +105,18 @@ Bursts are composed of multiple OFDM symbols. OFDM symbols are composed of
 multiple sub-channels(??).
 
 \begin{table*}
-	\begin{tabulary}{\textwidth}{c|c|c|C}
+	\begin{tabularx}{\textwidth}{c|c|c|X}
 		\label{tbl:burst-io}
 		Name & Width & Direction & Description\\ \hline
 
-		iuc & 4 & I & The UIUC or DIUC field (depending on uplink
+		\texttt{iuc} & 4 & I & The UIUC or DIUC field (depending on uplink
 		or downlink state). Used by randomizer\\
 		
-		bsid & 4 & I & Used by randomizer \\
+		\texttt{bsid} & 4 & I & Used by randomizer \\
 		
-		frame\_num & 4 & I & Used by randomizer \\
+		\texttt{frame\_num} & 4 & I & Used by randomizer \\
 
-	\end{tabulary}
+	\end{tabularx}
 	\caption{Per Burst interface to transmit hardware}
 \end{table*}
 

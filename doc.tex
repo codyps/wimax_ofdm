@@ -105,21 +105,38 @@ Bursts are composed of multiple OFDM symbols. OFDM symbols are composed of
 multiple sub-channels(??).
 
 \begin{table*}
-	\begin{tabularx}{\textwidth}{c|c|c|X}
-		\label{tbl:burst-io}
-		Name & Width & Direction & Description\\ \hline
+\begin{tabularx}{\textwidth}{c|c|c|X}
+	\label{tbl:burst-io}
+	Name & Width & Direction & Description\\ \hline
 
-		\texttt{iuc} & 4 & I & The UIUC or DIUC field (depending on uplink
-		or downlink state). Used by randomizer\\
-		
-		\texttt{bsid} & 4 & I & Used by randomizer \\
-		
-		\texttt{frame\_num} & 4 & I & Used by randomizer \\
+	\texttt{iuc} & 4 & I & The UIUC or DIUC field (depending on uplink
+	or downlink state). Used by randomizer\\
+	
+	\texttt{bsid} & 4 & I & Used by randomizer \\
+	
+	\texttt{frame\_num} & 4 & I & Used by randomizer \\
 
-	\end{tabularx}
-	\caption{Per Burst interface to transmit hardware}
+\end{tabularx}
+\caption{External Interface - Per Burst interface to transmit hardware}
 \end{table*}
 
+\begin{table*}
+\begin{tabularx}{\textwidth}{c|c|c|X}
+	\label{tbl:extern-io}
+	Name & Width & Direction & Description\\ \hline
+
+	\texttt{phy\_out\_I} & 16 & O & The real component of the output,
+	clocked by \texttt{phy\_out\_clk} \\
+
+	\texttt{phy\_out\_Q} & 16 & O & Imaginary component of the output,
+	clocked by \texttt{phy\_out\_clk} \\
+
+	\texttt{phy\_out\_clk} & 1 & O & Clocks out the I and Q values
+	produced by the PHY.
+
+\end{tabularx}
+\caption{External Interface - General outputs}
+\end{table*}
 	
 \section{Internal Interfaces}
 This section covers the interfaces for internal structures within the PHY

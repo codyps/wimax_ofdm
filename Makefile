@@ -3,6 +3,9 @@ TRASH  := $(TARGET).pdf \
           $(TARGET).dvi \
           $(TARGET).aux \
           $(TARGET).log \
+	  $(TARGET).bbl \
+          $(TARGET).blg \
+	  $(TARGET).out \
 	  transmiter.dot.eps
 
 .PHONY: all clean

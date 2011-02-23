@@ -98,7 +98,9 @@ standard.
 	\item[Frame Header - Rate\_ID] is fixed at '1' indicating QPSK
 		modulation with a code rate of $1 over 2$.
 	
-	\item[] \end{description}
+	\item[]
+
+\end{description}
 
 \section{Burst Interface}
 \label{sec:burst}
@@ -118,6 +120,13 @@ interface inputs and outputs.
 	\texttt{bsid} & 4 & I & Used by randomizer \\
 	
 	\texttt{frame\_num} & 4 & I & Used by randomizer \\
+
+	\texttt{burst\_in\_bits} & 1 & I & Input bitstream \\
+
+	\texttt{burst\_in\_valid} & 1 &  I & Indicates the input bitstream
+	\texttt{burst\_in\_bits} is valid \\
+
+
 
 \end{tabularx}
 \caption{External Interface - Per Burst interface to transmit hardware}
@@ -252,13 +261,13 @@ This is done so that outputted data does not change while being read.
 	\autoref{tbl:fec}.
 	
 	\begin{table*}
-		\begin{tabular}{p{2cm}|p{2cm}|p{2cm}|p{2cm}|p{2cm}|p{2cm}}
+		\begin{tabularx}{\textwidth}{X|X|X|X|X|X}
 		\label{tbl:fec}
 			Modulation & Uncoded block size (bytes) &
 			Coded block size (bytes) & Overall coding
 			rate & RS code & CC code rate \\ \hline
 			QPSK & 24 & 48 & 1/2 & (32,24,4) & 2/3 \\
-		\end{tabular}
+		\end{tabularx}
 		\caption{Forward Error correction rates}
 	\end{table*}
 

@@ -72,6 +72,38 @@ code is placed.
 
 \ldots
 
+\section{OFDM Parameters}
+
+\subsection{Primitive Parameters}
+
+\begin{description}
+	\item[BW]: This is the nominal channel bandwidth.
+	\item[$N_{used}$]: Number of used subcarriers.
+	\item[n]: Sampling factor. This parameter, in conjunction with BW
+		and $N_{used}$ determines the subcarrier spacing, and the
+		useful symbol time.
+	\item[G]: This is the ratio of CP time to ``useful'' time.
+\end{description}
+
+
+\todo{Insert a table of the values that are fixed by the standard and our
+implimentation limitations}
+
+\subsection{Derived Parameters}
+
+\begin{description}
+	\item[$N_{FFT}$]: Smallest power of two greater than $N_{used}$
+	\item[Sampling Frequency]: $F_s = floor ( n \cdot BW / 8000 )
+		\times 8000 $
+	\item[Subcarrier spacing]: $\Delta f = F s / N_{FFT} $
+	\item[Useful symbol time]: $T_b = 1 / \Delta f$
+	\item[CP Time]: $T_g = G \cdot T_b$
+	\item[OFDM Symbol Time]: $T_s = T_b + T_g$
+	\item[Sampling time]: $T_b / N_{FFT}$
+\end{description}
+
+\todo{Tables of valid values for each of the derived values}
+
 \section{Frame Interface}
 \label{sec:frame}
 The MAC interfaces with the PHY module by sending frames (with the
@@ -164,29 +196,6 @@ interface inputs and outputs.
 \caption{External Interface - General outputs}
 \end{table*}
 
-\section{Parameters}
-
-\begin{description}
-	\item[BW]: This is the nominal channel bandwidth.
-	\item[$N_{used}$]: Number of used subcarriers.
-	\item[n]: Sampling factor. This parameter, in conjunction with BW
-		and Nused determines the subcarrier spacing, and the
-		useful symbol time. Required values of this parameter are
-		specified in 8.3.2.4.
-	\item[G]: This is the ratio of CP time to ``useful'' time. Required
-		values of this parameter are specified in
-\end{description}
-
-\begin{description}
-	\item[$N_{FFT}$]: Smallest power of two greater than $N_{used}$
-	\item[Sampling Frequency]: $F_s = floor ( n \cdot BW / 8000 )
-		\times 8000 $
-	\item[Subcarrier spacing]: $\Delta f = F s / N_{FFT} $
-	\item[Useful symbol time]: $T_b = 1 / \Delta f$
-	\item[CP Time]: $T_g = G \cdot T_b$
-	\item[OFDM Symbol Time]: $T_s = T_b + T_g$
-	\item[Sampling time]: $T_b / N_{FFT}$
-\end{description}
 
 
 

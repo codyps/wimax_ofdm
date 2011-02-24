@@ -163,7 +163,33 @@ interface inputs and outputs.
 \end{tabularx}
 \caption{External Interface - General outputs}
 \end{table*}
-	
+
+\section{Parameters}
+
+\begin{description}
+	\item[BW]: This is the nominal channel bandwidth.
+	\item[$N_{used}$]: Number of used subcarriers.
+	\item[n]: Sampling factor. This parameter, in conjunction with BW
+		and Nused determines the subcarrier spacing, and the
+		useful symbol time. Required values of this parameter are
+		specified in 8.3.2.4.
+	\item[G]: This is the ratio of CP time to ``useful'' time. Required
+		values of this parameter are specified in
+\end{description}
+
+\begin{description}
+	\item[$N_{FFT}$]: Smallest power of two greater than $N_{used}$
+	\item[Sampling Frequency]: $F_s = floor ( n \cdot BW / 8000 )
+		\times 8000 $
+	\item[Subcarrier spacing]: $\Delta f = F s / N_{FFT} $
+	\item[Useful symbol time]: $T_b = 1 / \Delta f$
+	\item[CP Time]: $T_g = G \cdot T_b$
+	\item[OFDM Symbol Time]: $T_s = T_b + T_g$
+	\item[Sampling time]: $T_b / N_{FFT}$
+\end{description}
+
+
+
 \section{Internal Interfaces}
 This section covers the interfaces for internal structures within the PHY
 transmitter which are not exposed for use by the MAC or any other interfacing

@@ -102,6 +102,19 @@ standard.
 
 \end{description}
 
+\begin{table*}
+\begin{tabularx}{\textwidth}{c|c|c|X}
+	\label{tbl:frame-io}
+	Name & Width & Direction & Description\\ \hline
+
+	\texttt{bsid} & 4 & I & Used by randomizer \\
+
+	?? & ?? & ?? & ?? 
+
+\end{tabularx}
+\caption{External Interface - Per frame interface}
+\end{table*}
+
 \section{Burst Interface}
 \label{sec:burst}
 
@@ -126,6 +139,7 @@ interface inputs and outputs.
 	\texttt{burst\_in\_valid} & 1 &  I & Indicates the input bitstream
 	\texttt{burst\_in\_bits} is valid \\
 
+	\texttt{??} & 1 & I & ??
 
 
 \end{tabularx}
@@ -163,15 +177,15 @@ the internal interfaces.
 	\label{tbl:internal-common-wire}
 	Name & Active Level & Meaning \\ \hline
 	
-	\textbf{*\_valid} & high & Indicate the source outputting the signal
-	is also outputting data (clocked via the \textbf{phy\_clock}) which
+	\texttt{*\_valid} & high & Indicate the source outputting the signal
+	is also outputting data (clocked via the \texttt{phy\_clock}) which
 	should be processed by the next item in the chain. \\
 
-	\textbf{*\_bits} & high & A serial stream of bits clocked by
-	\textbf{phy\_clock}. Only valid when the corresponding
-	\textbf{*\_valid} line is also active. \\
+	\texttt{*\_bits} & high & A serial stream of bits clocked by
+	\texttt{phy\_clock}. Only valid when the corresponding
+	\texttt{*\_valid} line is also active. \\
 
-	\textbf{*\_flag} & high & Set active for a single clock cycle
+	\texttt{*\_flag} & high & Set active for a single clock cycle
 	before becoming inactive again.
 \end{tabulary}
 \caption{Common signals used internally}
@@ -451,22 +465,49 @@ This is done so that outputted data does not change while being read.
 
 	\subsection{Cyclic Prefix}
 	\label{sec:cyclic_prefix}
-	\begin{description}
-		\item{Inputs:}
-		\begin{description}
-			\item[ifft\_done] indicates the IFFT has
-				data to be read out.
-			\item[ifft\_data] : single bit of data from
-				the IFFT.
-		\end{description}
-		\item{Outputs:}
-		\begin{description}
-			\item[ifft\_shift\_clk] clocks out the data from the IFFT.
-			\item[bits\_cyclic\_appended{[2]}]: sequence of
-				I\&Q with the prefix appended.
-				This is sent directly to the ADC.
-		\end{description}
-	\end{description}
+
+	\begin{table}
+	\begin{tabulary}{0.5\textwidth}{C|C}
+		\label{tbl:param-g-vals}
+		Value of \texttt{param\_G} & Ratio of CP time to
+		``useful'' time. \\ \hline
+
+		0b00 & 1/4 \\
+		0b01 & 1/8 \\
+		0b10 & 1/16 \\
+		0b11 & 1/32 \\
+
+	\end{tabulary}
+	\caption{Values of OFDM parameter G as presented on
+	\texttt{param\_G}}
+	\end{table}
+
+	\begin{table*}
+	\begin{tabularx}{\textwidth}{c|c|c|X}
+		\label{tbl:cp-io}
+		Name & Direction & Width & Description \\ \hline
+
+		\texttt{param\_G} & I & 2 & The meanings of valid values
+		are listed in \autoref{tbl:param-g-vals}. Indicates the
+		fraction of CP time to ``useful'' time.
+		\\
+
+		\texttt{cp\_in\_bits} & I & 1 & Input bitstream. \\
+		
+		\texttt{cp\_in\_valid} & I & 1 & Indicates the input
+		bitstream \texttt{cp\_in\_bits} is valid. \\
+
+		\texttt{cp\_out\_bits} & O & 1 & Output bitstream. \\
+
+		\texttt{cp\_out\_valid} & O & 1 & Indicates the output
+		bitstream \texttt{cp\_out\_bits} is valid. \\
+
+	\end{tabularx}
+	\caption{Cyclic Prefix Inputs and Outputs}
+	\end{table*}
+
+	\autoref{tbl:cp-io} lists the inputs and outputs to the cyclic
+	prefix unit.
 
 	Appends the last Tg items of the previous frame to the start of the
 	present frame.  Reads 256 2 bit items from the IFFT, appending Tg
@@ -476,7 +517,8 @@ This is done so that outputted data does not change while being read.
 	Size is fixed at ??
 
 	Estimated Gates: 2k.
-	Responsible Person: John.
+
+	Responsible Person: Cody.
 
 	\subsection{Control Logic}
 	\label{sec:ctrl}

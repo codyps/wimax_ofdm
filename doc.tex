@@ -8,7 +8,7 @@
 \usepackage{multirow}
 \usepackage{todonotes}
 \usepackage[english]{babel}
-\usepackage{fullpage}
+%\usepackage{fullpage}
 \usepackage{tabulary}
 \usepackage{tabularx}
 %\usepackage{natbib}
@@ -28,6 +28,8 @@ are omitted.
 This PHY requires the cooperation of a MAC layer implementation which is
 compliant with the 802.16-2009 standard in order for the compliance
 expectations (\autoref{sec:comply}) to be met.
+
+\todo[inline]{Derive the product from the needs}
 
 	\subsection{End Market Expectations}
 	Currently IEEE 802.16, also known as ``WiMAX'', has seen little
@@ -70,7 +72,7 @@ expectations (\autoref{sec:comply}) to be met.
 All voltages of logic levels are defined by the FPGA on which the product's
 code is placed.
 
-\ldots
+\todo[inline]{Need these defined}
 
 \section{OFDM Parameters}
 
@@ -86,7 +88,7 @@ code is placed.
 \end{description}
 
 
-\todo{Insert a table of the values that are fixed by the standard and our
+\todo[inline]{Insert a table of the values that are fixed by the standard and our
 implimentation limitations}
 
 \subsection{Derived Parameters}
@@ -102,7 +104,7 @@ implimentation limitations}
 	\item[Sampling time]: $T_b / N_{FFT}$
 \end{description}
 
-\todo{Tables of valid values for each of the derived values}
+\todo[inline]{Tables of valid values for each of the derived values}
 
 \section{Frame Interface}
 \label{sec:frame}
@@ -130,7 +132,7 @@ standard.
 	\item[Frame Header - Rate\_ID] is fixed at '1' indicating QPSK
 		modulation with a code rate of $1 over 2$.
 	
-	\item[]
+	\todo[inline]{Determine Full inputs and outputs}
 
 \end{description}
 
@@ -597,6 +599,7 @@ This is done so that outputted data does not change while being read.
   P = C * V^2 * f = 10 pF * (4.4 V)^2 * 4.083 MHz = 0.18 mW
   \end{equation}
   \end{center}
+  \todo[inline]{Is this correct?}
   
 	%\subsection{Pin outs}
 	%XC3S200-FT256

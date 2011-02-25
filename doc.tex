@@ -8,10 +8,10 @@
 \usepackage{multirow}
 \usepackage{todonotes}
 \usepackage[english]{babel}
-\usepackage{fullpage}
+%\usepackage{fullpage}
 \usepackage{tabulary}
 \usepackage{tabularx}
-\usepackage{natbib}
+%\usepackage{natbib}
 \usepackage[all]{hypcap}
 \title{802.16-2009 OFDM PHY baseband}
 \author{Jonathan Huang \and Cody Schafer \and Luke Steepy}
@@ -28,6 +28,8 @@ are omitted.
 This PHY requires the cooperation of a MAC layer implementation which is
 compliant with the 802.16-2009 standard in order for the compliance
 expectations (\autoref{sec:comply}) to be met.
+
+\todo[inline]{Derive the product from the needs}
 
 	\subsection{End Market Expectations}
 	Currently IEEE 802.16, also known as ``WiMAX'', has seen little
@@ -70,6 +72,40 @@ expectations (\autoref{sec:comply}) to be met.
 All voltages of logic levels are defined by the FPGA on which the product's
 code is placed.
 
+\todo[inline]{Need these defined}
+
+\section{OFDM Parameters}
+
+\subsection{Primitive Parameters}
+
+\begin{description}
+	\item[BW]: This is the nominal channel bandwidth.
+	\item[$N_{used}$]: Number of used subcarriers.
+	\item[n]: Sampling factor. This parameter, in conjunction with BW
+		and $N_{used}$ determines the subcarrier spacing, and the
+		useful symbol time.
+	\item[G]: This is the ratio of CP time to ``useful'' time.
+\end{description}
+
+
+\todo[inline]{Insert a table of the values that are fixed by the standard and our
+implimentation limitations}
+
+\subsection{Derived Parameters}
+
+\begin{description}
+	\item[$N_{FFT}$]: Smallest power of two greater than $N_{used}$
+	\item[Sampling Frequency]: $F_s = floor ( n \cdot BW / 8000 )
+		\times 8000 $
+	\item[Subcarrier spacing]: $\Delta f = F s / N_{FFT} $
+	\item[Useful symbol time]: $T_b = 1 / \Delta f$
+	\item[CP Time]: $T_g = G \cdot T_b$
+	\item[OFDM Symbol Time]: $T_s = T_b + T_g$
+	\item[Sampling time]: $T_b / N_{FFT}$
+\end{description}
+
+\todo[inline]{Tables of valid values for each of the derived values}
+
 \section{Frame Interface}
 \label{sec:frame}
 The MAC interfaces with the PHY module by sending frames (with the
@@ -96,31 +132,75 @@ standard.
 	\item[Frame Header - Rate\_ID] is fixed at '1' indicating QPSK
 		modulation with a code rate of $1 over 2$.
 	
-	\item[] \end{description}
+
+\end{description}
+\todo[inline]{Determine Full inputs and outputs}
+
+\begin{table*}
+\begin{tabularx}{\textwidth}{c|c|c|X}
+	\label{tbl:frame-io}
+	Name & Width & Direction & Description\\ \hline
+
+	\texttt{bsid} & 4 & I & Used by randomizer \\
+
+	?? & ?? & ?? & ?? 
+
+\end{tabularx}
+\caption{External Interface - Per frame interface}
+\end{table*}
 
 \section{Burst Interface}
 \label{sec:burst}
 
 Bursts are composed of multiple OFDM symbols. OFDM symbols are composed of
-multiple sub-channels(??).
+multiple sub-channels(??). \autoref{tbl:burst-io} shows the burst
+interface inputs and outputs.
 
 \begin{table*}
-	\begin{tabularx}{\textwidth}{c|c|c|X}
-		\label{tbl:burst-io}
-		Name & Width & Direction & Description\\ \hline
+\begin{tabularx}{\textwidth}{c|c|c|X}
+	\label{tbl:burst-io}
+	Name & Width & Direction & Description\\ \hline
 
-		\texttt{iuc} & 4 & I & The UIUC or DIUC field (depending on uplink
-		or downlink state). Used by randomizer\\
-		
-		\texttt{bsid} & 4 & I & Used by randomizer \\
-		
-		\texttt{frame\_num} & 4 & I & Used by randomizer \\
+	\texttt{iuc} & 4 & I & The UIUC or DIUC field (depending on uplink
+	or downlink state). Used by randomizer\\
+	
+	\texttt{bsid} & 4 & I & Used by randomizer \\
+	
+	\texttt{frame\_num} & 4 & I & Used by randomizer \\
 
-	\end{tabularx}
-	\caption{Per Burst interface to transmit hardware}
+	\texttt{burst\_in\_bits} & 1 & I & Input bitstream \\
+
+	\texttt{burst\_in\_valid} & 1 &  I & Indicates the input bitstream
+	\texttt{burst\_in\_bits} is valid \\
+
+	\texttt{??} & 1 & I & ??
+
+
+\end{tabularx}
+\caption{External Interface - Per Burst interface to transmit hardware}
 \end{table*}
 
-	
+\begin{table*}
+\begin{tabularx}{\textwidth}{c|c|c|X}
+	\label{tbl:extern-io}
+	Name & Width & Direction & Description\\ \hline
+
+	\texttt{phy\_out\_I} & 16 & O & The real component of the output,
+	clocked by \texttt{phy\_out\_clk} \\
+
+	\texttt{phy\_out\_Q} & 16 & O & Imaginary component of the output,
+	clocked by \texttt{phy\_out\_clk} \\
+
+	\texttt{phy\_out\_clk} & 1 & O & Clocks out the I and Q values
+	produced by the PHY.
+
+\end{tabularx}
+\caption{External Interface - General outputs}
+\end{table*}
+
+
+
+
 \section{Internal Interfaces}
 This section covers the interfaces for internal structures within the PHY
 transmitter which are not exposed for use by the MAC or any other interfacing
@@ -134,15 +214,15 @@ the internal interfaces.
 	\label{tbl:internal-common-wire}
 	Name & Active Level & Meaning \\ \hline
 	
-	\textbf{*\_valid} & high & Indicate the source outputting the signal
-	is also outputting data (clocked via the \textbf{phy\_clock}) which
+	\texttt{*\_valid} & high & Indicate the source outputting the signal
+	is also outputting data (clocked via the \texttt{phy\_clock}) which
 	should be processed by the next item in the chain. \\
 
-	\textbf{*\_bits} & high & A serial stream of bits clocked by
-	\textbf{phy\_clock}. Only valid when the corresponding
-	\textbf{*\_valid} line is also active. \\
+	\texttt{*\_bits} & high & A serial stream of bits clocked by
+	\texttt{phy\_clock}. Only valid when the corresponding
+	\texttt{*\_valid} line is also active. \\
 
-	\textbf{*\_flag} & high & Set active for a single clock cycle
+	\texttt{*\_flag} & high & Set active for a single clock cycle
 	before becoming inactive again.
 \end{tabulary}
 \caption{Common signals used internally}
@@ -232,13 +312,13 @@ This is done so that outputted data does not change while being read.
 	\autoref{tbl:fec}.
 	
 	\begin{table*}
-		\begin{tabular}{p{2cm}|p{2cm}|p{2cm}|p{2cm}|p{2cm}|p{2cm}}
+		\begin{tabularx}{\textwidth}{X|X|X|X|X|X}
 		\label{tbl:fec}
 			Modulation & Uncoded block size (bytes) &
 			Coded block size (bytes) & Overall coding
 			rate & RS code & CC code rate \\ \hline
 			QPSK & 24 & 48 & 1/2 & (32,24,4) & 2/3 \\
-		\end{tabular}
+		\end{tabularx}
 		\caption{Forward Error correction rates}
 	\end{table*}
 
@@ -292,6 +372,7 @@ This is done so that outputted data does not change while being read.
 	\subsection{Interleaving}
 	\label{sec:interleaving}
 	
+<<<<<<< HEAD
  All encoded data bits will be interleaved by this block interleaver. The
   block size is defined by the number of coded bits per allocated subchannels 
   per OFDM symbol (N_{cbps}). 
@@ -325,12 +406,47 @@ This is done so that outputted data does not change while being read.
   $m_{k}$ : index after first permutation
 
   $j_{k}$ : index after second permutation 
+=======
+	All encoded data bits will be interleaved by this block interleaver. The
+	block size is defined by the number of coded bits per allocated subchannels 
+	per OFDM symbol ($N_{cbps}$). 
+ 
+	 \begin{center}
+  	\begin{tabular}{|c|c|c|c|c|c|}
+	\hline
+	\multicolumn{6}{|c|}{Block sizes of the Interleaver} \\ \hline
+	\multicolumn{6}{|c|}{$N_{cbps}$} \\ \hline
+  	& 16 subchannels & 8 & 4 & 2 & 1 \\ \hline
+	QPSK & 384 & 192 & 96 & 48 & 24 \\ \hline
+	\end{tabular}
+  	\end{center}
+
+	Interleaving is a two step type operation. The first step ensures adjacent 
+	coded bits are mapped onto nonadjacent subcarriers and the second step 
+	ensures bits are mapped alternately onto less and more significant bits of
+	the constellation. The second step is done to avoid long runs of lowly
+	reliable bits.
+	 
+	The permutations are dependent on the number of coded bits per subcarrier
+	($N_{cpc}$), which is defined by the type of modulation and the index of the
+	coded bit before permutation (k).
+
+	For our implementation, as we are only using QPSK modulation,
+	$N_{cpc} = 2$.
+	
+	k : index of coded bit before first permutation
+
+	$m_{k}$ : index after first permutation
+
+	$j_{k}$ : index after second permutation 
+>>>>>>> b3ad7139022c631423a2109476ae1d832e2ba79e
 
   First permutation equation :
   \begin{equation}
   m_k = (N_{cbps}/12)*k_{mod12}+floor(k/12)
   \end{equation}
 
+<<<<<<< HEAD
   Second permutation equation :
   \begin{equation}
   s=ceil(N_{cpc}/2)
@@ -354,6 +470,28 @@ This is done so that outputted data does not change while being read.
   interleave\_out\_enable to Constellation Mapping, output line is ready to read
   
   interleaved\_bits to Constellation Mapping, output line
+=======
+	Second permutation equation :
+	\begin{equation}
+	s=ceil(N_{cpc}/2) \\
+	\end{equation}
+	\begin{eqnarray}
+	j_k = s*floor(m_{k}/s)+(m_{k}+N_{cbps}- \nonumber \\
+		floor(12*m_k/N_{cbps}))_{mod(s)}
+	\end{eqnarray}
+
+	After the interleaving the first bit out of the interleaver would map to the
+	MSB for the constellation mapping. 
+	
+	Input : 
+	fec\_buffer\_out from Buffer, block of bits is read along this line
+	fec\_buffer\_done from Buffer, block of bits is ready to read
+	interleave\_reset from Control Logic
+	
+	Output :
+	interleave\_out\_enable to Constellation Mapping, output line is ready to read
+	interleaved\_bits to Constellation Mapping, output line
+>>>>>>> b3ad7139022c631423a2109476ae1d832e2ba79e
 
   \subsubsection{Testing and Verification}
   
@@ -429,22 +567,49 @@ This is done so that outputted data does not change while being read.
 
 	\subsection{Cyclic Prefix}
 	\label{sec:cyclic_prefix}
-	\begin{description}
-		\item{Inputs:}
-		\begin{description}
-			\item[ifft\_done] indicates the IFFT has
-				data to be read out.
-			\item[ifft\_data] : single bit of data from
-				the IFFT.
-		\end{description}
-		\item{Outputs:}
-		\begin{description}
-			\item[ifft\_shift\_clk] clocks out the data from the IFFT.
-			\item[bits\_cyclic\_appended{[2]}]: sequence of
-				I\&Q with the prefix appended.
-				This is sent directly to the ADC.
-		\end{description}
-	\end{description}
+
+	\begin{table}
+	\begin{tabulary}{0.5\textwidth}{C|C}
+		\label{tbl:param-g-vals}
+		Value of \texttt{param\_G} & Ratio of CP time to
+		``useful'' time. \\ \hline
+
+		0b00 & 1/4 \\
+		0b01 & 1/8 \\
+		0b10 & 1/16 \\
+		0b11 & 1/32 \\
+
+	\end{tabulary}
+	\caption{Values of OFDM parameter G as presented on
+	\texttt{param\_G}}
+	\end{table}
+
+	\begin{table*}
+	\begin{tabularx}{\textwidth}{c|c|c|X}
+		\label{tbl:cp-io}
+		Name & Direction & Width & Description \\ \hline
+
+		\texttt{param\_G} & I & 2 & The meanings of valid values
+		are listed in \autoref{tbl:param-g-vals}. Indicates the
+		fraction of CP time to ``useful'' time.
+		\\
+
+		\texttt{cp\_in\_bits} & I & 1 & Input bitstream. \\
+		
+		\texttt{cp\_in\_valid} & I & 1 & Indicates the input
+		bitstream \texttt{cp\_in\_bits} is valid. \\
+
+		\texttt{cp\_out\_bits} & O & 1 & Output bitstream. \\
+
+		\texttt{cp\_out\_valid} & O & 1 & Indicates the output
+		bitstream \texttt{cp\_out\_bits} is valid. \\
+
+	\end{tabularx}
+	\caption{Cyclic Prefix Inputs and Outputs}
+	\end{table*}
+
+	\autoref{tbl:cp-io} lists the inputs and outputs to the cyclic
+	prefix unit.
 
 	Appends the last Tg items of the previous frame to the start of the
 	present frame.  Reads 256 2 bit items from the IFFT, appending Tg
@@ -454,7 +619,8 @@ This is done so that outputted data does not change while being read.
 	Size is fixed at ??
 
 	Estimated Gates: 2k.
-	Responsible Person: John.
+
+	Responsible Person: Cody.
 
 	\subsection{Control Logic}
 	\label{sec:ctrl}
@@ -498,6 +664,7 @@ This is done so that outputted data does not change while being read.
   P = C * V^2 * f = 10 pF * (4.4 V)^2 * 4.083 MHz = 0.18 mW
   \end{equation}
   \end{center}
+  \todo[inline]{Is this correct?}
   
 	%\subsection{Pin outs}
 	%XC3S200-FT256

@@ -6,7 +6,7 @@
 \usepackage[bookmarksnumbered,frenchlinks]{hyperref}
 \hypersetup{pdfborder=0 0 0}
 \usepackage{multirow}
-\usepackage{todonotes}
+%\usepackage{todonotes}
 \usepackage[english]{babel}
 %\usepackage{fullpage}
 \usepackage{tabulary}
@@ -377,68 +377,74 @@ This is done so that outputted data does not change while being read.
 	\subsection{Interleaving}
 	\label{sec:interleaving}
 	
- All encoded data bits will be interleaved by this block interleaver. The
-  block size is defined by the number of coded bits per allocated subchannels 
-  per OFDM symbol ($N_{cbps}$). 
+	All encoded data bits will be interleaved by this block interleaver. The
+	block size is defined by the number of coded bits per allocated subchannels 
+	per OFDM symbol ($N_{cbps}$). 
  
-   \begin{center}
-    \begin{tabular}{|c|c|c|c|c|c|}
-  \hline
-  \multicolumn{6}{|c|}{Block sizes of the Interleaver} \\ \hline
-  \multicolumn{6}{|c|}{$N_{cbps}$} \\ \hline
-    & 16 subchannels & 8 & 4 & 2 & 1 \\ \hline
-  QPSK & 384 & 192 & 96 & 48 & 24 \\ \hline
-  \end{tabular}
-    \end{center}
+	 \begin{center}
+  	\begin{tabular}{|c|c|c|c|c|c|}
+	\hline
+	\multicolumn{6}{|c|}{Block sizes of the Interleaver} \\ \hline
+	\multicolumn{6}{|c|}{$N_{cbps}$} \\ \hline
+  	& 16 subchannels & 8 & 4 & 2 & 1 \\ \hline
+	QPSK & 384 & 192 & 96 & 48 & 24 \\ \hline
+	\end{tabular}
+  	\end{center}
 
-  Interleaving is a two step type operation. The first step ensures adjacent 
-  coded bits are mapped onto nonadjacent subcarriers and the second step 
-  ensures bits are mapped alternately onto less and more significant bits of
-  the constellation. The second step is done to avoid long runs of lowly
-  reliable bits.
-   
-  The permutations are dependent on the number of coded bits per subcarrier 
-  which is defined by the type of modulation and the index of the coded bit 
-  before permutation.
+	Interleaving is a two step type operation. The first step ensures adjacent 
+	coded bits are mapped onto nonadjacent subcarriers and the second step 
+	ensures bits are mapped alternately onto less and more significant bits of
+	the constellation. The second step is done to avoid long runs of lowly
+	reliable bits.
+	 
+	The permutations are dependent on the number of coded bits per subcarrier
+	($N_{cpc}$), which is defined by the type of modulation and the index of the
+	coded bit before permutation (k).
 
-  For our implementation, as we are only using QPSK modulation, $N_{cpc} = 2$.
-  
-  $N_{cpc}$ : number of coded bits per subcarrier
-  
-  $k$ : index of coded bit before first permutation
+	For our implementation, as we are only using QPSK modulation,
+	$N_{cpc} = 2$.
+	
+	k : index of coded bit before first permutation
 
-  $m_{k}$ : index after first permutation
+	$m_{k}$ : index after first permutation
 
-  $j_{k}$ : index after second permutation 
+	$j_{k}$ : index after second permutation 
 
   First permutation equation :
   \begin{equation}
   m_k = (N_{cbps}/12)*k_{mod12}+floor(k/12)
   \end{equation}
 
-  Second permutation equation :
-  \begin{equation}
-  s=ceil(N_{cpc}/2)
-  j_k = s*floor(m_{k}/s)+(m_{k}+N_{cbps}-floor(12*m_k/N_{cbps}))_{mod(s)}
-  \end{equation}
+	Second permutation equation :
+	\begin{equation}
+	s=ceil(N_{cpc}/2) \\
+	\end{equation}
+	\begin{eqnarray}
+	j_k = s*floor(m_{k}/s)+(m_{k}+N_{cbps}- \nonumber \\
+		floor(12*m_k/N_{cbps}))_{mod(s)}
+	\end{eqnarray}
 
-  After the interleaving the first bit out of the interleaver would map to the
-  MSB for the constellation mapping. 
-  
-  Input : 
-  
-  fec\_buffer\_out from Buffer, block of bits is read along this line
-  
-  fec\_buffer\_done from Buffer, block of bits is ready to read
-  
-  interleave\_reset from Control Logic
-  
-  Output :
-  
-  interleave\_out\_enable to Constellation Mapping, output line is ready to read
-  
-  interleaved\_bits to Constellation Mapping, output line
-
+	After the interleaving the first bit out of the interleaver would map to the
+	MSB for the constellation mapping. 
+	
+	\begin{table*}
+		\begin{tabularx}{\textwidth}{X|X|X|}
+		\label{tbl:fec}
+			Signal name & From/To &
+			Description \\ \hline
+			fec\_buffer\_out & From Buffer & A block of $N_{cbps}$ bits are read
+			along this line \\ \hline
+			fec\_buffer\_done & From Buffer & Indicates on high that a block of
+		 	encoded bits are ready to be read \\ \hline
+			interleave\_reset & From Control Logic & On high, causes reset\\ \hline
+			interleave\_out\_enable & To Constellation Mapping & On high output
+			line of bits is valid and ready to read \\ \hline
+			interleaved\_bits & To Constellation Mapping & Interleaved bits are
+			sent on this line \\ \hline
+		\end{tabularx}
+		\caption{Interleaver IO signals}
+	\end{table*}
+	
   \subsubsection{Testing and Verification}
   
   The Interleaver operation can be verified by inputting a known block of bits
@@ -447,7 +453,6 @@ This is done so that outputted data does not change while being read.
   directly. 
   
   *Add example test inputs and outputs. 
- 
 
   Estimated Gates: 2K
   Responsible Person: John
@@ -488,6 +493,8 @@ This is done so that outputted data does not change while being read.
 
 	\subsection{IFFT}
 	\label{sec:ifft}
+	*
+	The IFFT 
 	IFFT Size: 256 items (each being a complex number)
 	\begin{description}
 		\item{Inputs:}
@@ -513,7 +520,17 @@ This is done so that outputted data does not change while being read.
 
 	\subsection{Cyclic Prefix}
 	\label{sec:cyclic_prefix}
+	
+	The Cyclic Prefix appends to the front of the symbol a copy of the last
+ 	$256/CP_{rate}$ ($N_{IFFT}/CP_{rate}$) bits. OFDM PHY should allow for four
+	(4) rates as defined by 2 bits in the PHY Mode ID field. 
 
+	%\begin{tabular}
+	$CP_{rate}$ 1/4,1/8,1/16,1/32
+	%\end{tabular} 
+	
+	
+	
 	\begin{table}
 	\begin{tabulary}{0.5\textwidth}{C|C}
 		\label{tbl:param-g-vals}

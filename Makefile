@@ -17,15 +17,18 @@ all : $(TARGET).pdf
 clean :
 	rm -f $(TRASH)
 
+%.eps : %.dia
+	dia -e $@ $<
+
+
 %.pdf : %.dvi
 	dvipdf $< $@
 
-%.dvi : %.tex %.bib
+%.dvi : %.tex %.bib t_block.eps
 	latex -interaction=nonstopmode $*
 	bibtex $*
 	latex -interaction=nonstopmode $*
 	latex -interaction=nonstopmode $*
-
 
 dot : transmiter.dot.eps
 

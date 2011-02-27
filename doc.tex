@@ -1,6 +1,7 @@
 % ex: tw=74 ts=4 sw=4
 \documentclass[dvips,10pt,twocolumn]{article}
 \usepackage[utf8]{inputenc}
+\usepackage[normalem]{ulem}
 \usepackage{amsmath}
 \usepackage{xkeyval}
 \usepackage[bookmarksnumbered,frenchlinks]{hyperref}
@@ -8,12 +9,12 @@
 \usepackage{multirow}
 \usepackage{todonotes}
 \usepackage[english]{babel}
-%\usepackage{fullpage}
 \usepackage{tabulary}
 \usepackage{tabularx}
+%\usepackage{fullpage}
 %\usepackage{natbib}
 \usepackage[all]{hypcap}
-\title{802.16-2009 OFDM PHY baseband}
+\title{802.16-2009 OFDM PHY - Transmitter Portion}
 \author{Jonathan Huang \and Cody Schafer \and Luke Steepy}
 \date{\today}
 \begin{document}
@@ -159,6 +160,10 @@ standard.
 	\texttt{phy\_in\_clk} & 1 & I & Clock at which the input bitstream
 	\texttt{phy\_in\_bits} should be sampled. \\
 
+	\texttt{phy\_in\_frame} & 1 & I & Set low while the current set of
+	bits is from the same frame. Must be set high for one clock cycle
+	between frames. \\
+
 	\texttt{bsid} & 4 & I & The lower four bits of the BSID, a unique
 	identifier.
 \end{tabularx}
@@ -208,6 +213,34 @@ Inputs and outputs are listed in \autoref{tbl:frame-io}.
 
 \begin{table*} \begin{tabularx}{\textwidth}{c|c|c|X} \label{frame-io}
 	Name & Width & Direction & Description \\ \hline
+
+	\texttt{frame\_in\_bits} & 1 & I & Input bitstream, clocked via
+	\texttt{frame\_in\_clk}. \\
+
+	\texttt{frame\_in\_clk} & 1 & I & Positive edge indicates that data on
+	\texttt{frame\_in\_bits} should be read. \\
+	
+	\texttt{frame\_in\_valid} & 1 & I & Set high while the current series
+	of bits is part of the same frame. \\
+
+	\texttt{burst\_reset} & 1 & O & reset line to the burst handler
+	(\autoref{sec:burst}). \\
+
+	\texttt{burst\_bits} & 1 & O & Bits to the burst handler. \\
+
+	\texttt{burst\_valid} & 1 & O & indicates the bitstream
+	\texttt{burst\_bits} is valid and should be processed. \\
+
+
+	\texttt{frame\_num} & 4 & O & The frame number parsed from the header
+	structures. \\
+
+	\texttt{iuc} & 4 & O & The UIUC or DIUC field, parsed from the header
+	stuctures. Only valid for the currently outputed frame. \\
+
+	Something about subchannels & ? & O & Indicates something about
+	subchannels to things. \\
+
 \end{tabularx} \caption{Frame Handler interface description} \end{table*}
 
 \subsection{Burst Handler} \label{sec:burst}
@@ -221,6 +254,9 @@ change.
 \begin{table*} \begin{tabularx}{\textwidth}{c|c|c|X}
 	\label{tbl:burst-io}
 	Name & Width & Direction & Description \\ \hline
+	
+	\texttt{burst\_reset} & 1 & I & Imediately resets the burst handler.
+	\\
 
 	\texttt{iuc} & 4 & I & The UIUC or DIUC field (depending on uplink
 	or downlink state). Used by randomizer. \\
@@ -243,8 +279,13 @@ change.
 
 	\texttt{burst\_out\_bits} & 1 & O & Output bitstream. Sent to the
 	randomizer for first portion of processing. \\
+
 	\texttt{burst\_out\_valid} & 1 & O & Indicates output is valid.
 	Also attached to the randomizer. \\
+
+	Something about subchannels & ? & I & Indicates something about
+	subchannels to things. \\
+
 \end{tabularx}
 \caption{Interface definition for the Burst Handler.}
 \end{table*}

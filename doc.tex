@@ -1,4 +1,4 @@
-% ex: tw=74 
+% ex: tw=74 ts=4 sw=4
 \documentclass[dvips,10pt,twocolumn]{article}
 \usepackage[utf8]{inputenc}
 \usepackage{amsmath}
@@ -111,7 +111,7 @@ implimentation limitations}
 
 \todo[inline]{Tables of valid values for each of the derived values}
 
-\section{Frame Interface}
+\section{External Interface to the PHY Transmitter}
 \label{sec:frame}
 The MAC interfaces with the PHY module by sending frames (with the
 appropriate headers and padding included) as a stream of bits.  These bits
@@ -133,7 +133,6 @@ parameters, some fields are constrained further than mentioned within the
 standard.
 
 \begin{description}
-	
 	\item[Frame Header - Rate\_ID] is fixed at '1' indicating QPSK
 		modulation with a code rate of $1 over 2$.
 	
@@ -141,52 +140,7 @@ standard.
 \end{description}
 \todo[inline]{Determine Full inputs and outputs}
 
-\begin{table*}
-\begin{tabularx}{\textwidth}{c|c|c|X}
-	\label{tbl:frame-io}
-	Name & Width & Direction & Description\\ \hline
-
-	\texttt{bsid} & 4 & I & Used by randomizer \\
-
-	?? & ?? & ?? & ?? 
-
-\end{tabularx}
-\caption{External Interface - Per frame interface}
-\end{table*}
-
-\section{Burst Interface}
-\label{sec:burst}
-
-Bursts are composed of multiple OFDM symbols. OFDM symbols are composed of
-multiple sub-channels(??). \autoref{tbl:burst-io} shows the burst
-interface inputs and outputs.
-
-\begin{table*}
-\begin{tabularx}{\textwidth}{c|c|c|X}
-	\label{tbl:burst-io}
-	Name & Width & Direction & Description\\ \hline
-
-	\texttt{iuc} & 4 & I & The UIUC or DIUC field (depending on uplink
-	or downlink state). Used by randomizer\\
-	
-	\texttt{bsid} & 4 & I & Used by randomizer \\
-	
-	\texttt{frame\_num} & 4 & I & Used by randomizer \\
-
-	\texttt{burst\_in\_bits} & 1 & I & Input bitstream \\
-
-	\texttt{burst\_in\_valid} & 1 &  I & Indicates the input bitstream
-	\texttt{burst\_in\_bits} is valid \\
-
-	\texttt{??} & 1 & I & ??
-
-
-\end{tabularx}
-\caption{External Interface - Per Burst interface to transmit hardware}
-\end{table*}
-
-\begin{table*}
-\begin{tabularx}{\textwidth}{c|c|c|X}
+\begin{table*} \begin{tabularx}{\textwidth}{c|c|c|X}
 	\label{tbl:extern-io}
 	Name & Width & Direction & Description\\ \hline
 
@@ -197,14 +151,19 @@ interface inputs and outputs.
 	clocked by \texttt{phy\_out\_clk} \\
 
 	\texttt{phy\_out\_clk} & 1 & O & Clocks out the I and Q values
-	produced by the PHY.
+	produced by the PHY. \\
 
+	\texttt{phy\_in\_bits} & 1 & I & Input bitstream from a MAC
+	device. \\
+
+	\texttt{phy\_in\_clk} & 1 & I & Clock at which the input bitstream
+	\texttt{phy\_in\_bits} should be sampled. \\
+
+	\texttt{bsid} & 4 & I & The lower four bits of the BSID, a unique
+	identifier.
 \end{tabularx}
-\caption{External Interface - General outputs}
+\caption{External Interface to the PHY transmitter.}
 \end{table*}
-
-
-
 
 \section{Internal Interfaces}
 This section covers the interfaces for internal structures within the PHY
@@ -238,42 +197,57 @@ buffer) is given the same clock. Each block reads its inputs on alternating
 clock edges such that two adjacent units read and write on different edges.
 This is done so that outputted data does not change while being read.
 
-	\subsection{Header Decoder}
-	\label{sec:header}
-	The Randomizer (\autoref{sec:rand}) requires the locations of the
-	PDUs (packet data units, 2 per frame) within each frame as well as
-	the locations of 'Bursts' within each PDU to reinitialize itself at
-	various points in the bit stream. As all of this data is contained
-	in the PDU headers, this block determines the values of the needed
-	fields and forwards them to the Control Logic block
-	(\autoref{sec:ctrl}). 
+\subsection{Frame Handler}
 
-	This block has the unique challenge of additionally reading it's
-	bit-stream at the clock specified by the MAC,
-	\textbf{mac\_bit\_clk\_in}.
+Is given a bitstream directly from the MAC device, expected to be able to
+clock in this bit stream at the rate defined by the MAC. Data and
+parsed configuration is sent to the Burst Handler (\autoref{sec:burst})
+to be processed and outputed.
 
-	\begin{description}
-		\item{Inputs:} \begin{description}
-			\item[bits\_to\_phy], input bit-stream,  clocked via
-				\textbf{mac\_bit\_clk\_in}.  No enable
-				used. Uses \textbf{mac\_frame\_flag} to
-				determine when a new frame is inbound.
-			\item[mac\_bit\_clk\_in], as indicated above.
-		\end{description}
-		\item{Outputs:} \begin{description}
-			\item[bits\_to\_rand] is the output bit-stream.
-			\item[en\_to\_rand] indicates the output bit-stream
-				is valid.
-			\item[??] All of the data in some format, sent to
-				the control logic so that it can reset the
-				randomizer at the appropriate times and
-				forward the subchannelization data to other
-				blocks of logic.
-		\end{description}
-	\end{description}
+Inputs and outputs are listed in \autoref{tbl:frame-io}.
 
-	Estimated gates: 1k \\
-	Responsible person: Cody
+\begin{table*} \begin{tabularx}{\textwidth}{c|c|c|X}
+	Name & Width & Direction & Description \\ \hline
+\end{tabularx} \caption{Frame Handler interface description} \end{table*}
+
+\subsection{Burst Handler} \label{sec:burst}
+Bursts are composed of multiple OFDM symbols. OFDM symbols are composed of
+multiple sub-channels(??). 
+
+\autoref{tbl:burst-io} shows the burst interface inputs and outputs.
+Across a single burst initialization of the pipeline hardware will not
+change.
+
+\begin{table*} \begin{tabularx}{\textwidth}{c|c|c|X}
+	\label{tbl:burst-io}
+	Name & Width & Direction & Description \\ \hline
+
+	\texttt{iuc} & 4 & I & The UIUC or DIUC field (depending on uplink
+	or downlink state). Used by randomizer. \\
+	
+	\texttt{bsid} & 4 & I & Used by randomizer. \\
+	
+	\texttt{frame\_num} & 4 & I & Used by randomizer. \\
+
+	\texttt{burst\_in\_bits} & 1 & I & Input bitstream. \\
+
+	\texttt{burst\_in\_valid} & 1 &  I & Indicates the input bitstream
+	\texttt{burst\_in\_bits} is valid. \\
+
+	\texttt{rand\_iv} & 15 & O & The initialization for
+	the randomizer's internal register. \\
+
+	\texttt{rand\_reload} & 1 & O & Instructs the randomizer to reload
+	it's internal register with a new one outputed on
+	\texttt{rand\_iv}. \\
+
+	\texttt{burst\_out\_bits} & 1 & O & Output bitstream. Sent to the
+	randomizer for first portion of processing. \\
+	\texttt{burst\_out\_valid} & 1 & O & Indicates output is valid.
+	Also attached to the randomizer. \\
+\end{tabularx}
+\caption{Interface definition for the Burst Handler.}
+\end{table*}
 
 	\subsection{Randomizer}
 	\label{sec:rand}
@@ -281,27 +255,35 @@ This is done so that outputted data does not change while being read.
 	determined by the PDU (packet data unit, one half of a frame) header
 	and whether it is a UL (uplink) or DL (downlink) PDU.
 
-	\begin{description}
-		\item{Inputs:}
-		\begin{description}
-			\item[bits\_to\_rand], the input bit-stream
-			\item[en\_to\_rand], indicates the input bit-stream
-				is valid.
-			\item[reset\_rand], indicates a reload of the
-				register is needed, only high for a single
-				bit. Causes the reading of \textbf{rand\_iv}
-				into an internal register.
-			\item[rand\_iv{[15]}], a new vector to load into
-				the shift register.
-		\end{description}
-		\item{Outputs:}
-		\begin{description}
-			\item[bits\_to\_fec], bit stream clocked via the
-				main clock.
-			\item[en\_to\_fec], indicates that the incoming
-				bit-stream is valid.
-		\end{description}
-	\end{description}
+	\begin{table*} \begin{tabularx}{\textwidth}{c|c|c|X}
+		\label{tbl:rand-io}
+		Name & Width & Direction & Description \\ \hline
+
+		\texttt{rand\_in\_bits}  & 1  & I & Uncoded input bitstream to the
+		randomizer (this is the first step in the encoding process).\\
+
+		\texttt{rand\_in\_valid} & 1  & I & Indicates the input bitstream
+
+		\texttt{rand\_in\_bits} is valid and should be read. \\
+
+		\texttt{rand\_out\_bits} & 1  & O & Output bitstream. \\
+		
+		\texttt{rand\_out\_bits} & 1  & O & Indicates the output bitstream
+		is valid. \\
+
+		\texttt{rand\_iv}        & 15 & I & Initialization data for the
+		internal register. \\
+
+		\texttt{rand\_reload}    & 1  & I & Indicates the internal
+		register should be loaded with \texttt{rand\_iv}. \\
+
+		\texttt{rand\_reset}     & 1  & I & Resets all internal state
+		imediately. The internal register is loaded from
+		\texttt{rand\_iv}.
+
+	\end{tabularx}
+	\caption{Randomizer interface definition.}
+	\end{table*}
 
 	Estimated Gates: 1k \\
 	Responsible Person: Cody.
@@ -429,7 +411,7 @@ This is done so that outputted data does not change while being read.
 	
 	\begin{table*}
 		\begin{tabularx}{\textwidth}{X|X|X|}
-		\label{tbl:fec}
+		\label{tbl:interleave}
 			Signal name & From/To &
 			Description \\ \hline
 			fec\_buffer\_out & From Buffer & A block of $N_{cbps}$ bits are read

@@ -203,6 +203,12 @@ clock edges such that two adjacent units read and write on different edges.
 This is done so that outputted data does not change while being read.
 
 \subsection{Frame Handler}
+\begin{description}
+	\item[Responsible person] Cody Schafer
+	\item[Estimated gates] 2000
+	\item[Estimated bitstream delay] 2 clock cycles for a bit to be
+		processed 
+\end{description}
 
 Is given a bitstream directly from the MAC device, expected to be able to
 clock in this bit stream at the rate defined by the MAC. Data and
@@ -239,11 +245,19 @@ Inputs and outputs are listed in \autoref{tbl:frame-io}.
 	stuctures. Only valid for the currently outputed frame. \\
 
 	Something about subchannels & ? & O & Indicates something about
-	subchannels to things. \\
+	subchannels to things. Need documentation as to what the other logic
+	blocks require before this can be pinned down. \\
 
 \end{tabularx} \caption{Frame Handler interface description} \end{table*}
 
 \subsection{Burst Handler} \label{sec:burst}
+\begin{description}
+	\item[Responsible person] Cody Schafer 
+	\item[Estimated gates] 2000 
+	\item[Estimated data bitstream delay] 2 clock cycles for a bit to be
+		processed, could be cut to zero by bypassing.
+\end{description}
+
 Bursts are composed of multiple OFDM symbols. OFDM symbols are composed of
 multiple sub-channels(??). 
 
@@ -283,8 +297,9 @@ change.
 	\texttt{burst\_out\_valid} & 1 & O & Indicates output is valid.
 	Also attached to the randomizer. \\
 
-	Something about subchannels & ? & I & Indicates something about
-	subchannels to things. \\
+	\texttt{subchan\_data} & ? & I & See \autoref{tbl:frame-io}. This
+	should be decoded to the useful items or simply passed along the
+	pipeline.
 
 \end{tabularx}
 \caption{Interface definition for the Burst Handler.}

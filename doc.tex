@@ -202,6 +202,8 @@ buffer) is given the same clock. Each block reads its inputs on alternating
 clock edges such that two adjacent units read and write on different edges.
 This is done so that outputted data does not change while being read.
 
+%% FRAME
+
 \subsection{Frame Handler}
 \begin{description}
 	\item[Responsible person] Cody Schafer
@@ -249,6 +251,8 @@ Inputs and outputs are listed in \autoref{tbl:frame-io}.
 	blocks require before this can be pinned down. \\
 
 \end{tabularx} \caption{Frame Handler interface description} \end{table*}
+
+%% BURST
 
 \subsection{Burst Handler} \label{sec:burst}
 \begin{description}
@@ -305,46 +309,57 @@ change.
 \caption{Interface definition for the Burst Handler.}
 \end{table*}
 
-	\subsection{Randomizer}
-	\label{sec:rand}
-	The randomizer operates as a shift register with an initial value
-	determined by the PDU (packet data unit, one half of a frame) header
-	and whether it is a UL (uplink) or DL (downlink) PDU.
+%% RAND
 
-	\begin{table*} \begin{tabularx}{\textwidth}{c|c|c|X}
-		\label{tbl:rand-io}
-		Name & Width & Direction & Description \\ \hline
+\subsection{Randomizer}
+\label{sec:rand}
+\begin{description}
+	\item[Responsible person] Cody Schafer 
+	\item[Estimated gates] 1000
+	\item[Estimated data bitstream delay] 8 clock cycles for a bit to be
+		processed, could be cut to zero by bypassing.
+\end{description}
 
-		\texttt{rand\_in\_bits}  & 1  & I & Uncoded input bitstream to the
-		randomizer (this is the first step in the encoding process).\\
+The randomizer operates as a shift register with an initial value
+determined by the PDU (packet data unit, one half of a frame) header
+and whether it is a UL (uplink) or DL (downlink) PDU.
 
-		\texttt{rand\_in\_valid} & 1  & I & Indicates the input bitstream
+\autoref{tbl:rand-io} describes the inputs and outputs of the
+randomizer.
 
-		\texttt{rand\_in\_bits} is valid and should be read. \\
+\begin{table*} \begin{tabularx}{\textwidth}{c|c|c|X}
+	\label{tbl:rand-io}
+	Name & Width & Direction & Description \\ \hline
 
-		\texttt{rand\_out\_bits} & 1  & O & Output bitstream. \\
-		
-		\texttt{rand\_out\_bits} & 1  & O & Indicates the output bitstream
-		is valid. \\
+	\texttt{rand\_in\_bits}  & 1  & I & Uncoded input bitstream to the
+	randomizer (this is the first step in the encoding process).\\
 
-		\texttt{rand\_iv}        & 15 & I & Initialization data for the
-		internal register. \\
+	\texttt{rand\_in\_valid} & 1  & I & Indicates the input bitstream
 
-		\texttt{rand\_reload}    & 1  & I & Indicates the internal
-		register should be loaded with \texttt{rand\_iv}. \\
+	\texttt{rand\_in\_bits} is valid and should be read. \\
 
-		\texttt{rand\_reset}     & 1  & I & Resets all internal state
-		imediately. The internal register is loaded from
-		\texttt{rand\_iv}.
+	\texttt{rand\_out\_bits} & 1  & O & Output bitstream. \\
+	
+	\texttt{rand\_out\_bits} & 1  & O & Indicates the output bitstream
+	is valid. \\
 
-	\end{tabularx}
-	\caption{Randomizer interface definition.}
-	\end{table*}
+	\texttt{rand\_iv}        & 15 & I & Initialization data for the
+	internal register. \\
 
-	Estimated Gates: 1k \\
-	Responsible Person: Cody.
+	\texttt{rand\_reload}    & 1  & I & Indicates the internal
+	register should be loaded with \texttt{rand\_iv}. \\
 
-	\subsection{Forward Error Correction}
+	\texttt{rand\_reset}     & 1  & I & Resets all internal state
+	imediately. The internal register is loaded from
+	\texttt{rand\_iv}.
+
+\end{tabularx}
+\caption{Randomizer interface definition.}
+\end{table*}
+	
+%% FEC
+
+\subsection{Forward Error Correction}
 	\label{sec:fec}
 	This is a Reed-Solomon and convolution coding combination
 	which is applied per frame. Within the standard, different

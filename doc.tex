@@ -248,8 +248,7 @@ Inputs and outputs are listed in \autoref{tbl:frame-io}.
 
 	Something about subchannels & ? & O & Indicates something about
 	subchannels to things. Need documentation as to what the other logic
-	blocks require before this can be pinned down. \\
-
+	blocks require before this can be pinned down. 
 \end{tabularx} \caption{Frame Handler interface description} \end{table*}
 
 %% BURST
@@ -304,7 +303,6 @@ change.
 	\texttt{subchan\_data} & ? & I & See \autoref{tbl:frame-io}. This
 	should be decoded to the useful items or simply passed along the
 	pipeline.
-
 \end{tabularx}
 \caption{Interface definition for the Burst Handler.}
 \end{table*}
@@ -352,7 +350,6 @@ randomizer.
 	\texttt{rand\_reset}     & 1  & I & Resets all internal state
 	imediately. The internal register is loaded from
 	\texttt{rand\_iv}.
-
 \end{tabularx}
 \caption{Randomizer interface definition.}
 \end{table*}
@@ -640,8 +637,7 @@ blocks.
 		\texttt{cp\_out\_bits} & O & 1 & Output bitstream. \\
 
 		\texttt{cp\_out\_valid} & O & 1 & Indicates the output
-		bitstream \texttt{cp\_out\_bits} is valid. \\
-
+		bitstream \texttt{cp\_out\_bits} is valid.
 	\end{tabularx}
 	\caption{Cyclic Prefix Inputs and Outputs}
 	\end{table*}

@@ -411,7 +411,7 @@ See \autoref{tbl:fec-io} for a listing of the inputs and outputs.
 \subsection{FEC to Interleaver buffer}
 \label{sec:fec_buffer}
 \begin{description}
-	\item[Responsible person] Cody Schafer 
+	\item[Responsible person] John 
 	\item[Estimated gates] 1000
 	\item[Estimated data bitstream delay] UNKNOWN -- FIXME.
 \end{description}
@@ -448,6 +448,11 @@ blocks.
 
 	\subsection{Interleaving}
 	\label{sec:interleaving}
+	\begin{description}
+		\item[Responsible person] John
+		\item[Estimated gates] 2000
+		\item[Estimated data bitstream delay] UNKNOWN -- FIXME.
+	\end{description}
 	
 	All encoded data bits will be interleaved by this block interleaver. The
 	block size is defined by the number of coded bits per allocated subchannels 
@@ -526,25 +531,27 @@ blocks.
   
   *Add example test inputs and outputs. 
 
-  Estimated Gates: 2K
-  Responsible Person: John
 
 	\subsection{Constellation Mapping}
 	\label{sec:constellation}
+	\begin{description}
+		\item[Responsible person] Luke
+		\item[Estimated gates] 4000
+		\item[Estimated data bitstream delay] UNKNOWN -- FIXME.
+	\end{description}
 
 	Input is bit stream, output is (I,Q).
 	
-	Estimated Gates: 4K \\
-	Responsible Person: Luke
-
 	\subsection{Pilot Sub-carrier Insertion}
 	\label{sec:pilot}
+	\begin{description}
+		\item[Responsible person] Luke
+		\item[Estimated gates] 1000
+		\item[Estimated data bitstream delay] UNKNOWN -- FIXME.
+	\end{description}
 
 	Input is (I,Q) pair, output is (I,Q) pair with pilot subcarriers
 	inserted at some points (fixed).
-
-	Estimated Gates: 1K \\
-	Responsible Person: Luke
 
 	\subsection{Sub-carrier to IFFT Buffer}
 	\label{sec:ifft-buffer}

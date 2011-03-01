@@ -411,35 +411,43 @@ See \autoref{tbl:fec-io} for a listing of the inputs and outputs.
 
 %% FEC TO INTERLEAVER
 
-	\subsection{FEC to Interleaving Circular buffer}
-	\label{sec:fec_buffer}
+\subsection{FEC to Interleaver buffer}
+\label{sec:fec_buffer}
+\begin{description}
+	\item[Responsible person] Cody Schafer 
+	\item[Estimated gates] 1000
+	\item[Estimated data bitstream delay] UNKNOWN -- FIXME.
+\end{description}
 
-	\begin{description}
-		\item{Inputs:} \begin{description}
-			\item[bits\_from\_fec]
-			\item[en\_from\_fec], indicates the incoming
-				bit-stream is valid
-			\item[fec\_buf\_adv\_flag] set high for a
-				single clock cycle by the consumer to
-				indicate it has consumed the
-				presently outputted data block.
-		\end{description}
-		\item{Outputs:} \begin{description}
-			\item[fec\_buffer\_flag], 
-			\item[fec\_buffer\_out{[96]}], set high to indicate
-				output bit-stream is valid.
-		\end{description}
-	\end{description}
+\begin{table*} \begin{tabularx}{\textwidth}{c|c|c|X}
+	\label{tbl:fec-buf-io}
+	Name & Width & Direction & Description \\ \hline
 
-	Takes \textbf{bits\_from\_fec} (triggered via
-	\textbf{en\_from\_fec}) and places them in a circular
-	buffer. When the number of buffered bits equals the block
-	size of the Interleaver (set at 96 bytes or 768 bits), the
-	\textbf{fec\_buffer\_done} flag is set. Data is outputted
-	via \textbf{fec\_buffer\_out[96]}
+	\texttt{fec\_out\_bits} & 1 & I & The bitstream outputed by the
+	forward error correction unit. \\
 
-	Estimated Gates: 1K \\
-	Responsible Person: Cody
+	\texttt{fec\_out\_valid} & 1 & I & Indicates the bitstream
+	\texttt{fec\_out\_bits} is valid and should be buffered. \\
+
+
+	\texttt{block} & 768 & O & A block of buffered data. (768 bits = 96
+	bytes). \\
+
+	\texttt{block\_valid} & 1 & O & Indicates the data block
+	\texttt{block} is valid and should be processed. \\
+
+	\texttt{advance} & 1 & I & Asserted by the consumer to indicate that
+	the current data block has been processed completely and a new data
+	block is required. \\
+
+\end{tabularx} \caption{FEC output buffer description} \end{table*}
+
+\autoref{tbl:fec-buf-io} describes the inputs and outputs of this logic
+block.
+Transitions the data pipline from a sequence of bits to a sequence of
+blocks.
+
+%% INTERLEAVER
 
 	\subsection{Interleaving}
 	\label{sec:interleaving}

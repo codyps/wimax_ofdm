@@ -360,51 +360,56 @@ randomizer.
 %% FEC
 
 \subsection{Forward Error Correction}
-	\label{sec:fec}
-	This is a Reed-Solomon and convolution coding combination
-	which is applied per frame. Within the standard, different
-	RS (Reed-Solomon) codes and CC (convolution code) rates are
-	used for varying modulation types. As we have fixed the
-	modulation and code rate to QPSK-1/2, one two of the RS
-	code and CC rate pairs are needed, as indicated in the
-	\autoref{tbl:fec-param}.
+\label{sec:fec}
+\begin{description}
+	\item[Responsible person] Cody Schafer 
+	\item[Estimated gates] 2000
+	\item[Estimated data bitstream delay] UNKNOWN -- FIXME.
+\end{description}
 
-	See \autoref{tbl:fec-io} for a listing of the inputs and outputs.
-	
-	\begin{table*}
-		\begin{tabularx}{\textwidth}{X|X|X|X|X|X}
-		\label{tbl:fec-param}
-			Modulation & Uncoded block size (bytes) &
-			Coded block size (bytes) & Overall coding
-			rate & RS code & CC code rate \\ \hline
-			QPSK & 24 & 48 & 1/2 & (32,24,4) & 2/3 \\
-		\end{tabularx}
-		\caption{Forward Error correction rates}
-	\end{table*}
+This is a Reed-Solomon and convolution coding combination
+which is applied per frame. Within the standard, different
+RS (Reed-Solomon) codes and CC (convolution code) rates are
+used for varying modulation types. As we have fixed the
+modulation and code rate to QPSK-1/2, one two of the RS
+code and CC rate pairs are needed, as indicated in the
+\autoref{tbl:fec-param}.
 
-	\begin{table*} \begin{tabularx}{\textwidth}{c|c|c|X}
-		\label{tbl:fec-io}
-		Name & Width & Direction & Description \\ \hline
+See \autoref{tbl:fec-io} for a listing of the inputs and outputs.
 
-		\texttt{fec\_in\_bits} & 1 & I & Input bitstream, processsed by randomizer.
-		\\
+\begin{table*}
+	\begin{tabularx}{\textwidth}{X|X|X|X|X|X}
+	\label{tbl:fec-param}
+		Modulation & Uncoded block size (bytes) &
+		Coded block size (bytes) & Overall coding
+		rate & RS code & CC code rate \\ \hline
+		QPSK & 24 & 48 & 1/2 & (32,24,4) & 2/3 \\
+	\end{tabularx}
+	\caption{Forward Error correction rates}
+\end{table*}
 
-		\texttt{fec\_in\_valid} & 1 & I & Indicates the input bitstream
-		\texttt{fec\_in\_bits} should be read.\\
+\begin{table*} \begin{tabularx}{\textwidth}{c|c|c|X}
+	\label{tbl:fec-io}
+	Name & Width & Direction & Description \\ \hline
 
-		\texttt{fec\_out\_bits} & 1 & O & Output bitstream, has FEC
-		applied. Will be longer than input bitstream. \\
+	\texttt{fec\_in\_bits} & 1 & I & Input bitstream, processsed by randomizer.
+	\\
 
-		\texttt{fec\_out\_valid} & 1 & O & Indicates the output bitstream
-		is valid (the data on it should be read and processed) \\
+	\texttt{fec\_in\_valid} & 1 & I & Indicates the input bitstream
+	\texttt{fec\_in\_bits} should be read.\\
 
-		\texttt{rate\_id} & 4 & I & The type of modulation used. See
-		\autoref{tbl:rate-id} for possible values.
+	\texttt{fec\_out\_bits} & 1 & O & Output bitstream, has FEC
+	applied. Will be longer than input bitstream. \\
 
-	\end{tabularx} \caption{FEC interface description} \end{table*}
+	\texttt{fec\_out\_valid} & 1 & O & Indicates the output bitstream
+	is valid (the data on it should be read and processed) \\
 
-	Estimated Gates: 2k \\
-	Responsible Person: Luke.
+	\texttt{rate\_id} & 4 & I & The type of modulation used. See
+	\autoref{tbl:rate-id} for possible values.
+
+\end{tabularx} \caption{FEC interface description} \end{table*}
+
+%% FEC TO INTERLEAVER
 
 	\subsection{FEC to Interleaving Circular buffer}
 	\label{sec:fec_buffer}

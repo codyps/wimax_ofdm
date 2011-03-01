@@ -548,6 +548,11 @@ blocks.
 
 	\subsection{Sub-carrier to IFFT Buffer}
 	\label{sec:ifft-buffer}
+	\begin{description}
+		\item[Responsible person] John Huang
+		\item[Estimated gates] 2000
+		\item[Estimated data bitstream delay] UNKNOWN -- FIXME.
+	\end{description}
 	Insertion into this buffer is ordered but will have random
 	jumps around different UL \& DL bursts.
 
@@ -560,12 +565,14 @@ blocks.
 	\& Q) has 4 possible values and thus 2 bits are needed for
 	each.
 
-	Estimated Gates: 2k \\
-	Responsible Person: Cody.
-
 	\subsection{IFFT}
 	\label{sec:ifft}
-	*
+	\begin{description}
+		\item[Responsible person] John Huang
+		\item[Estimated gates] 10,000
+		\item[Estimated data bitstream delay] UNKNOWN -- FIXME.
+	\end{description}
+
 	The IFFT 
 	IFFT Size: 256 items (each being a complex number)
 	\begin{description}
@@ -587,11 +594,13 @@ blocks.
 		\end{description}
 	\end{description}
 
-	Estimated Gates: 10k.
-	Responsible Person: John.
-
 	\subsection{Cyclic Prefix}
 	\label{sec:cyclic_prefix}
+	\begin{description}
+		\item[Responsible person] John Huang
+		\item[Estimated gates] 2000
+		\item[Estimated data bitstream delay] UNKNOWN -- FIXME.
+	\end{description}
 	
 	The Cyclic Prefix appends to the front of the symbol a copy of the last
  	$256/CP_{rate}$ ($N_{IFFT}/CP_{rate}$) bits. OFDM PHY should allow for four
@@ -651,13 +660,6 @@ blocks.
 	they may be appended to the next frame from the IFFT.
 
 	Size is fixed at ??
-
-	Estimated Gates: 2k.
-
-	Responsible Person: Cody.
-
-	\subsection{Control Logic}
-	\label{sec:ctrl}
 
 \section{Testing Considerations}
 \section{Economic Analysis}

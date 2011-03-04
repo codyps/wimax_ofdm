@@ -312,6 +312,11 @@ change.
 	\wire{subchan\_ct} & 4 & O & Indicates the number of subchannels in
 	use. Calculated from \wire{subchan\_data\_in}. \\
 
+	\wire{rate\_id\_in} & 4 & O & See \autoref{tbl:rate-id}. \\
+
+	\wire{rate\_id\_out} & 4 & O & Pass-through pair of
+	\wire{rate\_id\_in}. \\
+
 \end{tabularx}
 \caption{Interface definition for the Burst Handler.}
 \end{table*}
@@ -742,11 +747,11 @@ $CP_{rate}$ 1/4,1/8,1/16,1/32
 	prefix unit.
 
 	Appends the last Tg items of the previous frame to the start of the
-	present frame.  Reads 256 2 bit items from the IFFT, appending Tg
+	present frame.  Reads 256 by 2 16 bit items from the IFFT, appending Tg
 	items to the start of it. It also stores the last Tg items so that
 	they may be appended to the next frame from the IFFT.
 
-	Size is fixed at ??
+	\todo[inline]{Maximum Size needed?}
 
 \section{Testing Considerations}
 \section{Economic Analysis}

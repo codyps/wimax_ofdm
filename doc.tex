@@ -168,10 +168,26 @@ standard.
 	between frames. \\
 
 	\wire{bsid} & 4 & I & The lower four bits of the BSID, a unique
-	identifier.
+	identifier. \\
+	
+	\wire{bw} & 3 & I & Channel bandwidth. See \autoref{tbl:bw}. \\
 \end{tabularx}
 \caption{External Interface to the PHY transmitter.}
 \end{table*}
+
+\begin{table} \begin{center} \begin{tabular}{c|c}
+	\label{tbl:bw}
+	
+	\wire{bw[3]} & Bandwidth in MHz \\ \hline
+
+	0 & 1.25 \\
+	1 & 1.5  \\
+	2 & 1.75 \\
+	3 & 2.0  \\
+	4 & 2.75 \\
+	5 - 7 & Undefined
+
+\end{tabular} \end{center} \caption{Meanings of BW values.} \end{table}
 
 \section{Internal Interfaces}
 This section covers the interfaces for internal structures within the PHY
@@ -249,6 +265,7 @@ All values but 1 (QPSK-1/2) are unsupported by this device.}
 	\wire{clk} & 1 & I & Clocks the logic block.\\
 
 	\wire{reset} & 1 & I & Active low reset to initial state. \\
+
 
 	\wire{frame\_in\_bits} & 1 & I & Input bitstream, clocked via
 	\wire{frame\_in\_clk}. \\
@@ -684,23 +701,12 @@ component (16 bits for the Real component and an another 16 bits for the
 imaginary).
 
 See \autoref{tbl:ifft-io} for a description of the inputs and outputs.
-
-\begin{table*} \begin{tabularx}{\linewidth}{c|c|c|X}
-	\label{tbl:ifft-io}
 	
 	Buffers blk\_size items each of which has width 2 bits.
 	QPSK utilizes both I and Q, amplitude and phase, each with
 	a granularity of 2. This means that each item (a pair of I
 	\& Q) has 4 possible values and thus 2 bits are needed for
 	each.
-
-	\subsection{IFFT}
-	\label{sec:ifft}
-	\begin{description}
-		\item[Responsible person] John Huang
-		\item[Estimated gates] 10,000
-		\item[Estimated data bitstream delay] UNKNOWN -- FIXME.
-	\end{description}
 
 	The IFFT takes in 256-bit complex samples and outputs to the Cyclic Prefix.
 
@@ -712,17 +718,16 @@ See \autoref{tbl:ifft-io} for a description of the inputs and outputs.
 		\wire{ifft\_buf\_has\_block} & I & 1 & 
 		\\
 
-		\wire{cp\_in\_bits} & I & 1 & Input bitstream. \\
+		\wire{ifft\_buf\_data} & I & 256 & Input bitstream. \\
 		
-		\wire{cp\_in\_valid} & I & 1 & Indicates the input
+		\wire{ifft\_data\_ready} & I & 1 & Indicates the input
 		bitstream \wire{cp\_in\_bits} is valid. \\
+		
+		\wire{reset} & I & \\
+		\wire{clock} & I & \\
 
-		\wire{cp\_out\_bits} & O & 1 & Output bitstream. \\
-
-		\wire{cp\_out\_valid} & O & 1 & Indicates the output
-		bitstream \wire{cp\_out\_bits} is valid.
-	\end{tabularx}
-	\caption{Cyclic Prefix Inputs and Outputs}
+\end{tabularx}
+	\caption{IFFT Inputs and Outputs}
 	\end{table*}
 
 	\begin{description}
@@ -742,6 +747,36 @@ See \autoref{tbl:ifft-io} for a description of the inputs and outputs.
 			\item[ifft\_data\_ready] high when the IFFT has
 				processed data.
 		\end{description}
+	Name & Width & Direction & Description \\ \hline
+
+	\wire{reset} & 1 & I & resets the device state. \\
+
+	\wire{clk}   & 1 & I & clocking. \\
+
+	\wire{in\_blk\_valid} & 1 & I & When high, indicates that the input block is
+	valid and should be processed. \\
+
+	\wire{in\_blk} & $200 \cdot 2 \cdot 16$ & I & Input data for the IFFT. Width of
+	numbers is 16 bits, processing both Q and I. \\
+
+	\wire{out\_blk} & $256 \cdot 2 \cdot 16$ & O & Output data after IFFT is preformed. Width of
+	numbers is 16 bits, processing both Q and I. \\
+
+	\wire{out\_blk\_valid} & 1 & O & Indicates the output block
+	\wire{out\_blk} is valid and should be imediately copied (it will be
+	replaced by the next block on the next clock cycle).
+
+\end{tabularx}
+\caption{IFFT input/output description.}
+\end{table*}
+
+
+	\subsection{Cyclic Prefix}
+	\label{sec:cyclic_prefix}
+	\begin{description}
+		\item[Responsible person] John Huang
+		\item[Estimated gates] 2000
+		\item[Estimated data bitstream delay] About 1050 clocks.
 	\end{description}
 	
 	Name & Width & Direction & Description \\ \hline
@@ -815,7 +850,7 @@ See \autoref{tbl:ifft-io} for a description of the inputs and outputs.
 	\end{tabulary}
 	\caption{Values of OFDM parameter G as presented on
 	\wire{param\_G}}
-\end{table}
+	\end{table}
 
 	\begin{table*}
 	\begin{tabularx}{\linewidth}{c|c|c|X}
@@ -842,6 +877,13 @@ See \autoref{tbl:ifft-io} for a description of the inputs and outputs.
 
 	\autoref{tbl:cp-io} lists the inputs and outputs to the cyclic
 	prefix unit.
+
+	Appends the last Tg items of the previous frame to the start of the
+	present frame.  Reads 256 by 2 16 bit items from the IFFT, appending Tg
+	items to the start of it. It also stores the last Tg items so that
+	they may be appended to the next frame from the IFFT.
+
+	\todo[inline]{Maximum Size needed?}
 
 \section{Testing Considerations}
 \section{Economic Analysis}

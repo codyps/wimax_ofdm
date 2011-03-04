@@ -611,7 +611,7 @@ MSB for the constellation mapping.
 \end{description}
 
 \begin{table*} \begin{tabularx}{\textwidth}{c|c|c|X}
-	\label{tbl:interleave-io}
+	\label{tbl:mapping-io}
 	Name & Width & Direction & Description \\ \hline
 
 	\wire{reset} & 1 & I & When low, the chip is reset. When high, normal
@@ -638,10 +638,12 @@ MSB for the constellation mapping.
 \end{tabularx} \caption{Constellation Mapping input/output description}
 \end{table*}
 
-\todo[inline]{Luke has some stuff to put here. He has had it for the last
-3 weeks. It is still not here}
+See \autoref{tbl:mapping} for the description of inputs and outputs.
 
 Input is bit stream, output is (I,Q).
+
+\todo[inline]{Luke has some stuff to put here. He has had it for the last
+3 weeks. It is still not here}
 	
 \subsection{Pilot Sub-carrier Insertion}
 \label{sec:pilot}
@@ -684,8 +686,12 @@ each.
 	\item[Estimated data bitstream delay] UNKNOWN -- FIXME.
 \end{description}
 
-The IFFT 
-IFFT Size: 256 items (each being a complex number)
+The IFFT must process 256 complex numbers with a depth of 16 bits for each
+component (16 bits for the Real component and an another 16 bits for the
+imaginary).
+
+See \autoref{tbl:ifft-io} for a description of the inputs and outputs.
+
 \begin{table*} \begin{tabularx}{\textwidth}{c|c|c|X}
 	\label{tbl:ifft-io}
 	
@@ -698,10 +704,10 @@ IFFT Size: 256 items (each being a complex number)
 	\wire{in\_blk\_valid} & 1 & I & When high, indicates that the input block is
 	valid and should be processed. \\
 
-	\wire{in\_blk} & 200 * 2 * 16 & I & Input data for the IFFT. Width of
+	\wire{in\_blk} & $200 \cdot 2 \cdot 16$ & I & Input data for the IFFT. Width of
 	numbers is 16 bits, processing both Q and I. \\
 
-	\wire{out\_blk} & 256 * 2 * 16 & O & Output data after IFFT is preformed. Width of
+	\wire{out\_blk} & $256 \cdot 2 \cdot 16$ & O & Output data after IFFT is preformed. Width of
 	numbers is 16 bits, processing both Q and I. \\
 
 	\wire{out\_blk\_valid} & 1 & O & Indicates the output block

@@ -14,6 +14,9 @@
 %\usepackage{fullpage}
 %\usepackage{natbib}
 \usepackage[all]{hypcap}
+
+\newcommand{\wire}{\texttt}
+
 \title{802.16-2009 OFDM PHY - Transmitter Portion}
 \author{Jonathan Huang \and Cody Schafer \and Luke Steepy}
 \date{\today}
@@ -31,7 +34,7 @@ compliant with the 802.16-2009 standard in order for the compliance
 expectations (\autoref{sec:comply}) to be met.
 
 \begin{figure}
-\includegraphics[width=0.5\textwidth]{t_block.eps}
+\includegraphics[width=\linewidth]{t_block.eps}
 \caption{Overview block diagram of the transmitter}
 \end{figure}
 
@@ -141,30 +144,30 @@ standard.
 \end{description}
 \todo[inline]{Determine Full inputs and outputs}
 
-\begin{table*} \begin{tabularx}{\textwidth}{c|c|c|X}
+\begin{table*} \begin{tabularx}{\linewidth}{c|c|c|X}
 	\label{tbl:extern-io}
 	Name & Width & Direction & Description\\ \hline
 
-	\texttt{phy\_out\_I} & 16 & O & The real component of the output,
-	clocked by \texttt{phy\_out\_clk} \\
+	\wire{phy\_out\_I} & 16 & O & The real component of the output,
+	clocked by \wire{phy\_out\_clk} \\
 
-	\texttt{phy\_out\_Q} & 16 & O & Imaginary component of the output,
-	clocked by \texttt{phy\_out\_clk} \\
+	\wire{phy\_out\_Q} & 16 & O & Imaginary component of the output,
+	clocked by \wire{phy\_out\_clk} \\
 
-	\texttt{phy\_out\_clk} & 1 & O & Clocks out the I and Q values
+	\wire{phy\_out\_clk} & 1 & O & Clocks out the I and Q values
 	produced by the PHY. \\
 
-	\texttt{phy\_in\_bits} & 1 & I & Input bitstream from a MAC
+	\wire{phy\_in\_bits} & 1 & I & Input bitstream from a MAC
 	device. \\
 
-	\texttt{phy\_in\_clk} & 1 & I & Clock at which the input bitstream
-	\texttt{phy\_in\_bits} should be sampled. \\
+	\wire{phy\_in\_clk} & 1 & I & Clock at which the input bitstream
+	\wire{phy\_in\_bits} should be sampled. \\
 
-	\texttt{phy\_in\_frame} & 1 & I & Set low while the current set of
+	\wire{phy\_in\_frame} & 1 & I & Set low while the current set of
 	bits is from the same frame. Must be set high for one clock cycle
 	between frames. \\
 
-	\texttt{bsid} & 4 & I & The lower four bits of the BSID, a unique
+	\wire{bsid} & 4 & I & The lower four bits of the BSID, a unique
 	identifier.
 \end{tabularx}
 \caption{External Interface to the PHY transmitter.}
@@ -179,19 +182,19 @@ hardware.
 the internal interfaces.
 
 \begin{table*}
-\begin{tabulary}{\textwidth}{c|C|L}
+\begin{tabulary}{\linewidth}{c|C|L}
 	\label{tbl:internal-common-wire}
 	Name & Active Level & Meaning \\ \hline
 	
-	\texttt{*\_valid} & high & Indicate the source outputting the signal
-	is also outputting data (clocked via the \texttt{phy\_clock}) which
+	\wire{*\_valid} & high & Indicate the source outputting the signal
+	is also outputting data (clocked via the \wire{phy\_clock}) which
 	should be processed by the next item in the chain. \\
 
-	\texttt{*\_bits} & high & A serial stream of bits clocked by
-	\texttt{phy\_clock}. Only valid when the corresponding
-	\texttt{*\_valid} line is also active. \\
+	\wire{*\_bits} & high & A serial stream of bits clocked by
+	\wire{phy\_clock}. Only valid when the corresponding
+	\wire{*\_valid} line is also active. \\
 
-	\texttt{*\_flag} & high & Set active for a single clock cycle
+	\wire{*\_flag} & high & Set active for a single clock cycle
 	before becoming inactive again.
 \end{tabulary}
 \caption{Common signals used internally}
@@ -219,36 +222,63 @@ to be processed and outputed.
 
 Inputs and outputs are listed in \autoref{tbl:frame-io}.
 
-\begin{table*} \begin{tabularx}{\textwidth}{c|c|c|X} \label{tbl:frame-io}
+\begin{table} \begin{center} \begin{tabularx}{\linewidth}{c|c}
+	\label{tbl:rate-id}
+	\wire{rate\_id[3]} & Modulation RS-CC rate \\ \hline
+	0 & BPSK-1/2 \\
+	1 & QPSK-1/2 \\
+	2 & QPSK-3/4 \\
+	3 & 16-QAM-1/2 \\
+	4 & 16-QAM-3/4 \\
+	5 & 64-QAM-2/3 \\
+	6 & 64-QAM-3/4 \\
+	7 & Reserved
+\end{tabularx} \caption{Possible values for \wire{rate\_id}. Note that
+All values but 1 (QPSK-1/2) are unsupported by this device.}
+\end{center} \end{table}
+
+\begin{table*}
+	\label{tbl:subchan}
+	
+	\caption{Possible values for \wire{subchan\_data}.}
+\end{table*}
+
+\begin{table*} \begin{tabularx}{\linewidth}{c|c|c|X} \label{tbl:frame-io}
 	Name & Width & Direction & Description \\ \hline
 
-	\texttt{frame\_in\_bits} & 1 & I & Input bitstream, clocked via
-	\texttt{frame\_in\_clk}. \\
+	\wire{clk} & 1 & I & Clocks the logic block.\\
 
-	\texttt{frame\_in\_clk} & 1 & I & Positive edge indicates that data on
-	\texttt{frame\_in\_bits} should be read. \\
+	\wire{reset} & 1 & I & Active low reset to initial state. \\
+
+	\wire{frame\_in\_bits} & 1 & I & Input bitstream, clocked via
+	\wire{frame\_in\_clk}. \\
+
+	\wire{frame\_in\_clk} & 1 & I & Positive edge indicates that data on
+	\wire{frame\_in\_bits} should be read. \\
 	
-	\texttt{frame\_in\_valid} & 1 & I & Set high while the current series
+	\wire{frame\_in\_valid} & 1 & I & Set high while the current series
 	of bits is part of the same frame. \\
 
-	\texttt{burst\_reset} & 1 & O & reset line to the burst handler
+	\wire{burst\_reset} & 1 & O & reset line to the burst handler
 	(\autoref{sec:burst}). \\
 
-	\texttt{burst\_bits} & 1 & O & Bits to the burst handler. \\
+	\wire{burst\_bits} & 1 & O & Bits to the burst handler. \\
 
-	\texttt{burst\_valid} & 1 & O & indicates the bitstream
-	\texttt{burst\_bits} is valid and should be processed. \\
+	\wire{burst\_valid} & 1 & O & indicates the bitstream
+	\wire{burst\_bits} is valid and should be processed. \\
 
 
-	\texttt{frame\_num} & 4 & O & The frame number parsed from the header
+	\wire{frame\_num} & 4 & O & The frame number parsed from the header
 	structures. \\
 
-	\texttt{iuc} & 4 & O & The UIUC or DIUC field, parsed from the header
-	stuctures. Only valid for the currently outputed frame. \\
+	\wire{iuc} & 4 & O & The UIUC or DIUC field, parsed from the header
+	stuctures. Only valid for the currently outputed burst. \\
 
-	Something about subchannels & ? & O & Indicates something about
-	subchannels to things. Need documentation as to what the other logic
-	blocks require before this can be pinned down. 
+	\wire{subchan\_data} & 6 & O & See \autoref{tbl:frame-io}.
+	\autoref{tbl:subchan} describes valid values. Per burst. \\
+
+	\wire{rate\_id} & 4 & O & See \autoref{tbl:rate-id}. Per burst. \\
+
 \end{tabularx} \caption{Frame Handler interface description} \end{table*}
 
 %% BURST
@@ -268,41 +298,54 @@ multiple sub-channels(??).
 Across a single burst initialization of the pipeline hardware will not
 change.
 
-\begin{table*} \begin{tabularx}{\textwidth}{c|c|c|X}
+\begin{table*} \begin{tabularx}{\linewidth}{c|c|c|X}
 	\label{tbl:burst-io}
 	Name & Width & Direction & Description \\ \hline
 	
-	\texttt{burst\_reset} & 1 & I & Imediately resets the burst handler.
-	\\
+	\wire{reset} & 1 & I & Imediately resets the burst handler. Active
+	low. \\
 
-	\texttt{iuc} & 4 & I & The UIUC or DIUC field (depending on uplink
+	\wire{clk} & 1 & I & Clocking. \\
+
+	\wire{iuc} & 4 & I & The UIUC or DIUC field (depending on uplink
 	or downlink state). Used by randomizer. \\
 	
-	\texttt{bsid} & 4 & I & Used by randomizer. \\
+	\wire{bsid} & 4 & I & Used by randomizer. \\
 	
-	\texttt{frame\_num} & 4 & I & Used by randomizer. \\
+	\wire{frame\_num} & 4 & I & Used by randomizer. \\
 
-	\texttt{burst\_in\_bits} & 1 & I & Input bitstream. \\
+	\wire{burst\_in\_bits} & 1 & I & Input bitstream. \\
 
-	\texttt{burst\_in\_valid} & 1 &  I & Indicates the input bitstream
-	\texttt{burst\_in\_bits} is valid. \\
+	\wire{burst\_in\_valid} & 1 &  I & Indicates the input bitstream
+	\wire{burst\_in\_bits} is valid. \\
 
-	\texttt{rand\_iv} & 15 & O & The initialization for
+	\wire{rand\_iv} & 15 & O & The initialization for
 	the randomizer's internal register. \\
 
-	\texttt{rand\_reload} & 1 & O & Instructs the randomizer to reload
+	\wire{rand\_reload} & 1 & O & Instructs the randomizer to reload
 	it's internal register with a new one outputed on
-	\texttt{rand\_iv}. \\
+	\wire{rand\_iv}. \\
 
-	\texttt{burst\_out\_bits} & 1 & O & Output bitstream. Sent to the
+	\wire{burst\_out\_bits} & 1 & O & Output bitstream. Sent to the
 	randomizer for first portion of processing. \\
 
-	\texttt{burst\_out\_valid} & 1 & O & Indicates output is valid.
+	\wire{burst\_out\_valid} & 1 & O & Indicates output is valid.
 	Also attached to the randomizer. \\
 
-	\texttt{subchan\_data} & ? & I & See \autoref{tbl:frame-io}. This
-	should be decoded to the useful items or simply passed along the
-	pipeline.
+	\wire{subchan\_data\_in} & 6 & I & See \autoref{tbl:frame-io}.
+	\autoref{tbl:subchan} describes valid values. \\
+
+	\wire{subchan\_data\_out} & 6 & O & Output pair of
+	\wire{subchan\_data\_in}, simple pass through. \\
+
+	\wire{subchan\_ct} & 4 & O & Indicates the number of subchannels in
+	use. Calculated from \wire{subchan\_data\_in}. \\
+
+	\wire{rate\_id\_in} & 4 & I  & See \autoref{tbl:rate-id}. \\
+
+	\wire{rate\_id\_out} & 4 & O & Pass-through pair of
+	\wire{rate\_id\_in}. \\
+
 \end{tabularx}
 \caption{Interface definition for the Burst Handler.}
 \end{table*}
@@ -325,31 +368,33 @@ and whether it is a UL (uplink) or DL (downlink) PDU.
 \autoref{tbl:rand-io} describes the inputs and outputs of the
 randomizer.
 
-\begin{table*} \begin{tabularx}{\textwidth}{c|c|c|X}
+\begin{table*} \begin{tabularx}{\linewidth}{c|c|c|X}
 	\label{tbl:rand-io}
 	Name & Width & Direction & Description \\ \hline
+	
+	\wire{reset}     & 1  & I & Resets all internal state
+	imediately. The internal register is loaded from
+	\wire{iv}. Active low. \\
 
-	\texttt{rand\_in\_bits}  & 1  & I & Uncoded input bitstream to the
+	\wire{clk}       & 1  & I & Clock. \\
+
+	\wire{in\_bits}  & 1  & I & Uncoded input bitstream to the
 	randomizer (this is the first step in the encoding process).\\
 
-	\texttt{rand\_in\_valid} & 1  & I & Indicates the input bitstream
+	\wire{in\_valid} & 1  & I & Indicates the input bitstream
+	\wire{in\_bits} is valid and should be read. \\
 
-	\texttt{rand\_in\_bits} is valid and should be read. \\
-
-	\texttt{rand\_out\_bits} & 1  & O & Output bitstream. \\
+	\wire{out\_bits} & 1  & O & Output bitstream. \\
 	
-	\texttt{rand\_out\_bits} & 1  & O & Indicates the output bitstream
+	\wire{out\_bits} & 1  & O & Indicates the output bitstream
 	is valid. \\
 
-	\texttt{rand\_iv}        & 15 & I & Initialization data for the
+	\wire{iv}        & 15 & I & Initialization data for the
 	internal register. \\
 
-	\texttt{rand\_reload}    & 1  & I & Indicates the internal
-	register should be loaded with \texttt{rand\_iv}. \\
+	\wire{reload}    & 1  & I & Indicates the internal
+	register should be loaded with \wire{iv}. \\
 
-	\texttt{rand\_reset}     & 1  & I & Resets all internal state
-	imediately. The internal register is loaded from
-	\texttt{rand\_iv}.
 \end{tabularx}
 \caption{Randomizer interface definition.}
 \end{table*}
@@ -375,7 +420,7 @@ code and CC rate pairs are needed, as indicated in the
 See \autoref{tbl:fec-io} for a listing of the inputs and outputs.
 
 \begin{table*}
-	\begin{tabularx}{\textwidth}{X|X|X|X|X|X}
+	\begin{tabularx}{\linewidth}{X|X|X|X|X|X}
 	\label{tbl:fec-param}
 		Modulation & Uncoded block size (bytes) &
 		Coded block size (bytes) & Overall coding
@@ -385,23 +430,28 @@ See \autoref{tbl:fec-io} for a listing of the inputs and outputs.
 	\caption{Forward Error correction rates}
 \end{table*}
 
-\begin{table*} \begin{tabularx}{\textwidth}{c|c|c|X}
+\begin{table*} \begin{tabularx}{\linewidth}{c|c|c|X}
 	\label{tbl:fec-io}
 	Name & Width & Direction & Description \\ \hline
 
-	\texttt{fec\_in\_bits} & 1 & I & Input bitstream, processsed by randomizer.
+	\wire{reset} & 1 & I & Active low, resets logic block to initial
+	state. \\
+
+	\wire{clk}   & 1 & I & Clocking. \\
+
+	\wire{in\_bits} & 1 & I & Input bitstream, processsed by randomizer.
 	\\
 
-	\texttt{fec\_in\_valid} & 1 & I & Indicates the input bitstream
-	\texttt{fec\_in\_bits} should be read.\\
+	\wire{in\_valid} & 1 & I & Indicates the input bitstream
+	\wire{in\_bits} should be read.\\
 
-	\texttt{fec\_out\_bits} & 1 & O & Output bitstream, has FEC
+	\wire{out\_bits} & 1 & O & Output bitstream, has FEC
 	applied. Will be longer than input bitstream. \\
 
-	\texttt{fec\_out\_valid} & 1 & O & Indicates the output bitstream
+	\wire{out\_valid} & 1 & O & Indicates the output bitstream
 	is valid (the data on it should be read and processed) \\
 
-	\texttt{rate\_id} & 4 & I & The type of modulation used. See
+	\wire{rate\_id} & 4 & I & The type of modulation used. See
 	\autoref{tbl:rate-id} for possible values.
 
 \end{tabularx} \caption{FEC interface description} \end{table*}
@@ -416,24 +466,28 @@ See \autoref{tbl:fec-io} for a listing of the inputs and outputs.
 	\item[Estimated data bitstream delay] UNKNOWN -- FIXME.
 \end{description}
 
-\begin{table*} \begin{tabularx}{\textwidth}{c|c|c|X}
+\begin{table*} \begin{tabularx}{\linewidth}{c|c|c|X}
 	\label{tbl:fec-buf-io}
 	Name & Width & Direction & Description \\ \hline
 
-	\texttt{fec\_out\_bits} & 1 & I & The bitstream outputed by the
+	\wire{reset} & 1 & I & Active low reset. \\
+
+	\wire{clk} & 1 & I & Clock. \\
+
+	\wire{fec\_out\_bits} & 1 & I & The bitstream outputed by the
 	forward error correction unit. \\
 
-	\texttt{fec\_out\_valid} & 1 & I & Indicates the bitstream
-	\texttt{fec\_out\_bits} is valid and should be buffered. \\
+	\wire{fec\_out\_valid} & 1 & I & Indicates the bitstream
+	\wire{fec\_out\_bits} is valid and should be buffered. \\
 
 
-	\texttt{block} & 768 & O & A block of buffered data. (768 bits = 96
+	\wire{block} & 768 & O & A block of buffered data. (768 bits = 96
 	bytes). \\
 
-	\texttt{block\_valid} & 1 & O & Indicates the data block
-	\texttt{block} is valid and should be processed. \\
+	\wire{block\_valid} & 1 & O & Indicates the data block
+	\wire{block} is valid and should be processed. \\
 
-	\texttt{advance} & 1 & I & Asserted by the consumer to indicate that
+	\wire{advance} & 1 & I & Asserted by the consumer to indicate that
 	the current data block has been processed completely and a new data
 	block is required. \\
 
@@ -446,82 +500,97 @@ blocks.
 
 %% INTERLEAVER
 
-	\subsection{Interleaving}
-	\label{sec:interleaving}
-	\begin{description}
-		\item[Responsible person] John
-		\item[Estimated gates] 2000
-		\item[Estimated data bitstream delay] UNKNOWN -- FIXME.
-	\end{description}
+\subsection{Interleaving}
+\label{sec:interleaving}
+\begin{description}
+	\item[Responsible person] John
+	\item[Estimated gates] 2000
+	\item[Estimated data bitstream delay] UNKNOWN -- FIXME.
+\end{description}
 	
-	All encoded data bits will be interleaved by this block interleaver. The
-	block size is defined by the number of coded bits per allocated subchannels 
-	per OFDM symbol ($N_{cbps}$). 
+\begin{table*} \begin{tabularx}{\linewidth}{c|c|c|X}
+	\label{tbl:interleave-io}
+	Name & Width & Direction & Description \\ \hline
+
+	\wire{reset} & 1 & I & resets the device state. \\
+
+	\wire{clk}   & 1 & I & clocking. \\
+
+	\wire{in\_blk} & 384 & I & Block of input data. \\
+
+	\wire{in\_blk\_valid} & 1 & I & Indicates a block of input data on
+	\wire{in\_blk} is valid and should be processed. \\
+
+	\wire{rate\_id} & 3 & I & The modulation type. Possible values can be
+	found in \autoref{tbl:rate-id}. \\
+
+	\wire{subchan\_ct} & 3 & I & Indicates whether the number of subchannels
+	is 1, 2, 4, 8, or 16. These are paired with values 0, 1, 2, 3, and 4,
+	respectively. The result of other values is undefined. This input
+	allows determintion on how many bits in \wire{in\_blk} should be
+	processed. \\
+
+	\wire{out\_blk} & 384 & O & Interleaved block which is then outputed.
+	\\
+
+	\wire{out\_blk\_valid} & 1 & O & When high, indicates that
+	\wire{out\_blk} contains valid data which should be processed by the
+	next item in the pipeline. 
+\end{tabularx} \caption{Interleaver I/O description} \end{table*}
+
+\begin{table*} \begin{tabularx}{\linewidth}{X|X|X|X|X|X}
+	\label{tbl:Ncbps}
+	Subchannels & 16 & 8 & 4 & 2 & 1 \\ \hline
+	BPSK   & 192  & 96  & 48  & 24  & 12 \\
+	QPSK   & 384  & 192 & 96  & 48  & 24 \\
+	16-QAM & 768  & 384 & 192 & 96  & 48 \\
+	64-QAM & 1152 & 576 & 288 & 144 & 72
+\end{tabularx} \caption{Values of $N_{cbps}$ from \cite{IEEE:802.16}. Note
+that other than the values listed for QPSK, none of these items are
+supported by this device.} \end{table*}
+
+All encoded data bits will be interleaved by this block interleaver. The
+block size is defined by the number of coded bits per allocated subchannels 
+per OFDM symbol ($N_{cbps}$). $N_{cbps}$ is determined by a
+combination of the number of subchannels and the modulation used, see
+\autoref{tbl:Ncbps} for a listing of possible values.
+
+Interleaving is a two step type operation. The first step ensures adjacent 
+coded bits are mapped onto nonadjacent subcarriers and the second step 
+ensures bits are mapped alternately onto less and more significant bits of
+the constellation. The second step is done to avoid long runs of lowly
+reliable bits.
  
-	\begin{center}
-  	\begin{tabular}{|c|c|c|c|c|c|}
-	\hline
-	\multicolumn{6}{|c|}{Block sizes of the Interleaver} \\ \hline
-	\multicolumn{6}{|c|}{$N_{cbps}$} \\ \hline
-  	& 16 subchannels & 8 & 4 & 2 & 1 \\ \hline
-	QPSK & 384 & 192 & 96 & 48 & 24 \\ \hline
-	\end{tabular}
-  	\end{center}
+The permutations are dependent on the number of coded bits per subcarrier
+($N_{cpc}$), which is defined by the type of modulation and the index of the
+coded bit before permutation (k).
 
-	Interleaving is a two step type operation. The first step ensures adjacent 
-	coded bits are mapped onto nonadjacent subcarriers and the second step 
-	ensures bits are mapped alternately onto less and more significant bits of
-	the constellation. The second step is done to avoid long runs of lowly
-	reliable bits.
-	 
-	The permutations are dependent on the number of coded bits per subcarrier
-	($N_{cpc}$), which is defined by the type of modulation and the index of the
-	coded bit before permutation (k).
+For our implementation, as we are only using QPSK modulation,
+$N_{cpc} = 2$.
 
-	For our implementation, as we are only using QPSK modulation,
-	$N_{cpc} = 2$.
-	
-	k : index of coded bit before first permutation
+k : index of coded bit before first permutation
 
-	$m_{k}$ : index after first permutation
+$m_{k}$ : index after first permutation
 
-	$j_{k}$ : index after second permutation 
+$j_{k}$ : index after second permutation 
 
-  First permutation equation :
-  \begin{equation}
-  m_k = (N_{cbps}/12)*k_{mod12}+floor(k/12)
-  \end{equation}
+First permutation equation :
+\begin{equation}
+m_k = (N_{cbps}/12)*k_{mod12}+floor(k/12)
+\end{equation}
 
-	Second permutation equation :
-	\begin{equation}
-	s=ceil(N_{cpc}/2) \\
-	\end{equation}
-	\begin{eqnarray}
-	j_k = s*floor(m_{k}/s)+(m_{k}+N_{cbps}- \nonumber \\
-		floor(12*m_k/N_{cbps}))_{mod(s)}
-	\end{eqnarray}
+Second permutation equation :
+\begin{equation}
+s=ceil(N_{cpc}/2) \\
+\end{equation}
+\begin{eqnarray}
+j_k = s*floor(m_{k}/s)+(m_{k}+N_{cbps}- \nonumber \\
+	floor(12*m_k/N_{cbps}))_{mod(s)}
+\end{eqnarray}
 
-	After the interleaving the first bit out of the interleaver would map to the
-	MSB for the constellation mapping. 
-	
-	\begin{table*}
-		\begin{tabularx}{\textwidth}{X|X|X|}
-		\label{tbl:interleave}
-			Signal name & From/To &
-			Description \\ \hline
-			fec\_buffer\_out & From Buffer & A block of $N_{cbps}$ bits are read
-			along this line \\ \hline
-			fec\_buffer\_done & From Buffer & Indicates on high that a block of
-		 	encoded bits are ready to be read \\ \hline
-			interleave\_reset & From Control Logic & On high, causes reset\\ \hline
-			interleave\_out\_enable & To Constellation Mapping & On high output
-			line of bits is valid and ready to read \\ \hline
-			interleaved\_bits & To Constellation Mapping & Interleaved bits are
-			sent on this line \\ \hline
-		\end{tabularx}
-		\caption{Interleaver IO signals}
-	\end{table*}
-	
+After the interleaving the first bit out of the interleaver would map to the
+MSB for the constellation mapping. 
+
   \subsubsection{Testing and Verification}
   
   The Interleaver operation can be verified by inputting a known block of bits
@@ -529,41 +598,100 @@ blocks.
   document, the appropriate Interleaver output can be calculated and compared
   directly. 
   
-  *Add example test inputs and outputs. 
+  \todo[inline]{Add example test inputs and outputs.}
 
-	\subsection{Constellation Mapping}
-	\label{sec:constellation}
-	\begin{description}
-		\item[Responsible person] Luke
-		\item[Estimated gates] 4000
-		\item[Estimated data bitstream delay] UNKNOWN -- FIXME.
-	\end{description}
+\subsection{Constellation Mapping}
+\label{sec:constellation}
+\begin{description}
+	\item[Responsible person] Luke
+	\item[Estimated gates] 4000
+	\item[Estimated data bitstream delay] UNKNOWN -- FIXME.
+\end{description}
 
-	Input is bit stream, output is (I,Q).
+\begin{table*} \begin{tabularx}{\linewidth}{c|c|c|X}
+	\label{tbl:mapping-io}
+	Name & Width & Direction & Description \\ \hline
+
+	\wire{reset} & 1 & I & When low, the chip is reset. When high, normal
+	operation. \\
+
+	\wire{clk}   & 1 & I & Clocks all syncronous operations. \\
+
+	\wire{FIXME-INPUT-STREAM} & ? & I & Some input stream of some width.
+	\\
+
+	\wire{FIXME-INPUT-VALID} & 1 & I & Indicates that
+	\wire{FIXME-INPUT-STREAM} is valid and should be read. \\
+
+	\wire{FIXME-OUTPUT-STREAM} & ? & O & Unknown output stream of unknown
+	width. \\
+
+	\wire{FIXME-OUTPUT-VALID} & 1 & O & Indiactes the
+	\wire{FIXME-OUTPUT-STREAM} is valid and should be processed or
+	buffered imediately. \\
+
+	\wire{subchan\_data} & 6 & I & Indicates the mapping of subchannels, see
+	\autoref{tbl:subchan} for explanation of values. \\
+
+\end{tabularx} \caption{Constellation Mapping input/output description}
+\end{table*}
+
+See \autoref{tbl:mapping} for the description of inputs and outputs.
+
+Input is bit stream, output is (I,Q).
+
+\todo[inline]{Luke has some stuff to put here. He has had it for the last
+3 weeks. It is still not here}
 	
-	\subsection{Pilot Sub-carrier Insertion}
-	\label{sec:pilot}
-	\begin{description}
-		\item[Responsible person] Luke
-		\item[Estimated gates] 1000
-		\item[Estimated data bitstream delay] UNKNOWN -- FIXME.
-	\end{description}
+\subsection{Pilot Sub-carrier Insertion}
+\label{sec:pilot}
+\begin{description}
+	\item[Responsible person] Luke
+	\item[Estimated gates] 1000
+	\item[Estimated data bitstream delay] UNKNOWN -- FIXME.
+\end{description}
 
-	Input is (I,Q) pair, output is (I,Q) pair with pilot subcarriers
-	inserted at some points (fixed).
+Input is (I,Q) pair, output is (I,Q) pair with pilot subcarriers
+inserted at some points (fixed).
 
-	\subsection{Sub-carrier to IFFT Buffer}
-	\label{sec:ifft-buffer}
-	\begin{description}
-		\item[Responsible person] John Huang
-		\item[Estimated gates] 2000
-		\item[Estimated data bitstream delay] UNKNOWN -- FIXME.
-	\end{description}
-	Insertion into this buffer is ordered but will have random
-	jumps around different UL \& DL bursts.
+\todo[inline]{Luke has some stuff to put here. He has had it for the last
+3 weeks. It is still not here}
 
-	Block Size = blk\_siz = 200 (the total number of used
-	subcarriers)
+\subsection{Sub-carrier to IFFT Buffer}
+\label{sec:ifft-buffer}
+\begin{description}
+	\item[Responsible person] John Huang
+	\item[Estimated gates] 2000
+	\item[Estimated data bitstream delay] UNKNOWN -- FIXME.
+\end{description}
+Insertion into this buffer is ordered but will have random
+jumps around different UL \& DL bursts.
+
+Block Size = blk\_siz = 200 (the total number of used
+subcarriers)
+
+Buffers blk\_size items each of which has width 2 bits.
+QPSK utilizes both I and Q, amplitude and phase, each with
+a granularity of 2. This means that each item (a pair of I
+\& Q) has 4 possible values and thus 2 bits are needed for
+each.
+
+\subsection{IFFT}
+\label{sec:ifft}
+\begin{description}
+	\item[Responsible person] John Huang
+	\item[Estimated gates] 10,000
+	\item[Estimated data bitstream delay] UNKNOWN -- FIXME.
+\end{description}
+
+The IFFT must process 256 complex numbers with a depth of 16 bits for each
+component (16 bits for the Real component and an another 16 bits for the
+imaginary).
+
+See \autoref{tbl:ifft-io} for a description of the inputs and outputs.
+
+\begin{table*} \begin{tabularx}{\linewidth}{c|c|c|X}
+	\label{tbl:ifft-io}
 	
 	Buffers blk\_size items each of which has width 2 bits.
 	QPSK utilizes both I and Q, amplitude and phase, each with
@@ -600,15 +728,38 @@ blocks.
 				processed data.
 		\end{description}
 	\end{description}
-
-	\subsection{Cyclic Prefix}
-	\label{sec:cyclic_prefix}
-	\begin{description}
-		\item[Responsible person] John Huang
-		\item[Estimated gates] 2000
-		\item[Estimated data bitstream delay] About 1050 clocks.
-	\end{description}
 	
+	Name & Width & Direction & Description \\ \hline
+
+	\wire{reset} & 1 & I & resets the device state. \\
+
+	\wire{clk}   & 1 & I & clocking. \\
+
+	\wire{in\_blk\_valid} & 1 & I & When high, indicates that the input block is
+	valid and should be processed. \\
+
+	\wire{in\_blk} & $200 \cdot 2 \cdot 16$ & I & Input data for the IFFT. Width of
+	numbers is 16 bits, processing both Q and I. \\
+
+	\wire{out\_blk} & $256 \cdot 2 \cdot 16$ & O & Output data after IFFT is preformed. Width of
+	numbers is 16 bits, processing both Q and I. \\
+
+	\wire{out\_blk\_valid} & 1 & O & Indicates the output block
+	\wire{out\_blk} is valid and should be imediately copied (it will be
+	replaced by the next block on the next clock cycle).
+
+\end{tabularx}
+\caption{IFFT input/output description.}
+\end{table*}
+
+\subsection{Cyclic Prefix}
+\label{sec:cyclic_prefix}
+\begin{description}
+	\item[Responsible person] John Huang
+	\item[Estimated gates] 2000
+	\item[Estimated data bitstream delay] About 1050 clocks.
+\end{description}
+
 	The Cyclic Prefix is used to act as protection from Intersymbol Interference 
 	by duplicating a certain number of symbols defined by the $CP_rate$.
 	
@@ -636,9 +787,9 @@ blocks.
 	total to about 1050 clocks. 
 	
 	\begin{table}
-	\begin{tabulary}{0.5\textwidth}{C|C}
+	\begin{tabulary}{\linewidth}{C|C}
 		\label{tbl:param-g-vals}
-		Value of \texttt{param\_G} & Ratio of CP time to
+		Value of \wire{param\_G} & Ratio of CP time to
 		``useful'' time. \\ \hline
 
 		0b00 & 1/4 \\
@@ -647,28 +798,29 @@ blocks.
 		0b11 & 1/32 \\
 
 	\end{tabulary}
-	\caption{Values of OFDM \texttt{param\_G}}
-	\end{table}
+	\caption{Values of OFDM parameter G as presented on
+	\wire{param\_G}}
+\end{table}
 
 	\begin{table*}
-	\begin{tabularx}{\textwidth}{c|c|c|X}
+	\begin{tabularx}{\linewidth}{c|c|c|X}
 		\label{tbl:cp-io}
 		Name & Direction & Width & Description \\ \hline
 
-		\texttt{param\_G} & I & 2 & The meanings of valid values
+		\wire{param\_G} & I & 2 & The meanings of valid values
 		are listed in \autoref{tbl:param-g-vals}. Indicates the
 		fraction of CP time to ``useful'' time.
 		\\
 
-		\texttt{cp\_in\_bits} & I & 1 & Input bitstream. \\
+		\wire{cp\_in\_bits} & I & 1 & Input bitstream. \\
 		
-		\texttt{cp\_in\_valid} & I & 1 & Indicates the input
-		bitstream \texttt{cp\_in\_bits} is valid. \\
+		\wire{cp\_in\_valid} & I & 1 & Indicates the input
+		bitstream \wire{cp\_in\_bits} is valid. \\
 
-		\texttt{cp\_out\_bits} & O & 1 & Output bitstream. \\
+		\wire{cp\_out\_bits} & O & 1 & Output bitstream. \\
 
-		\texttt{cp\_out\_valid} & O & 1 & Indicates the output
-		bitstream \texttt{cp\_out\_bits} is valid.
+		\wire{cp\_out\_valid} & O & 1 & Indicates the output
+		bitstream \wire{cp\_out\_bits} is valid.
 	\end{tabularx}
 	\caption{Cyclic Prefix Inputs and Outputs}
 	\end{table*}

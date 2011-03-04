@@ -458,7 +458,7 @@ blocks.
 	block size is defined by the number of coded bits per allocated subchannels 
 	per OFDM symbol ($N_{cbps}$). 
  
-	 \begin{center}
+	\begin{center}
   	\begin{tabular}{|c|c|c|c|c|c|}
 	\hline
 	\multicolumn{6}{|c|}{Block sizes of the Interleaver} \\ \hline
@@ -531,7 +531,6 @@ blocks.
   
   *Add example test inputs and outputs. 
 
-
 	\subsection{Constellation Mapping}
 	\label{sec:constellation}
 	\begin{description}
@@ -580,7 +579,8 @@ blocks.
 		\item[Estimated data bitstream delay] UNKNOWN -- FIXME.
 	\end{description}
 
-	The IFFT 
+	The IFFT takes in 256-bit complex samples and outputs to the Cyclic Prefix generator. 
+	
 	IFFT Size: 256 items (each being a complex number)
 	\begin{description}
 		\item{Inputs:}
@@ -606,18 +606,34 @@ blocks.
 	\begin{description}
 		\item[Responsible person] John Huang
 		\item[Estimated gates] 2000
-		\item[Estimated data bitstream delay] UNKNOWN -- FIXME.
+		\item[Estimated data bitstream delay] About 1050 clocks.
 	\end{description}
+	
+	The Cyclic Prefix is used to act as protection from Intersymbol Interference 
+	by duplicating a certain number of symbols defined by the $CP_rate$.
 	
 	The Cyclic Prefix appends to the front of the symbol a copy of the last
  	$256/CP_{rate}$ ($N_{IFFT}/CP_{rate}$) bits. OFDM PHY should allow for four
 	(4) rates as defined by 2 bits in the PHY Mode ID field. 
+	
+	It reads 256 2 bit items from the IFFT into 2 256 blocks of memory.
+	On output, the appropriate number of bits are read from the end of 
+	memory by offset.
+	
+	At a rate of $1/4$, 64 bits would need to be read from the end and 
+	at a rate of $1/32$, 8 bits would need to be read.
+	
+	The sample size would then increase from 256 bits to anywhere between
+	264 to 320 bits.
+	
+	For our implementation, we will set the CP rate at $1/16$ which leads to
+	a sample size of 272 bits.
+	
+	This process would take about about 512 clocks to read in the data to fill
+	memory and about 528 clocks to write out. 
 
-	%\begin{tabular}
-	$CP_{rate}$ 1/4,1/8,1/16,1/32
-	%\end{tabular} 
-	
-	
+	The total time would include clocks to set and check valid lines and would
+	total to about 1050 clocks. 
 	
 	\begin{table}
 	\begin{tabulary}{0.5\textwidth}{C|C}
@@ -631,8 +647,7 @@ blocks.
 		0b11 & 1/32 \\
 
 	\end{tabulary}
-	\caption{Values of OFDM parameter G as presented on
-	\texttt{param\_G}}
+	\caption{Values of OFDM \texttt{param\_G}}
 	\end{table}
 
 	\begin{table*}
@@ -660,13 +675,6 @@ blocks.
 
 	\autoref{tbl:cp-io} lists the inputs and outputs to the cyclic
 	prefix unit.
-
-	Appends the last Tg items of the previous frame to the start of the
-	present frame.  Reads 256 2 bit items from the IFFT, appending Tg
-	items to the start of it. It also stores the last Tg items so that
-	they may be appended to the next frame from the IFFT.
-
-	Size is fixed at ??
 
 \section{Testing Considerations}
 \section{Economic Analysis}
@@ -702,6 +710,7 @@ blocks.
   Clock frequency required for a 3.5 MHz channel bandwidth : 4.083 MHz
   
   Input capacitance over recommended operating conditions : 10 pF
+	%Input capacitance per input pin?
   \begin{center}
   \begin{equation}
   P = C * V^2 * f = 10 pF * (4.4 V)^2 * 4.083 MHz = 0.18 mW

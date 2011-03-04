@@ -303,9 +303,15 @@ change.
 	\wire{burst\_out\_valid} & 1 & O & Indicates output is valid.
 	Also attached to the randomizer. \\
 
-	\wire{subchan\_data} & ? & I & See \autoref{tbl:frame-io}. This
-	should be decoded to the useful items or simply passed along the
-	pipeline.
+	\wire{subchan\_data\_in} & 6 & I & See \autoref{tbl:frame-io}.
+	\autoref{tbl:subchan} describes valid values. \\
+
+	\wire{subchan\_data\_out} & 6 & O & Output pair of
+	\wire{subchan\_data\_in}, simple pass through. \\
+
+	\wire{subchan\_ct} & 4 & O & Indicates the number of subchannels in
+	use. Calculated from \wire{subchan\_data\_in}. \\
+
 \end{tabularx}
 \caption{Interface definition for the Burst Handler.}
 \end{table*}
@@ -473,7 +479,7 @@ blocks.
 	\wire{rate\_id} & 3 & I & The modulation type. Possible values can be
 	found in \autoref{tbl:rate-id}. \\
 
-	\wire{subch\_ct} & 3 & I & Indicates whether the number of subchannels
+	\wire{subchan\_ct} & 3 & I & Indicates whether the number of subchannels
 	is 1, 2, 4, 8, or 16. These are paired with values 0, 1, 2, 3, and 4,
 	respectively. The result of other values is undefined. This input
 	allows determintion on how many bits in \wire{in\_blk} should be
@@ -595,8 +601,8 @@ MSB for the constellation mapping.
 	\wire{FIXME-OUTPUT-STREAM} is valid and should be processed or
 	buffered imediately. \\
 
-	\wire{FIXME SOME PARAM} & ? & I & Something needed to configure this
-	device. \\
+	\wire{subchan\_data} & 6 & I & Indicates the mapping of subchannels, see
+	\autoref{tbl:subchan} for explanation of values. \\
 
 \end{tabularx} \caption{Constellation Mapping input/output description}
 \end{table*}

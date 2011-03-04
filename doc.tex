@@ -573,6 +573,37 @@ MSB for the constellation mapping.
 	\item[Estimated data bitstream delay] UNKNOWN -- FIXME.
 \end{description}
 
+\begin{table*} \begin{tabularx}{\textwidth}{c|c|c|X}
+	\label{tbl:interleave-io}
+	Name & Width & Direction & Description \\ \hline
+
+	\wire{reset} & 1 & I & When low, the chip is reset. When high, normal
+	operation. \\
+
+	\wire{clk}   & 1 & I & Clocks all syncronous operations. \\
+
+	\wire{FIXME-INPUT-STREAM} & ? & I & Some input stream of some width.
+	\\
+
+	\wire{FIXME-INPUT-VALID} & 1 & I & Indicates that
+	\wire{FIXME-INPUT-STREAM} is valid and should be read. \\
+
+	\wire{FIXME-OUTPUT-STREAM} & ? & O & Unknown output stream of unknown
+	width. \\
+
+	\wire{FIXME-OUTPUT-VALID} & 1 & O & Indiactes the
+	\wire{FIXME-OUTPUT-STREAM} is valid and should be processed or
+	buffered imediately. \\
+
+	\wire{FIXME SOME PARAM} & ? & I & Something needed to configure this
+	device. \\
+
+\end{tabularx} \caption{Constellation Mapping input/output description}
+\end{table*}
+
+\todo[inline]{Luke has some stuff to put here. He has had it for the last
+3 weeks. It is still not here}
+
 Input is bit stream, output is (I,Q).
 	
 \subsection{Pilot Sub-carrier Insertion}
@@ -585,6 +616,9 @@ Input is bit stream, output is (I,Q).
 
 Input is (I,Q) pair, output is (I,Q) pair with pilot subcarriers
 inserted at some points (fixed).
+
+\todo[inline]{Luke has some stuff to put here. He has had it for the last
+3 weeks. It is still not here}
 
 \subsection{Sub-carrier to IFFT Buffer}
 \label{sec:ifft-buffer}

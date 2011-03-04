@@ -247,11 +247,13 @@ Inputs and outputs are listed in \autoref{tbl:frame-io}.
 	structures. \\
 
 	\wire{iuc} & 4 & O & The UIUC or DIUC field, parsed from the header
-	stuctures. Only valid for the currently outputed frame. \\
+	stuctures. Only valid for the currently outputed burst. \\
 
-	Something about subchannels & ? & O & Indicates something about
-	subchannels to things. Need documentation as to what the other logic
-	blocks require before this can be pinned down. 
+	\wire{subchan\_data} & 6 & O & See \autoref{tbl:frame-io}.
+	\autoref{tbl:subchan} describes valid values. Per burst. \\
+
+	\wire{rate\_id} & 4 & O & See \autoref{tbl:rate-id}. Per burst. \\
+
 \end{tabularx} \caption{Frame Handler interface description} \end{table*}
 
 %% BURST
@@ -312,7 +314,7 @@ change.
 	\wire{subchan\_ct} & 4 & O & Indicates the number of subchannels in
 	use. Calculated from \wire{subchan\_data\_in}. \\
 
-	\wire{rate\_id\_in} & 4 & O & See \autoref{tbl:rate-id}. \\
+	\wire{rate\_id\_in} & 4 & I  & See \autoref{tbl:rate-id}. \\
 
 	\wire{rate\_id\_out} & 4 & O & Pass-through pair of
 	\wire{rate\_id\_in}. \\

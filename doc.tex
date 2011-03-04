@@ -34,7 +34,7 @@ compliant with the 802.16-2009 standard in order for the compliance
 expectations (\autoref{sec:comply}) to be met.
 
 \begin{figure}
-\includegraphics[width=0.5\textwidth]{t_block.eps}
+\includegraphics[width=\linewidth]{t_block.eps}
 \caption{Overview block diagram of the transmitter}
 \end{figure}
 
@@ -144,7 +144,7 @@ standard.
 \end{description}
 \todo[inline]{Determine Full inputs and outputs}
 
-\begin{table*} \begin{tabularx}{\textwidth}{c|c|c|X}
+\begin{table*} \begin{tabularx}{\linewidth}{c|c|c|X}
 	\label{tbl:extern-io}
 	Name & Width & Direction & Description\\ \hline
 
@@ -182,7 +182,7 @@ hardware.
 the internal interfaces.
 
 \begin{table*}
-\begin{tabulary}{\textwidth}{c|C|L}
+\begin{tabulary}{\linewidth}{c|C|L}
 	\label{tbl:internal-common-wire}
 	Name & Active Level & Meaning \\ \hline
 	
@@ -222,7 +222,7 @@ to be processed and outputed.
 
 Inputs and outputs are listed in \autoref{tbl:frame-io}.
 
-\begin{table} \begin{center} \begin{tabularx}{0.5\textwidth}{c|c}
+\begin{table} \begin{center} \begin{tabularx}{\linewidth}{c|c}
 	\label{tbl:rate-id}
 	\wire{rate\_id[3]} & Modulation RS-CC rate \\ \hline
 	0 & BPSK-1/2 \\
@@ -243,7 +243,7 @@ All values but 1 (QPSK-1/2) are unsupported by this device.}
 	\caption{Possible values for \wire{subchan\_data}.}
 \end{table*}
 
-\begin{table*} \begin{tabularx}{\textwidth}{c|c|c|X} \label{tbl:frame-io}
+\begin{table*} \begin{tabularx}{\linewidth}{c|c|c|X} \label{tbl:frame-io}
 	Name & Width & Direction & Description \\ \hline
 
 	\wire{clk} & 1 & I & Clocks the logic block.\\
@@ -298,7 +298,7 @@ multiple sub-channels(??).
 Across a single burst initialization of the pipeline hardware will not
 change.
 
-\begin{table*} \begin{tabularx}{\textwidth}{c|c|c|X}
+\begin{table*} \begin{tabularx}{\linewidth}{c|c|c|X}
 	\label{tbl:burst-io}
 	Name & Width & Direction & Description \\ \hline
 	
@@ -368,7 +368,7 @@ and whether it is a UL (uplink) or DL (downlink) PDU.
 \autoref{tbl:rand-io} describes the inputs and outputs of the
 randomizer.
 
-\begin{table*} \begin{tabularx}{\textwidth}{c|c|c|X}
+\begin{table*} \begin{tabularx}{\linewidth}{c|c|c|X}
 	\label{tbl:rand-io}
 	Name & Width & Direction & Description \\ \hline
 	
@@ -420,7 +420,7 @@ code and CC rate pairs are needed, as indicated in the
 See \autoref{tbl:fec-io} for a listing of the inputs and outputs.
 
 \begin{table*}
-	\begin{tabularx}{\textwidth}{X|X|X|X|X|X}
+	\begin{tabularx}{\linewidth}{X|X|X|X|X|X}
 	\label{tbl:fec-param}
 		Modulation & Uncoded block size (bytes) &
 		Coded block size (bytes) & Overall coding
@@ -430,7 +430,7 @@ See \autoref{tbl:fec-io} for a listing of the inputs and outputs.
 	\caption{Forward Error correction rates}
 \end{table*}
 
-\begin{table*} \begin{tabularx}{\textwidth}{c|c|c|X}
+\begin{table*} \begin{tabularx}{\linewidth}{c|c|c|X}
 	\label{tbl:fec-io}
 	Name & Width & Direction & Description \\ \hline
 
@@ -466,7 +466,7 @@ See \autoref{tbl:fec-io} for a listing of the inputs and outputs.
 	\item[Estimated data bitstream delay] UNKNOWN -- FIXME.
 \end{description}
 
-\begin{table*} \begin{tabularx}{\textwidth}{c|c|c|X}
+\begin{table*} \begin{tabularx}{\linewidth}{c|c|c|X}
 	\label{tbl:fec-buf-io}
 	Name & Width & Direction & Description \\ \hline
 
@@ -508,7 +508,7 @@ blocks.
 	\item[Estimated data bitstream delay] UNKNOWN -- FIXME.
 \end{description}
 	
-\begin{table*} \begin{tabularx}{\textwidth}{c|c|c|X}
+\begin{table*} \begin{tabularx}{\linewidth}{c|c|c|X}
 	\label{tbl:interleave-io}
 	Name & Width & Direction & Description \\ \hline
 
@@ -539,7 +539,7 @@ blocks.
 \end{tabularx} \caption{Interleaver I/O description} \end{table*}
 
 
-\begin{table*} \begin{tabularx}{\textwidth}{X|X|X|X|X|X}
+\begin{table*} \begin{tabularx}{\linewidth}{X|X|X|X|X|X}
 	\label{tbl:Ncbps}
 	Subchannels & 16 & 8 & 4 & 2 & 1 \\ \hline
 	
@@ -610,7 +610,7 @@ MSB for the constellation mapping.
 	\item[Estimated data bitstream delay] UNKNOWN -- FIXME.
 \end{description}
 
-\begin{table*} \begin{tabularx}{\textwidth}{c|c|c|X}
+\begin{table*} \begin{tabularx}{\linewidth}{c|c|c|X}
 	\label{tbl:mapping-io}
 	Name & Width & Direction & Description \\ \hline
 
@@ -692,7 +692,7 @@ imaginary).
 
 See \autoref{tbl:ifft-io} for a description of the inputs and outputs.
 
-\begin{table*} \begin{tabularx}{\textwidth}{c|c|c|X}
+\begin{table*} \begin{tabularx}{\linewidth}{c|c|c|X}
 	\label{tbl:ifft-io}
 	
 	Name & Width & Direction & Description \\ \hline
@@ -738,7 +738,7 @@ $CP_{rate}$ 1/4,1/8,1/16,1/32
 	
 	
 	\begin{table}
-	\begin{tabulary}{0.5\textwidth}{C|C}
+	\begin{tabulary}{\linewidth}{C|C}
 		\label{tbl:param-g-vals}
 		Value of \wire{param\_G} & Ratio of CP time to
 		``useful'' time. \\ \hline
@@ -754,7 +754,7 @@ $CP_{rate}$ 1/4,1/8,1/16,1/32
 	\end{table}
 
 	\begin{table*}
-	\begin{tabularx}{\textwidth}{c|c|c|X}
+	\begin{tabularx}{\linewidth}{c|c|c|X}
 		\label{tbl:cp-io}
 		Name & Direction & Width & Description \\ \hline
 

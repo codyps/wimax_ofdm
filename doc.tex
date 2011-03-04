@@ -168,10 +168,26 @@ standard.
 	between frames. \\
 
 	\wire{bsid} & 4 & I & The lower four bits of the BSID, a unique
-	identifier.
+	identifier. \\
+	
+	\wire{bw} & 3 & I & Channel bandwidth. See \autoref{tbl:bw}. \\
 \end{tabularx}
 \caption{External Interface to the PHY transmitter.}
 \end{table*}
+
+\begin{table} \begin{center} \begin{tabular}{c|c}
+	\label{tbl:bw}
+	
+	\wire{bw[3]} & Bandwidth in MHz \\ \hline
+
+	0 & 1.25 \\
+	1 & 1.5  \\
+	2 & 1.75 \\
+	3 & 2.0  \\
+	4 & 2.75 \\
+	5 - 7 & Undefined
+
+\end{tabular} \end{center} \caption{Meanings of BW values.} \end{table}
 
 \section{Internal Interfaces}
 This section covers the interfaces for internal structures within the PHY
@@ -249,6 +265,7 @@ All values but 1 (QPSK-1/2) are unsupported by this device.}
 	\wire{clk} & 1 & I & Clocks the logic block.\\
 
 	\wire{reset} & 1 & I & Active low reset to initial state. \\
+
 
 	\wire{frame\_in\_bits} & 1 & I & Input bitstream, clocked via
 	\wire{frame\_in\_clk}. \\

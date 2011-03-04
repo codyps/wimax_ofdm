@@ -517,16 +517,16 @@ blocks.
 
 %% INTERLEAVER
 
-\subsection{Interleaving}
-\label{sec:interleaving}
+\subsection{Interleaver}
+\label{sec:interleaver}
 \begin{description}
 	\item[Responsible person] John
 	\item[Estimated gates] 2000
-	\item[Estimated data bitstream delay] UNKNOWN -- FIXME.
+	\item[Estimated data bitstream delay] About 392 clocks.
 \end{description}
 	
 \begin{table*} \begin{tabularx}{\linewidth}{c|c|c|X}
-	\label{tbl:interleave-io}
+	\label{tbl:interleaver-io}
 	Name & Width & Direction & Description \\ \hline
 
 	\wire{reset} & 1 & I & resets the device state. \\
@@ -547,7 +547,7 @@ blocks.
 	allows determintion on how many bits in \wire{in\_blk} should be
 	processed. \\
 
-	\wire{out\_blk} & 384 & O & Interleaved block which is then outputed.
+	\wire{out\_blk} & 384 & O & Interleaved block which is then outputted.
 	\\
 
 	\wire{out\_blk\_valid} & 1 & O & When high, indicates that
@@ -645,7 +645,7 @@ MSB for the constellation mapping.
 	\wire{FIXME-OUTPUT-STREAM} & ? & O & Unknown output stream of unknown
 	width. \\
 
-	\wire{FIXME-OUTPUT-VALID} & 1 & O & Indiactes the
+	\wire{FIXME-OUTPUT-VALID} & 1 & O & Indicates the
 	\wire{FIXME-OUTPUT-STREAM} is valid and should be processed or
 	buffered imediately. \\
 

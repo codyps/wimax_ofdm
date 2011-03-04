@@ -500,39 +500,32 @@ blocks.
 
 %% INTERLEAVER
 
-\subsection{Interleaving}
-\label{sec:interleaving}
+\subsection{Interleaver}
+\label{sec:interleaver}
 \begin{description}
 	\item[Responsible person] John
 	\item[Estimated gates] 2000
-	\item[Estimated data bitstream delay] UNKNOWN -- FIXME.
+	\item[Estimated data bitstream delay] About 392 clocks.
 \end{description}
 	
 \begin{table*} \begin{tabularx}{\linewidth}{c|c|c|X}
-	\label{tbl:interleave-io}
+	\label{tbl:interleaver-io}
 	Name & Width & Direction & Description \\ \hline
 
-	\wire{reset} & 1 & I & resets the device state. \\
-
-	\wire{clk}   & 1 & I & clocking. \\
-
+	\wire{reset} & 1 & I & Resets the device state. \\
+	\wire{clk}   & 1 & I & Clock. \\
 	\wire{in\_blk} & 384 & I & Block of input data. \\
-
 	\wire{in\_blk\_valid} & 1 & I & Indicates a block of input data on
 	\wire{in\_blk} is valid and should be processed. \\
-
 	\wire{rate\_id} & 3 & I & The modulation type. Possible values can be
 	found in \autoref{tbl:rate-id}. \\
-
 	\wire{subchan\_ct} & 3 & I & Indicates whether the number of subchannels
 	is 1, 2, 4, 8, or 16. These are paired with values 0, 1, 2, 3, and 4,
 	respectively. The result of other values is undefined. This input
 	allows determintion on how many bits in \wire{in\_blk} should be
 	processed. \\
-
-	\wire{out\_blk} & 384 & O & Interleaved block which is then outputed.
+	\wire{out\_blk} & 384 & O & Interleaved block which is then outputted.
 	\\
-
 	\wire{out\_blk\_valid} & 1 & O & When high, indicates that
 	\wire{out\_blk} contains valid data which should be processed by the
 	next item in the pipeline. 
@@ -591,6 +584,8 @@ j_k = s*floor(m_{k}/s)+(m_{k}+N_{cbps}- \nonumber \\
 After the interleaving the first bit out of the interleaver would map to the
 MSB for the constellation mapping. 
 
+This will be implemented by a 384 bit memory with an input of 48 bits from the buffer. It would take 8 clock cycles to fill the memory. The interleaver operation would take 384 clock cycles for a total of 392 clock cycles.
+
   \subsubsection{Testing and Verification}
   
   The Interleaver operation can be verified by inputting a known block of bits
@@ -626,7 +621,7 @@ MSB for the constellation mapping.
 	\wire{FIXME-OUTPUT-STREAM} & ? & O & Unknown output stream of unknown
 	width. \\
 
-	\wire{FIXME-OUTPUT-VALID} & 1 & O & Indiactes the
+	\wire{FIXME-OUTPUT-VALID} & 1 & O & Indicates the
 	\wire{FIXME-OUTPUT-STREAM} is valid and should be processed or
 	buffered imediately. \\
 
@@ -707,9 +702,29 @@ See \autoref{tbl:ifft-io} for a description of the inputs and outputs.
 		\item[Estimated data bitstream delay] UNKNOWN -- FIXME.
 	\end{description}
 
-	The IFFT takes in 256-bit complex samples and outputs to the Cyclic Prefix generator. 
-	
-	IFFT Size: 256 items (each being a complex number)
+	The IFFT takes in 256-bit complex samples and outputs to the Cyclic Prefix.
+
+\begin{table*}
+	\begin{tabularx}{\linewidth}{c|c|c|X}
+		\label{tbl:ifft-io}
+		Name & Direction & Width & Description \\ \hline
+
+		\wire{ifft\_buf\_has\_block} & I & 1 & 
+		\\
+
+		\wire{cp\_in\_bits} & I & 1 & Input bitstream. \\
+		
+		\wire{cp\_in\_valid} & I & 1 & Indicates the input
+		bitstream \wire{cp\_in\_bits} is valid. \\
+
+		\wire{cp\_out\_bits} & O & 1 & Output bitstream. \\
+
+		\wire{cp\_out\_valid} & O & 1 & Indicates the output
+		bitstream \wire{cp\_out\_bits} is valid.
+	\end{tabularx}
+	\caption{Cyclic Prefix Inputs and Outputs}
+	\end{table*}
+
 	\begin{description}
 		\item{Inputs:}
 		\begin{description}

@@ -687,6 +687,32 @@ QPSK utilizes both I and Q, amplitude and phase, each with
 a granularity of 2. This means that each item (a pair of I
 \& Q) has 4 possible values and thus 2 bits are needed for
 each.
+\todo[inline]{Pilot insertion input needs to be defined}
+\begin{table*}
+	\begin{tabularx}{\linewidth}{c|c|c|X}
+		\label{tbl:ifft-buffer-io}
+			
+	Name & Width & Direction & Description \\ \hline
+
+	\wire{reset} & 1 & I & Resets the device state. \\
+
+	\wire{clk}   & 1 & I & Clocking. \\
+
+	\wire{in\_blk\_valid} & 1 & I & When high, indicates that the input block is
+	valid and should be processed. \\
+
+	\wire{in\_blk} & $??$ & I & Input data from the Pilot Insertion. \\
+
+	\wire{out\_blk} & $200 \cdot 2 \cdot 16$ & O & Output data to the IFFT. Width of
+	numbers is 16 bits, processing both Q and I. \\
+
+	\wire{out\_blk\_valid} & 1 & O & Indicates the output block
+	\wire{out\_blk} is valid and should be imediately copied (it will be
+	replaced by the next block on the next clock cycle).
+
+\end{tabularx}
+\caption{Sub-carrier to IFFT Buffer input/output description.}
+\end{table*}
 
 \subsection{IFFT}
 \label{sec:ifft}
@@ -713,45 +739,12 @@ See \autoref{tbl:ifft-io} for a description of the inputs and outputs.
 \begin{table*}
 	\begin{tabularx}{\linewidth}{c|c|c|X}
 		\label{tbl:ifft-io}
-		Name & Direction & Width & Description \\ \hline
-
-		\wire{ifft\_buf\_has\_block} & I & 1 & 
-		\\
-
-		\wire{ifft\_buf\_data} & I & 256 & Input bitstream. \\
-		
-		\wire{ifft\_data\_ready} & I & 1 & Indicates the input
-		bitstream \wire{cp\_in\_bits} is valid. \\
-		
-		\wire{reset} & I & \\
-		\wire{clock} & I & \\
-
-\end{tabularx}
-	\caption{IFFT Inputs and Outputs}
-	\end{table*}
-
-	\begin{description}
-		\item{Inputs:}
-		\begin{description}
-			\item[ifft\_buf\_has\_block] The count of the last
-				block present in the Sub to IFFT buffer
-				(\autoref{sec:ifft-buffer})
 			
-			\item[ifft\_buf\_data{[200][2][??ndepth]}] access
-				to the data at the present 'tail' location
-				in the buffer
-		\end{description}
-		
-		\item{Outputs:}
-		\begin{description}
-			\item[ifft\_data\_ready] high when the IFFT has
-				processed data.
-		\end{description}
 	Name & Width & Direction & Description \\ \hline
 
-	\wire{reset} & 1 & I & resets the device state. \\
+	\wire{reset} & 1 & I & Resets the device state. \\
 
-	\wire{clk}   & 1 & I & clocking. \\
+	\wire{clk}   & 1 & I & Clocking. \\
 
 	\wire{in\_blk\_valid} & 1 & I & When high, indicates that the input block is
 	valid and should be processed. \\
@@ -778,37 +771,6 @@ See \autoref{tbl:ifft-io} for a description of the inputs and outputs.
 		\item[Estimated gates] 2000
 		\item[Estimated data bitstream delay] About 1050 clocks.
 	\end{description}
-	
-	Name & Width & Direction & Description \\ \hline
-
-	\wire{reset} & 1 & I & resets the device state. \\
-
-	\wire{clk}   & 1 & I & clocking. \\
-
-	\wire{in\_blk\_valid} & 1 & I & When high, indicates that the input block is
-	valid and should be processed. \\
-
-	\wire{in\_blk} & $200 \cdot 2 \cdot 16$ & I & Input data for the IFFT. Width of
-	numbers is 16 bits, processing both Q and I. \\
-
-	\wire{out\_blk} & $256 \cdot 2 \cdot 16$ & O & Output data after IFFT is preformed. Width of
-	numbers is 16 bits, processing both Q and I. \\
-
-	\wire{out\_blk\_valid} & 1 & O & Indicates the output block
-	\wire{out\_blk} is valid and should be imediately copied (it will be
-	replaced by the next block on the next clock cycle).
-
-\end{tabularx}
-\caption{IFFT input/output description.}
-\end{table*}
-
-\subsection{Cyclic Prefix}
-\label{sec:cyclic_prefix}
-\begin{description}
-	\item[Responsible person] John Huang
-	\item[Estimated gates] 2000
-	\item[Estimated data bitstream delay] About 1050 clocks.
-\end{description}
 
 	The Cyclic Prefix is used to act as protection from Intersymbol Interference 
 	by duplicating a certain number of symbols defined by the $CP_rate$.
@@ -877,13 +839,6 @@ See \autoref{tbl:ifft-io} for a description of the inputs and outputs.
 
 	\autoref{tbl:cp-io} lists the inputs and outputs to the cyclic
 	prefix unit.
-
-	Appends the last Tg items of the previous frame to the start of the
-	present frame.  Reads 256 by 2 16 bit items from the IFFT, appending Tg
-	items to the start of it. It also stores the last Tg items so that
-	they may be appended to the next frame from the IFFT.
-
-	\todo[inline]{Maximum Size needed?}
 
 \section{Testing Considerations}
 \section{Economic Analysis}

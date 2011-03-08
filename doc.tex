@@ -610,14 +610,15 @@ j_k = s*floor(m_{k}/s)+(m_{k}+N_{cbps}- \nonumber \\
 After the interleaving the first bit out of the interleaver would map to the
 MSB for the constellation mapping. 
 
-  \subsubsection{Testing and Verification}
+	\subsubsection{Testing and Verification}
+	The Interleaver operation can be verified by inputting a known block
+	of bits and observing the output. With the equations defined in the
+	IEEE 802.16 document, the appropriate Interleaver output can be
+	calculated and compared directly. 
   
-  The Interleaver operation can be verified by inputting a known block of bits
-  and observing the output. With the equations defined in the IEEE 802.16
-  document, the appropriate Interleaver output can be calculated and compared
-  directly. 
-  
-  \todo[inline]{Add example test inputs and outputs.}
+	\todo[inline]{Add example test inputs and outputs.}
+
+% CONSTELLATION MAPPING
 
 \subsection{Constellation Mapping}
 \label{sec:constellation}
@@ -661,7 +662,10 @@ Input is bit stream, output is (I,Q).
 
 \todo[inline]{Luke has some stuff to put here. He has had it for the last
 3 weeks. It is still not here}
-	
+
+
+% PILOT INSERTION.
+
 \subsection{Pilot Sub-carrier Insertion}
 \label{sec:pilot}
 \begin{description}
@@ -675,6 +679,9 @@ inserted at some points (fixed).
 
 \todo[inline]{Luke has some stuff to put here. He has had it for the last
 3 weeks. It is still not here}
+
+
+% IFFT INPUT BUFFER.
 
 \subsection{Sub-carrier to IFFT Buffer}
 \label{sec:ifft-buffer}
@@ -720,6 +727,10 @@ each.
 \end{tabularx}
 \caption{Sub-carrier to IFFT Buffer input/output description.}
 \end{table*}
+
+
+% IFFT
+
 
 \subsection{IFFT}
 \label{sec:ifft}
@@ -771,88 +782,91 @@ See \autoref{tbl:ifft-io} for a description of the inputs and outputs.
 \end{table*}
 
 
-	\subsection{Cyclic Prefix}
-	\label{sec:cyclic_prefix}
-	\begin{description}
-		\item[Responsible person] John Huang
-		\item[Estimated gates] 2000
-		\item[Estimated data bitstream delay] About 1050 clocks.
-	\end{description}
+% CYCLIC PREF X
+% WTF. i cant put a capital I there.
+
+\subsection{Cyclic Prefix}
+\label{sec:cyclic_prefix}
+\begin{description}
+	\item[Responsible person] John Huang
+	\item[Estimated gates] 2000
+	\item[Estimated data bitstream delay] About 1050 clocks.
+\end{description}
+
+The Cyclic Prefix is used to act as protection from Intersymbol Interference 
+by duplicating a certain number of symbols defined by the $CP_rate$.
+
+The Cyclic Prefix appends to the front of the symbol a copy of the last
+$256/CP_{rate}$ ($N_{IFFT}/CP_{rate}$) bits. OFDM PHY should allow for four
+(4) rates as defined by 2 bits in the PHY Mode ID field. 
+
+It reads 256 2 bit items from the IFFT into 2 256 blocks of memory.
+On output, the appropriate number of bits are read from the end of 
+memory by offset.
+
+At a rate of $1/4$, 64 bits would need to be read from the end and 
+at a rate of $1/32$, 8 bits would need to be read.
+
+The sample size would then increase from 256 bits to anywhere between
+264 to 320 bits.
+
+For our implementation, we will set the CP rate at $1/16$ which leads to
+a sample size of 272 bits.
+
+This process would take about about 512 clocks to read in the data to fill
+memory and about 528 clocks to write out. 
+
+The total time would include clocks to set and check valid lines and would
+total to about 1050 clocks. 
+
+\begin{table}
+\begin{tabulary}{\linewidth}{C|C}
+	\label{tbl:param-g-vals}
+	Value of \wire{param\_G} & Ratio of CP time to
+	``useful'' time. \\ \hline
+
+	0b00 & 1/4 \\
+	0b01 & 1/8 \\
+	0b10 & 1/16 \\
+	0b11 & 1/32 \\
+
+\end{tabulary}
+\caption{Values of OFDM parameter G as presented on
+\wire{param\_G}}
+\end{table}
+
+\begin{table*}
+\begin{tabularx}{\linewidth}{c|c|c|X}
+	\label{tbl:cp-io}
+	Name & Direction & Width & Description \\ \hline
+
+	\wire{param\_G} & I & 2 & The meanings of valid values
+	are listed in \autoref{tbl:param-g-vals}. Indicates the
+	fraction of CP time to ``useful'' time.
+	\\
+
+	\wire{cp\_in\_bits} & I & 1 & Input bitstream. \\
 	
-	The Cyclic Prefix is used to act as protection from Intersymbol Interference 
-	by duplicating a certain number of symbols defined by the $CP_rate$.
-	
-	The Cyclic Prefix appends to the front of the symbol a copy of the last
- 	$256/CP_{rate}$ ($N_{IFFT}/CP_{rate}$) bits. OFDM PHY should allow for four
-	(4) rates as defined by 2 bits in the PHY Mode ID field. 
-	
-	It reads 256 2 bit items from the IFFT into 2 256 blocks of memory.
-	On output, the appropriate number of bits are read from the end of 
-	memory by offset.
-	
-	At a rate of $1/4$, 64 bits would need to be read from the end and 
-	at a rate of $1/32$, 8 bits would need to be read.
-	
-	The sample size would then increase from 256 bits to anywhere between
-	264 to 320 bits.
-	
-	For our implementation, we will set the CP rate at $1/16$ which leads to
-	a sample size of 272 bits.
-	
-	This process would take about about 512 clocks to read in the data to fill
-	memory and about 528 clocks to write out. 
+	\wire{cp\_in\_valid} & I & 1 & Indicates the input
+	bitstream \wire{cp\_in\_bits} is valid. \\
 
-	The total time would include clocks to set and check valid lines and would
-	total to about 1050 clocks. 
-	
-	\begin{table}
-	\begin{tabulary}{\linewidth}{C|C}
-		\label{tbl:param-g-vals}
-		Value of \wire{param\_G} & Ratio of CP time to
-		``useful'' time. \\ \hline
+	\wire{cp\_out\_bits} & O & 1 & Output bitstream. \\
 
-		0b00 & 1/4 \\
-		0b01 & 1/8 \\
-		0b10 & 1/16 \\
-		0b11 & 1/32 \\
+	\wire{cp\_out\_valid} & O & 1 & Indicates the output
+	bitstream \wire{cp\_out\_bits} is valid.
+\end{tabularx}
+\caption{Cyclic Prefix Inputs and Outputs}
+\end{table*}
 
-	\end{tabulary}
-	\caption{Values of OFDM parameter G as presented on
-	\wire{param\_G}}
-	\end{table}
+\autoref{tbl:cp-io} lists the inputs and outputs to the cyclic
+prefix unit.
 
-	\begin{table*}
-	\begin{tabularx}{\linewidth}{c|c|c|X}
-		\label{tbl:cp-io}
-		Name & Direction & Width & Description \\ \hline
+Appends the last Tg items of the previous frame to the start of the
+present frame.  Reads 256 by 2 16 bit items from the IFFT, appending Tg
+items to the start of it. It also stores the last Tg items so that
+they may be appended to the next frame from the IFFT.
 
-		\wire{param\_G} & I & 2 & The meanings of valid values
-		are listed in \autoref{tbl:param-g-vals}. Indicates the
-		fraction of CP time to ``useful'' time.
-		\\
-
-		\wire{cp\_in\_bits} & I & 1 & Input bitstream. \\
-		
-		\wire{cp\_in\_valid} & I & 1 & Indicates the input
-		bitstream \wire{cp\_in\_bits} is valid. \\
-
-		\wire{cp\_out\_bits} & O & 1 & Output bitstream. \\
-
-		\wire{cp\_out\_valid} & O & 1 & Indicates the output
-		bitstream \wire{cp\_out\_bits} is valid.
-	\end{tabularx}
-	\caption{Cyclic Prefix Inputs and Outputs}
-	\end{table*}
-
-	\autoref{tbl:cp-io} lists the inputs and outputs to the cyclic
-	prefix unit.
-
-	Appends the last Tg items of the previous frame to the start of the
-	present frame.  Reads 256 by 2 16 bit items from the IFFT, appending Tg
-	items to the start of it. It also stores the last Tg items so that
-	they may be appended to the next frame from the IFFT.
-
-	\todo[inline]{Maximum Size needed?}
+\todo[inline]{Maximum Size needed?}
 
 \section{Testing Considerations}
 \section{Economic Analysis}
@@ -889,11 +903,9 @@ See \autoref{tbl:ifft-io} for a description of the inputs and outputs.
   
   Input capacitance over recommended operating conditions : 10 pF
 	%Input capacitance per input pin?
-  \begin{center}
-  \begin{equation}
+  \begin{center}\begin{equation}
   P = C * V^2 * f = 10 pF * (4.4 V)^2 * 4.083 MHz = 0.18 mW
-  \end{equation}
-  \end{center}
+  \end{equation}\end{center}
   \todo[inline]{Is this correct?}
   
 	%\subsection{Pin outs}

@@ -293,7 +293,7 @@ All values but 1 (QPSK-1/2) are unsupported by this device.}
 	\wire{subchan\_data} & 6 & O & See \autoref{tbl:frame-io}.
 	\autoref{tbl:subchan} describes valid values. Per burst. \\
 
-	\wire{rate\_id} & 4 & O & See \autoref{tbl:rate-id}. Per burst. \\
+	\wire{rate\_id} & 3 & O & See \autoref{tbl:rate-id}. Per burst. \\
 
 \end{tabularx} \caption{Frame Handler interface description} \end{table*}
 
@@ -356,9 +356,9 @@ change.
 	\wire{subchan\_ct} & 4 & O & Indicates the number of subchannels in
 	use. Calculated from \wire{subchan\_data\_in}. \\
 
-	\wire{rate\_id\_in} & 4 & I  & See \autoref{tbl:rate-id}. \\
+	\wire{rate\_id\_in} & 3 & I  & See \autoref{tbl:rate-id}. \\
 
-	\wire{rate\_id\_out} & 4 & O & Pass-through pair of
+	\wire{rate\_id\_out} & 3 & O & Pass-through pair of
 	\wire{rate\_id\_in}. \\
 
 \end{tabularx}
@@ -464,7 +464,7 @@ See \autoref{tbl:fec-io} for a listing of the inputs and outputs.
 	\wire{out\_valid} & 1 & O & Indicates the output bitstream
 	is valid (the data on it should be read and processed) \\
 
-	\wire{rate\_id} & 4 & I & The type of modulation used. See
+	\wire{rate\_id} & 3 & I & The type of modulation used. See
 	\autoref{tbl:rate-id} for possible values.
 
 \end{tabularx} \caption{FEC interface description} \end{table*}

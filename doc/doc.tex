@@ -705,10 +705,10 @@ each.
 
 	\wire{clk}   & 1 & I & Clocking. \\
 
+	\wire{in\_blk} & $??$ & I & Input data from the Pilot Insertion. \\
+
 	\wire{in\_blk\_valid} & 1 & I & When high, indicates that the input block is
 	valid and should be processed. \\
-
-	\wire{in\_blk} & $??$ & I & Input data from the Pilot Insertion. \\
 
 	\wire{out\_blk} & $200 \cdot 2 \cdot 16$ & O & Output data to the IFFT. Width of
 	numbers is 16 bits, processing both Q and I. \\

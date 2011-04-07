@@ -9,7 +9,7 @@ module burst_handler(
 	input [5:0] subchan_data_in,
 	output [5:0] subchan_data_out,
 	output [3:0] subchan_ct,
-	input [3:0] rate_id_in,
-	output [3:0] rate_id_out);
+	input [2:0] rate_id_in,
+	output [2:0] rate_id_out);
 
 endmodule

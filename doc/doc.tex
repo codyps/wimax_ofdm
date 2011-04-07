@@ -17,8 +17,8 @@
 
 \newcommand{\wire}{\texttt}
 
-\title{802.16-2009 OFDM PHY - Transmitter Portion}
-\author{Jonathan Huang \and Cody Schafer \and Luke Steepy}
+\title{802.16-2009 OFDM PHY - Digital Realm Transmitter Implimentation}
+\author{Cody Schafer}
 \date{\today}
 \begin{document}
 \maketitle
@@ -225,7 +225,6 @@ This is done so that outputted data does not change while being read.
 
 \subsection{Frame Handler}
 \begin{description}
-	\item[Responsible person] Cody Schafer
 	\item[Estimated gates] 2000
 	\item[Estimated bitstream delay] 2 clock cycles for a bit to be
 		processed 
@@ -302,7 +301,6 @@ All values but 1 (QPSK-1/2) are unsupported by this device.}
 
 \subsection{Burst Handler} \label{sec:burst}
 \begin{description}
-	\item[Responsible person] Cody Schafer 
 	\item[Estimated gates] 2000 
 	\item[Estimated data bitstream delay] 2 clock cycles for a bit to be
 		processed, could be cut to zero by bypassing.
@@ -372,7 +370,6 @@ change.
 \subsection{Randomizer}
 \label{sec:rand}
 \begin{description}
-	\item[Responsible person] Cody Schafer 
 	\item[Estimated gates] 1000
 	\item[Estimated data bitstream delay] 8 clock cycles for a bit to be
 		processed, could be cut to zero by bypassing.
@@ -403,7 +400,7 @@ randomizer.
 
 	\wire{out\_bits} & 1  & O & Output bitstream. \\
 	
-	\wire{out\_bits} & 1  & O & Indicates the output bitstream
+	\wire{out\_valid} & 1  & O & Indicates the output bitstream
 	is valid. \\
 
 	\wire{iv}        & 15 & I & Initialization data for the
@@ -421,7 +418,6 @@ randomizer.
 \subsection{Forward Error Correction}
 \label{sec:fec}
 \begin{description}
-	\item[Responsible person] Cody Schafer 
 	\item[Estimated gates] 2000
 	\item[Estimated data bitstream delay] UNKNOWN -- FIXME.
 \end{description}
@@ -478,7 +474,6 @@ See \autoref{tbl:fec-io} for a listing of the inputs and outputs.
 \subsection{FEC to Interleaver buffer}
 \label{sec:fec_buffer}
 \begin{description}
-	\item[Responsible person] John 
 	\item[Estimated gates] 1000
 	\item[Estimated data bitstream delay] UNKNOWN -- FIXME.
 \end{description}
@@ -520,7 +515,6 @@ blocks.
 \subsection{Interleaver}
 \label{sec:interleaver}
 \begin{description}
-	\item[Responsible person] John
 	\item[Estimated gates] 2000
 	\item[Estimated data bitstream delay] About 392 clocks.
 \end{description}
@@ -686,7 +680,6 @@ inserted at some points (fixed).
 \subsection{Sub-carrier to IFFT Buffer}
 \label{sec:ifft-buffer}
 \begin{description}
-	\item[Responsible person] John Huang
 	\item[Estimated gates] 2000
 	\item[Estimated data bitstream delay] UNKNOWN -- FIXME.
 \end{description}
@@ -735,7 +728,6 @@ each.
 \subsection{IFFT}
 \label{sec:ifft}
 \begin{description}
-	\item[Responsible person] John Huang
 	\item[Estimated gates] 10,000
 	\item[Estimated data bitstream delay] UNKNOWN -- FIXME.
 \end{description}
@@ -788,7 +780,6 @@ See \autoref{tbl:ifft-io} for a description of the inputs and outputs.
 \subsection{Cyclic Prefix}
 \label{sec:cyclic_prefix}
 \begin{description}
-	\item[Responsible person] John Huang
 	\item[Estimated gates] 2000
 	\item[Estimated data bitstream delay] About 1050 clocks.
 \end{description}

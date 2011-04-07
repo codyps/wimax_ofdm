@@ -24,7 +24,7 @@ clean :
 %.pdf : %.dvi
 	dvipdf $< $@
 
-%.dvi : %.tex %.bib t_block.eps
+%.dvi : %.tex %.bib t_block.eps rand.eps
 	latex -interaction=nonstopmode $*
 	bibtex $*
 	latex -interaction=nonstopmode $*

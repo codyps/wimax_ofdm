@@ -5,8 +5,20 @@ module interleaver
 	input in_blk_valid,
 	input [2:0] rate_id,
 	input [2:0] subchan_ct,
-	output [blk_size-1:0] out_blk,
-	output out_blk_valid);
+	output reg [blk_size-1:0] out_blk,
+	output reg out_blk_valid);
+
+	always @ (reset) if (reset == 0) begin
+		
+	end
+
+	always @ (posedge clk) begin
+
+	end
+
+	always @ (negedge clk) begin
+
+	end
 
 endmodule
 

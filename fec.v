@@ -1,3 +1,6 @@
+/* FEC is composed of 2 portions, reed solomon and convolution code,
+* applied in that order. */
+
 module fec(
 	input reset, clk
 	input in_bits,
@@ -9,7 +12,7 @@ module fec(
 	);
 
 	always @(reset) begin
-
+		
 	end
 
 	always @ (posedge clk) begin
@@ -19,5 +22,18 @@ module fec(
 	always @ (negedge clk) begin
 
 	end
+
+endmodule
+
+/* convolution code */
+module cc_enc(
+	/* ?? */
+	);
+
+endmodule
+
+/* reed solomon encoding */
+module rs_enc(
+	);
 
 endmodule

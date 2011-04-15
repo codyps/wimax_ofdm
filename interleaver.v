@@ -24,7 +24,8 @@ module interleaver (input reset, clk,
 endmodule
 
 module ir_base
-	#(parameter blk_size = 384)
+	#(parameter blk_size = 384,
+	  parameter subch_ct = 16)
 	(input reset, clk,
 	input [blk_size-1:0] in_blk,
 	input in_blk_valid,
@@ -49,24 +50,21 @@ module ir_base
 	reg valid_r;
 	wire [blk_size-1:0] m;
 
-	generate
-		genvar k;
-		for (k = 0; k < blk_size; k = k + 1) begin
-			assign m[k] = blk_size / 12 * (k % 12) + floor(k / 12);
-		end
-	endgenerate
 
+	/* FIXME: Only works for QPSK and BPSK, need to use Ncpc? */
 	generate
 		genvar k;
-		for (k = 0; k < blk_size; k = k + 1) begin
-			always @ (negedge clk) if (valid_r) begin
-				out_blk[k] <= floor(m[k] / s) + (m[k] + blk_size - floor( 12 * m[k] / blk_size) ) % s;
-			end
+		for (k = 0; k < blk_size; k = k + 1) begin: g1
+			always @ (negedge clk) if (valid_r)
+			out_blk[k] <= inr[(k % 12) * blk_size / 12 + floor(k / 12)];	
 		end
 	endgenerate
 
 	always @ (posedge clk or posedge reset) begin
-		if (reset == 0) begin
+		if (reset) begin
+			valid_r <= 0;
+			inr <= x;
+		end else begin
 			if (in_blk_valid) begin
 				valid_r <= 1;
 				inr <= in_blk;
@@ -74,14 +72,11 @@ module ir_base
 				valid_r <= 0;
 				inr <= X;
 			end
-		end else begin
-			valid_r <= 0;
-			inr <= 0;
 		end
 	end
 
 	always @ (negedge clk) begin
-		if (reset == 0) begin
+		if (~reset) begin
 			out_blk_valid <= valid_r;
 		end
 	end

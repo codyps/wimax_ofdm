@@ -15,11 +15,39 @@ module interleaver (input reset, clk,
 	output [blk_size-1:0] out_blk,
 	output out_blk_valid);
 
+	localparam mod_ct = 4;
+	localparam sub_ct = 5;
+	localparam blk_szs [mod_ct-1:0][sub_ct-1:0] = {
+		}
 
-	ir_base r[4:0](reset, clk, in_blk, in_blk_valid, out_blk,
-		out_blk_valid);
+	/* presently, only QPSK is supported */
+	wire o_valid [mod_ct-1:0][sub_ct-1:0];
+	wire [blk_size-1:0] o_blk [mod_ct-1:0][sub_ct-1:0];
 
-	
+	generate
+	genvar mod_n, sub_n;
+	for (mod_n = 0; mod_n < mod_ct; mod_n = mod_n + 1) begin : ir_mod
+	for (sub_n = 0; sub_n < sub_ct; sub_n = sub_n + 1) begin : ir_sub
+			ir_base r
+				#(blk_size = blk_szs[mod_n][sub_n],
+				  subchan_ct = sub_n)
+				(reset, clk, in_blk, in_blk_valid,
+				o_blk[mod_n][sub_n],
+				o_valid[mod_n][sub_n]);
+	end
+	endgenerate
+
+endmodule
+
+
+/* Max is set to QPSK's largest */
+module blk_conv #(parameter in_blk_size = 1,
+		  parameter max_out_blk_size = 384)
+	(	input reset, clk,
+		input in_valid,
+		input [in_blk_size-1:0] in_data,
+		input [16:0] out_blk_size,
+		output [max_out_blk_size-1:0] out_blk);
 
 endmodule
 

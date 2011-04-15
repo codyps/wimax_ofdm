@@ -1,9 +1,9 @@
 module randomizer(
-	input reset, clk
+	input reset, clk,
 	input in_bits,
 	input in_valid,
 	output reg out_bits,
-	output reg out_valid
+	output reg out_valid,
 	input [14:0] rand_iv,
 	input reload);
 
@@ -26,21 +26,21 @@ module randomizer(
 
 	always @ (posedge clk) begin
 		if (reload) begin
-			vect = rand_iv;
+			vect <= rand_iv;
 		end else if (in_valid) begin
-			nout = in_bits ^ (vect[13] ^ vect[14]);
-			nvalid = 1;
-			vect[1:14] = vect[0:15];
-			vect[0] = vect[13] ^ vect[14];
+			nout <= in_bits ^ (vect[13] ^ vect[14]);
+			nvalid <= 1;
+			vect[1 +: 14] <= vect[0 +: 14];
+			vect[0] <= vect[13] ^ vect[14];
 		end else begin
 			nvalid = 0;
-			nout = x;
+			nout = 0;
 		end
 	end
 
 	always @ (negedge clk) begin
-		out_valid = nvalid;
-		out_bits = nout;
+		out_valid <= nvalid;
+		out_bits <= nout;
 	end
 
 endmodule
@@ -48,14 +48,13 @@ endmodule
 /* Processes 8 (or some variation between 1 and 14 bits) at a time */
 module rand8
 	#(parameter bits_pclk = 8)(
-	input reset, clk
+	input reset, clk,
 	input [bits_pclk-1:0] in_bits,
 	input in_valid,
 	output reg [bits_pclk-1:0] out_bits,
-	output reg out_valid
+	output reg out_valid,
 	input [14:0] rand_iv,
 	input reload);
-	);
 
 	reg [14:0] vect;
 	reg [bits_pclk-1:0] nvect;

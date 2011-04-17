@@ -1,5 +1,5 @@
 `include "randomizer.v"
-`include "test/vect2.v"
+`include "test/vect1.v"
 
 module rand_test();
 
@@ -54,12 +54,13 @@ module rand_test();
 		rand_iv = 0;
 		ot = 0;
 
+
 		#1
 		reset = 1;
 		#1
 
 		/* device is now reset, iv = 0 */
-		set_vect(gen_iv(vect.bsid, vect.uiuc,
+		set_vect(gen_rand_iv(vect.bsid, vect.uiuc,
 			vect.frame_num));
 
 		#1

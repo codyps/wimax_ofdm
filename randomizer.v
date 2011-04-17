@@ -16,25 +16,25 @@ module randomizer(
 	 * IEEE Std 802.16d on FPGA"
 	 */
 
-	always @(reset) begin
-		nout = 0;
-		nvalid = 0;
-		out_bits = 0;
-		out_valid = 0;
-		vect = rand_iv;
-	end
-
-	always @ (posedge clk) begin
-		if (reload) begin
-			vect <= rand_iv;
-		end else if (in_valid) begin
-			nout <= in_bits ^ (vect[13] ^ vect[14]);
-			nvalid <= 1;
-			vect[1 +: 14] <= vect[0 +: 14];
-			vect[0] <= vect[13] ^ vect[14];
-		end else begin
-			nvalid = 0;
+	always @ (posedge clk or posedge clk) begin
+		if (reset) begin
 			nout = 0;
+			nvalid = 0;
+			out_bits = 0;
+			out_valid = 0;
+			vect = 0;
+		end else begin
+			if (reload) begin
+				vect <= rand_iv;
+			end else if (in_valid) begin
+				nout <= in_bits ^ (vect[13] ^ vect[14]);
+				nvalid <= 1;
+				vect[1 +: 14] <= vect[0 +: 14];
+				vect[0] <= vect[13] ^ vect[14];
+			end else begin
+				nvalid = 0;
+				nout = 0;
+			end
 		end
 	end
 
@@ -46,7 +46,7 @@ module randomizer(
 endmodule
 
 /* Processes 8 (or some variation between 1 and 14 bits) at a time */
-module rand8
+module rand_parm
 	#(parameter bits_pclk = 8)(
 	input reset, clk,
 	input [bits_pclk-1:0] in_bits,
@@ -60,31 +60,27 @@ module rand8
 	reg [bits_pclk-1:0] nvect;
 	reg [bits_pclk-1:0]  nout;
 	reg nvalid;
-	
-	always @(reset) begin
-		nout = 0;
-		nvalid = 0;
-		out_bits = 0;
-		out_valid = 0;
-		vect = rand_iv;
-	end
 
-	always @ (posedge clk) begin
-		if (reload) begin
-			vect = rand_iv;
-		end else if (in_valid) begin
-			nvect[bits_pclk-1:0] =
-				vect[13-:bits_pclk] ^ vect[14-:bits_pclk];
-			nout[bits_pclk-1:0]  =
-				nvect[bits_pclk-1:0] ^ nvect[bits_pclk-1:0];
-			nvalid = 1;
-		end else begin
-			nvalid = 0;
+	always @ (posedge clk or posedge reset) begin
+		if (reset) begin
 			nout = 0;
-
-			/* higher bits shift up */
-			vect[14-:bits_pclk] =  vect[bits_pclk-1:0];
-			vect[bits_pclk-1:0] = nvect[bits_pclk-1:0];
+			nvalid = 0;
+			out_bits = 0;
+			out_valid = 0;
+			vect = 0;
+		end else begin
+			if (reload) begin
+				vect <= rand_iv;
+			end else if (in_valid) begin
+				nvect[bits_pclk-1:0] =
+					vect[13-:bits_pclk] ^ vect[14-:bits_pclk];
+				nout[bits_pclk-1:0]  =
+					nvect[bits_pclk-1:0] ^ nvect[bits_pclk-1:0];
+				nvalid = 1;
+			end else begin
+				nvalid = 0;
+				nout = 0;
+			end
 		end
 	end
 

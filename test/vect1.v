@@ -1,6 +1,6 @@
-`include "../common_widths.v"
+`include "common_widths.v"
 
-module vect_mod();
+module vect();
 /* Page 633
  * Modulation mode: QPSK, rate 3/4, Symbol Number within burst: 1, UIUC: 7,
  * BSID: 1, Frame Number 1 (decimal values)

@@ -38,19 +38,7 @@ module rand_test();
 		end
 	endtask
 
-	function [0:14] gen_iv;
-		input [`BSID_SZ-1:0] bsid;
-		input [`UIUC_SZ-1:0] uiuc;
-		input [`FRAMEN_SZ-1:0] fnum;
-
-		gen_iv = {
-			fnum[3], fnum[2], fnum[1], fnum[0],
-			1'b1,
-			uiuc[3], uiuc[2], uiuc[1], uiuc[0],
-			2'b11,
-			bsid[3], bsid[2], bsid[1], bsid[0]
-			};
-	endfunction
+	`include "func/gen_rand_iv.v"
 
 	integer i, o;
 	reg ot;

@@ -1,7 +1,7 @@
 
 RM = rm -f
 
-TESTS    = randomizer.vvp
+TESTS    = randomizer.vvp bitorder.vvp
 TEST_OBJ = $(addprefix test/, $(TESTS))
 TEST_RUN = $(TEST_OBJ:.vvp=.test)
 

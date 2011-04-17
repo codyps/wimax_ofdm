@@ -1,14 +1,24 @@
 
 RM = rm -f
 
-TESTS    = randomizer
+TESTS    = randomizer.vvp
 TEST_OBJ = $(addprefix test/, $(TESTS))
+TEST_RUN = $(TEST_OBJ:.vvp=.test)
 
-.PHONY: test
-test: $(TEST_OBJ)
+.PHONY: all
+all: test
 
+.PHONY: test_bin
+test_bin: $(TEST_OBJ)
 
-% : %.v
+.PHONY: .test
+test: $(TEST_RUN)
+
+.PHONY: %.test
+%.test : %.vvp
+	./$<
+
+%.vvp : %.v
 	iverilog -I . -o $@ $<
 
 .PHONY: clean

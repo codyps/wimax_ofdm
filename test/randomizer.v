@@ -44,11 +44,12 @@ module rand_test();
 		input [`FRAMEN_SZ-1:0] fnum;
 
 		gen_iv = {
-			fnum[0 +: `FRAMEN_SZ-1],
+			fnum[3], fnum[2], fnum[1], fnum[0],
 			1'b1,
-			uiuc[0 +: `UIUC_SZ-1],
+			uiuc[3], uiuc[2], uiuc[1], uiuc[0],
 			2'b11,
-			bsid[0 +: `BSID_SZ-1] };
+			bsid[3], bsid[2], bsid[1], bsid[0]
+			};
 	endfunction
 
 	integer i, o;

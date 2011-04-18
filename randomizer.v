@@ -13,34 +13,33 @@ module randomizer(
 
 	/* XXX: EFFICIENCY: there should be a way to do this 8 bits at a time,
 	 * as mentioned in "OFDM Baseband Transmitter Implementation Compliant
-	 * IEEE Std 802.16d on FPGA"
-	 */
+	 * IEEE Std 802.16d on FPGA" */
 
-	always @ (posedge clk or posedge clk) begin
+	always @ (posedge clk or posedge reset) begin
 		if (reset) begin
-			nout = 0;
-			nvalid = 0;
-			out_bits = 0;
-			out_valid = 0;
-			vect = 0;
+			nout   <= 0;
+			nvalid <= 0;
+			vect   <= 0;
 		end else begin
 			if (reload) begin
-				vect <= rand_iv;
+				nvalid <= 0;
+				nout   <= 0;
+				vect   <= rand_iv;
 			end else if (in_valid) begin
-				nout <= in_bits ^ (vect[13] ^ vect[14]);
 				nvalid <= 1;
-				vect[1 +: 14] <= vect[0 +: 14];
-				vect[0] <= vect[13] ^ vect[14];
+				nout   <= in_bits ^ (vect[13] ^ vect[14]);
+				vect   <= { vect[13:0], vect[13] ^ vect[14] };
 			end else begin
-				nvalid = 0;
-				nout = 0;
+				nvalid <= 0;
+				nout   <= 0;
+				vect   <= vect;
 			end
 		end
 	end
 
 	always @ (negedge clk) begin
 		out_valid <= nvalid;
-		out_bits <= nout;
+		out_bits  <= nout;
 	end
 
 endmodule
@@ -63,23 +62,24 @@ module rand_parm
 
 	always @ (posedge clk or posedge reset) begin
 		if (reset) begin
-			nout = 0;
-			nvalid = 0;
-			out_bits = 0;
-			out_valid = 0;
-			vect = 0;
+			nvalid <= 0;
+			nout   <= 0;
+			vect   <= 0;
 		end else begin
 			if (reload) begin
-				vect <= rand_iv;
+				nvalid <= 0;
+				nout   <= 0;
+				vect   <= rand_iv;
 			end else if (in_valid) begin
+				nvalid <= 1;
 				nvect[bits_pclk-1:0] =
 					vect[13-:bits_pclk] ^ vect[14-:bits_pclk];
 				nout[bits_pclk-1:0]  =
 					nvect[bits_pclk-1:0] ^ nvect[bits_pclk-1:0];
-				nvalid = 1;
 			end else begin
-				nvalid = 0;
-				nout = 0;
+				nvalid <= 0;
+				nout   <= 0;
+				vect   <= vect;
 			end
 		end
 	end

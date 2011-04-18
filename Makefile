@@ -19,7 +19,7 @@ test: $(TEST_RUN)
 	./$<
 
 %.vvp : %.v
-	iverilog -I . -o $@ $<
+	iverilog -Wall -I . -o $@ $<
 
 .PHONY: clean
 clean:

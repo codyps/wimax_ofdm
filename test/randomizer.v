@@ -23,7 +23,6 @@ module rand_test();
 		input [14:0] new_iv;
 
 		/* insert new_iv into randomizer */
-
 		begin
 			clk = 1;
 			#1

@@ -12,9 +12,9 @@ module rand_test();
 
 	reg [14:0] rand_iv;
 
-	reg odata[vect.input_data_sz-1:0];
+	reg odata[0:vect.input_data_sz-1];
 
-	randomizer x1(
+	rand_parm #(w) x1(
 		reset, clk,
 		in_bits,
 		in_valid,
@@ -82,7 +82,7 @@ module rand_test();
 			/* read on the rising edge */
 
 			if (out_valid) begin
-				odata[o +: w] = out_bits;
+				//odata[o +: w] = out_bits;
 				$display("r: %b => %b %b %b", vect.input_data[o +: w], out_bits, vect.randomized_data[o +: w], x1.vect);
 				o = o + w;
 			end else begin
@@ -97,7 +97,7 @@ module rand_test();
 			clk = 0;
 			#1;
 			if (out_valid) begin
-				odata[o +: w] = out_bits;
+				//odata[o +: w] = out_bits;
 				$display("r: %b => %b %b %b", vect.input_data[o +: w], out_bits, vect.randomized_data[o +: w], x1.vect);
 				o = o + w;
 			end

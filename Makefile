@@ -6,9 +6,6 @@ TEST_OBJ = $(addprefix test/, $(TESTS))
 TEST_RUN = $(TEST_OBJ:.vvp=.test)
 
 
-test/rand.vvp: rand.v func/gen_rand_iv.v
-
-test/cc.vvp: fec.v
 
 
 
@@ -25,9 +22,13 @@ test: $(TEST_RUN)
 	iverilog -Wall -I . -o $@ $<
 
 .PHONY: %.test
-%.test : %.vvp
+%.test : %.vvp $(wildcard test_vect/*.v)
 	./$<
 
 .PHONY: clean
 clean:
 	$(RM) $(TEST_OBJ)
+
+test/rand.vvp: rand.v func/gen_rand_iv.v
+
+test/cc.vvp: fec.v

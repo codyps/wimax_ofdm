@@ -1,5 +1,5 @@
-`include "randomizer.v"
-`include "test/vect2.v"
+`include "rand.v"
+`include "test/vect/2.v"
 
 module rand_test();
 

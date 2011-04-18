@@ -2,7 +2,7 @@
 * applied in that order. */
 
 module fec(
-	input reset, clk
+	input reset, clk,
 	input in_bits,
 	input in_valid,
 	output out_bits,
@@ -11,12 +11,16 @@ module fec(
 	/* FIXME: I think this needs more inputs */
 	);
 
-	always @ (posedge clk or posedge reset) begin
-		
+	always @(posedge clk or posedge reset) begin
+		if (reset) begin
+		end else begin
+		end
 	end
 
-	always @ (negedge clk or posedge reset) begin
-
+	always @(negedge clk or posedge reset) begin
+		if (reset) begin
+		end else begin
+		end
 	end
 
 endmodule
@@ -84,6 +88,7 @@ endmodule
 
 /* reed solomon encoding */
 module rs_enc(
+	input reset, clk
 	);
 
 	/* The Reed-Solomon encoding shall be derived from a systematic RS (N
@@ -104,14 +109,16 @@ module rs_enc(
 	 * multiplication: multiplication modulo the generator polynomial
 	 */
 
-	always @ (reset) if (reset == 0) begin
+	always @(posedge clk or posedge reset) begin
+		if (reset) begin
+		end else begin
+		end
 	end
 
-	always @ (posedge clk) begin
+	always @(negedge clk or posedge reset) begin
+		if (reset) begin
+		end else begin
+		end
 	end
-
-	always @ (negedge clk) begin
-	end
-
 
 endmodule

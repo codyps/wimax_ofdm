@@ -3,7 +3,7 @@
 
 module rand_test();
 
-	localparam w = 1;
+	localparam w = 8;
 
 	reg reset, clk, in_valid, reload;
 	reg  [w-1:0] in_bits;

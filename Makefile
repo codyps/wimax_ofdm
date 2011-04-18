@@ -5,6 +5,11 @@ TESTS    = bitorder.vvp rand_parm.vvp
 TEST_OBJ = $(addprefix test/, $(TESTS))
 TEST_RUN = $(TEST_OBJ:.vvp=.test)
 
+
+test/rand_parm.vvp: randomizer.v func/gen_rand_iv.v
+
+
+
 .PHONY: all
 all: test_bin
 

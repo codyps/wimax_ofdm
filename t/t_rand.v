@@ -1,5 +1,5 @@
 `include "rand.v"
-`include "test/vect/2.v"
+`include "t/vect/2.v"
 
 module rand_test();
 

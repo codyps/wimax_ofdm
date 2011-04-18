@@ -11,15 +11,11 @@ module fec(
 	/* FIXME: I think this needs more inputs */
 	);
 
-	always @(reset) begin
+	always @ (posedge clk or posedge reset) begin
 		
 	end
 
-	always @ (posedge clk) begin
-		
-	end
-
-	always @ (negedge clk) begin
+	always @ (negedge clk or posedge reset) begin
 
 	end
 
@@ -28,7 +24,7 @@ endmodule
 /* convolution code - this one is based on the Figure 202 of 802.16-2009,
  * labeled "1/2 rate". Seems to indicate 2 bit output per 1 bit input.
  */
-module cc_enc(
+module cc_base(
 	/* ?? */
 	input reset, clk,
 	input valid_in,
@@ -44,37 +40,46 @@ module cc_enc(
 	assign x = state[0] | state[1] | state[2] | state[5] | cur_in;
 	assign y = state[1] | state[2] | state[4] | state[5] | cur_in;
 
-	always @ (reset) if (reset == 0) begin
-		state <= 0;
-		in_progress <= 0;
-	end
+	/**
+	* This is a 1 bit width design which has similar concerns as the 1 bit
+	* reed solomon
+	*/
 
-	always @ (posedge clk) begin
-		if (valid_in) begin
-			in_progress <= 1;
-
-			/* shift */
-			state[5:1] <= state[4:0];
-			state[0] <= cur_in;
-		end else if (in_progress) begin
-			/* TODO: flush out remaining data, set in_progress = 1
-			 * when all needed data has escaped. Note that
-			 * in_progress is used on the negedge, so it needs to
-			 * be cleared after the data is shifted out, not just
-			 * read in. */
+	always @ (posedge clk or posedge reset) begin
+		if (reset) begin
+			state <= 0;
+			in_progress <= 0;
 		end else begin
-			/* XXX: do we need anything here? */		
+			if (valid_in) begin
+				in_progress <= 1;
+
+				/* shift */
+				state[5:0] <= { state[4:0], cur_in };
+			end else if (in_progress) begin
+				/* TODO: flush out remaining data, set
+				* in_progress = 1 when all needed data has
+				* escaped. Note that in_progress is used on
+				* the negedge, so it needs to be cleared after
+				* the data is shifted out, not just read in.
+				*/
+			end else begin
+				/* XXX: do we need anything here? */		
+			end
 		end
 	end
 
-	always @ (negedge clk) begin
-		if (in_progress) begin
-			z[0] <= x;
-			z[1] <= y;
-			valid_out <= 1;
+	always @ (negedge clk or posedge reset) begin
+		if (reset) begin
+			z <= 0;
+			valid_out <= 0;
+		end else begin
+			if (in_progress) begin
+				z[0] <= x;
+				z[1] <= y;
+				valid_out <= 1;
+			end
 		end
 	end
-
 endmodule
 
 /* reed solomon encoding */

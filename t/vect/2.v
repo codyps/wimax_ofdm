@@ -20,10 +20,11 @@ reg [0:input_data_sz-1] randomized_data = 'hD4_BA_A1_12_F2_74_96_30_27_D4;
 //reg [159:0] randomized_data = 'hD4_BA_A1_12_F2_74_96_30_27_D4_00_00;
 
 /* Convolutionally encoded data (Hex) */
-//reg convolution_encoded_data = 'hEE_C6_A1_CB_7E_04_73_6C_BC_61_95_D3_B7_DF_00;
+parameter cc_data_sz = input_data_sz + 5 * 8;
+reg [0:cc_data_sz-1] convolution_encoded_data = 'hEE_C6_A1_CB_7E_04_73_6C_BC_61_95_D3_B7_DF_00;
 
 /* Interleaved data (Hex) */
-//reg interleaved_data = 'hBC_EC_A1_F4_8A_3A_7A_4F_78_39_53_87_DF_2A_A2;
+reg [0:cc_data_sz-1] interleaved_data =         'hBC_EC_A1_F4_8A_3A_7A_4F_78_39_53_87_DF_2A_A2;
 
 /*
 Subcarrier mapping (frequency offset index: I value Q value)

@@ -22,7 +22,7 @@ reg [0:rs_data_sz-1] rs_encoded_data =       'h49_31_40_BF_D4_BA_A1_12_F2_74_96_
 parameter cc_data_sz = 3 * rs_data_sz / 4; // rs_data_sz + 8*8;
 reg [0:cc_data_sz-1] cc_encoded_data =       'h3A_5E_E7_AE_49_9E_6F_1C_6F_C1_28_BC_BD_AB_57_CD_BC_CD_E3_A7_92_CA_92_C2_4D_BC_8D_78_32_FB_BF_DF_23_ED_8A_94_16_27_A5_65_CF_7D_16_7A_45_B8_09_CC;
 
-//reg interleaved_data = 'h77_FA_4F_17_4E_3E_E6_70_E8_CD_3F_76_90_C4_2C_DB_F9_B7_FB_43_6C_F1_9A_BD_ED_0A_1C_D8_1B_EC_9B_30_15_BA_DA_31_F5_50_49_7D_56_ED_B4_88_CC_72_FC_5C;
+reg [0:cc_data_sz-1] inteinterleaved_data =  'h77_FA_4F_17_4E_3E_E6_70_E8_CD_3F_76_90_C4_2C_DB_F9_B7_FB_43_6C_F1_9A_BD_ED_0A_1C_D8_1B_EC_9B_30_15_BA_DA_31_F5_50_49_7D_56_ED_B4_88_CC_72_FC_5C;
 
 /*
 Subcarrier mapping (frequency offset index: I value Q value)

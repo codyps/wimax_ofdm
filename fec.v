@@ -1,5 +1,5 @@
 /* FEC is composed of 2 portions, reed solomon and convolution code,
-* applied in that order. */
+ * applied in that order. On non-subchannelized data, RS is bypassed */
 
 module fec(
 	input reset, clk,
@@ -7,8 +7,10 @@ module fec(
 	input in_valid,
 	output out_bits,
 	output out_valid,
-	input [3:0] rate_id
-	/* FIXME: I think this needs more inputs */
+
+	/* config */
+	input enable_rs,
+	input [1:0] cc_rate
 	);
 
 	always @(posedge clk or posedge reset) begin
@@ -84,6 +86,66 @@ module cc_base(
 			end
 		end
 	end
+endmodule
+
+/* Buffers the output of cc_base into something the next stage in the pipeline
+ * wants. 
+ */
+module cc_wrap
+	#(
+	parameter in_width  = 1,
+	parameter out_width = 1,
+  	parameter ncbps     = 768,
+	parameter buf_sz    = ncbps / 2,
+	parameter baddr_sz  = $clog2(buf_sz),
+	parameter cc_base_o_width = 2
+	)(
+	input reset, clk,
+	input [in_width-1:0] cur_in,
+	input valid_in,
+	output reg [out_width-1:0] z,
+	output reg valid_out
+	);
+
+	/* cc_base connections */
+	wire [cc_base_o_width-1:0] base_out;
+	wire base_valid_out;
+
+	/* buffering/fifo */
+	reg [buf_sz-1:0] dbuf
+	reg [baddr_sz-1:0] i_loc;
+	reg [baddr_sz-1:0] o_loc;
+
+	/* "next", to be assigned to outputs on negedge. */
+	reg [out_width-1:0] nout;
+	reg nvalid;
+
+	cc_base cc(reset, clk, valid_in, cur_in, base_out, base_valid_out);
+
+	always @(posedge clk or posedge reset) begin
+		if (reset) begin
+			i_loc <= 0;
+			o_loc <= 0;
+		end else begin
+			if (base_valid_out) begin
+				dbuf[i_loc +: cc_base_o_width] <= base_out;
+				i_loc            <= i_loc + cc_base_o_width;
+			end else begin
+
+			end
+		end
+	end
+
+	always @(negedge clk or posedge reset) begin
+		if (reset) begin
+			z         <= 0;
+			valid_out <= 0;
+		end else begin
+			z         <= nout;
+			valid_out <= nvalid;
+		end
+	end
+
 endmodule
 
 /* reed solomon encoding */

@@ -31,7 +31,6 @@ endmodule
  * labeled "1/2 rate". Seems to indicate 2 bit output per 1 bit input.
  */
 module cc_base(
-	/* ?? */
 	input reset, clk,
 	input valid_in,
 	input cur_in,
@@ -43,8 +42,8 @@ module cc_base(
 	reg in_progress;
 	wire x, y;
 
-	assign x = state[0] | state[1] | state[2] | state[5] | cur_in;
-	assign y = state[1] | state[2] | state[4] | state[5] | cur_in;
+	assign x = state[0] ^ state[1] ^ state[2] ^ state[5] ^ cur_in;
+	assign y = state[1] ^ state[2] ^ state[4] ^ state[5] ^ cur_in;
 
 	/**
 	* This is a 1 bit width design which has similar concerns as the 1 bit
@@ -89,7 +88,7 @@ module cc_base(
 endmodule
 
 /* Buffers the output of cc_base into something the next stage in the pipeline
- * wants. 
+ * wants. Also handles the needed discards for the requested rate.
  */
 module cc_wrap
 	#(
@@ -104,7 +103,9 @@ module cc_wrap
 	input [in_width-1:0] cur_in,
 	input valid_in,
 	output reg [out_width-1:0] z,
-	output reg valid_out
+	output reg valid_out,
+
+	input [p_cc_rate.w-1:0] cc_rate
 	);
 
 	/* cc_base connections */

@@ -2,6 +2,8 @@
 
 from collections import deque
 
+from util import hex_str_to_bin_list
+
 class Rnd():
     def __init__(self, iv):
         self.iv = deque(iv)
@@ -14,15 +16,6 @@ class Rnd():
         return bit ^ x
 
 
-def hex_str_to_bin_list(hex_str):
-    r = []
-    for dig in hex_str:
-        d = int(dig, 16) 
-        for i in range(0, 4):
-            b = (d & (1 << (3-i))) >> (3-i)
-            r.append(b)
-
-    return r
 
 def test_rnd(iv, da_s, ex_s):
     print da_s

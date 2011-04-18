@@ -1,12 +1,14 @@
 
 RM = rm -f
 
-TESTS    = bitorder.vvp rand_parm.vvp
+TESTS    = bitorder.vvp rand.vvp cc.vvp
 TEST_OBJ = $(addprefix test/, $(TESTS))
 TEST_RUN = $(TEST_OBJ:.vvp=.test)
 
 
-test/rand_parm.vvp: randomizer.v func/gen_rand_iv.v
+test/rand.vvp: rand.v func/gen_rand_iv.v
+
+test/cc.vvp: fec.v
 
 
 

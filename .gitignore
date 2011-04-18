@@ -1,3 +1,5 @@
+*.vvp
+*.lxt
 *.aux
 *.dvi
 *.pdf

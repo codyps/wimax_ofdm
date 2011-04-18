@@ -53,10 +53,11 @@ module rand_test();
 		rand_iv = 0;
 		ot = 0;
 
-
 		#1
 		reset = 1;
 		#1
+		
+		reset = 0;
 
 		/* device is now reset, iv = 0 */
 		set_vect(gen_rand_iv(vect.bsid, vect.uiuc,
@@ -80,6 +81,7 @@ module rand_test();
 			end
 			clk = 1;
 			#1;
+
 		end
 
 		while (o < vect.input_data_sz) begin

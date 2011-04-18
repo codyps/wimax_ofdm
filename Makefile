@@ -1,12 +1,12 @@
 
 RM = rm -f
 
-TESTS    = randomizer.vvp bitorder.vvp rand_parm.vvp
+TESTS    = bitorder.vvp rand_parm.vvp
 TEST_OBJ = $(addprefix test/, $(TESTS))
 TEST_RUN = $(TEST_OBJ:.vvp=.test)
 
 .PHONY: all
-all: test
+all: test_bin
 
 .PHONY: test_bin
 test_bin: $(TEST_OBJ)
@@ -14,12 +14,12 @@ test_bin: $(TEST_OBJ)
 .PHONY: .test
 test: $(TEST_RUN)
 
+%.vvp : %.v
+	iverilog -Wall -I . -o $@ $<
+
 .PHONY: %.test
 %.test : %.vvp
 	./$<
-
-%.vvp : %.v
-	iverilog -Wall -I . -o $@ $<
 
 .PHONY: clean
 clean:

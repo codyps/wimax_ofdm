@@ -61,7 +61,6 @@ module rand_parm
 	input reload);
 
 	reg [14:0] vect;
-	reg [bits_pclk-1:0] nvect;
 	reg [bits_pclk-1:0]  nout;
 	reg nvalid;
 
@@ -77,10 +76,9 @@ module rand_parm
 				vect   <= rand_iv;
 			end else if (in_valid) begin
 				nvalid <= 1;
-				nvect[bits_pclk-1:0] =
-					vect[13-:bits_pclk] ^ vect[14-:bits_pclk];
-				nout[bits_pclk-1:0]  =
-					nvect[bits_pclk-1:0] ^ nvect[bits_pclk-1:0];
+				nout   <= in_bits ^ (vect[13 -: bits_pclk] ^ vect[14 -: bits_pclk]);
+				vect   <= { vect[14 - bits_pclk:0],
+					vect[13 -: bits_pclk] ^ vect[14 -: bits_pclk] };
 			end else begin
 				nvalid <= 0;
 				nout   <= 0;
@@ -89,9 +87,14 @@ module rand_parm
 		end
 	end
 
-	always @ (negedge clk) begin
-		out_valid = nvalid;
-		out_bits = nout;
+	always @ (negedge clk or posedge reset) begin
+		if (reset) begin
+			out_valid <= 0;
+			out_bits  <= 0;
+		end else begin
+			out_valid <= nvalid;
+			out_bits  <= nout;
+		end
 	end
 
 endmodule

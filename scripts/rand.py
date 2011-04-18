@@ -32,10 +32,11 @@ def test_rnd(iv, da_s, ex_s):
     print ex
     r = Rnd(iv)
 
+    print "iv: {0}".format(r.iv)
     for in_bit, ex_bit in zip(da, ex):
         out_bit = r.proc_bit(in_bit)
 
-        print "{0} {1} {2}".format(out_bit, ex_bit, r.iv)
+        print "r: {3} {0} {1} {2}".format(out_bit, ex_bit, r.iv, in_bit)
 
 
 uiuc = 7 # 0111

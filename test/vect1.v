@@ -11,9 +11,9 @@ parameter bsid = 1;
 parameter frame_num = 1;
 
 parameter input_data_sz = 560;
-reg [input_data_sz-1:0] input_data =      560'h45_29_C4_79_AD_0F_55_28_AD_87_B5_76_1A_9C_80_50_45_1B_9F_D9_2A_88_95_EB_AE_B5_2E_03_4F_09_14_69_58_0A_5D;
+reg [0:input_data_sz-1] input_data =      560'h45_29_C4_79_AD_0F_55_28_AD_87_B5_76_1A_9C_80_50_45_1B_9F_D9_2A_88_95_EB_AE_B5_2E_03_4F_09_14_69_58_0A_5D;
 
-reg [input_data_sz-1:0] randomized_data = 560'hD4_BA_A1_12_F2_74_96_30_27_D4_88_9C_96_E3_A9_52_B3_15_AB_FD_92_53_07_32_C0_62_48_F0_19_22_E0_91_62_1A_C1;
+reg [0:input_data_sz-1] randomized_data = 560'hD4_BA_A1_12_F2_74_96_30_27_D4_88_9C_96_E3_A9_52_B3_15_AB_FD_92_53_07_32_C0_62_48_F0_19_22_E0_91_62_1A_C1;
 
 //reg rs_encoded_data = 'h49_31_40_BF_D4_BA_A1_12_F2_74_96_30_27_D4_88_9C_96_E3_A9_52_B3_15_AB_FD_92_53_07_32_C0_62_48_F0_19_22_E0_91_62_1A_C1_00;
 

@@ -1,5 +1,5 @@
 `include "randomizer.v"
-`include "test/vect1.v"
+`include "test/vect2.v"
 
 module rand_test();
 
@@ -40,7 +40,6 @@ module rand_test();
 	`include "func/gen_rand_iv.v"
 
 	integer i, o;
-	reg ot;
 	initial begin
 		$dumpfile("randomizer.lxt");
 		$dumpvars();
@@ -51,7 +50,6 @@ module rand_test();
 		in_valid = 0;
 		reload = 0;
 		rand_iv = 0;
-		ot = 0;
 
 		#1
 		reset = 1;
@@ -68,18 +66,24 @@ module rand_test();
 		#1
 
 		o = 0;
+
+		$display("iv: %b", x1.vect);
 		for (i = 0; i < vect.input_data_sz; i = i + 1) begin
 			in_valid = 1;
 			in_bits = vect.input_data[i];
 			clk = 0;
-			ot = vect.randomized_data[o];
 			#1;
+			clk = 1;
+
+			/* read on the rising edge */
+
 			if (out_valid) begin
 				odata[o] = out_bits;
+				$display("r: %b => %b %b %b", vect.input_data[o], out_bits, vect.randomized_data[o], x1.vect);
 				o = o + 1;
-				$display("o: ", out_bits, vect.randomized_data[o]);
+			end else begin
+				$display("skip");
 			end
-			clk = 1;
 			#1;
 
 		end
@@ -87,12 +91,11 @@ module rand_test();
 		while (o < vect.input_data_sz) begin
 			in_valid = 0;
 			clk = 0;
-			ot = vect.randomized_data[o];
 			#1;
 			if (out_valid) begin
 				odata[o] = out_bits;
+				$display("r: %b => %b %b %b", vect.input_data[o], out_bits, vect.randomized_data[o], x1.vect);
 				o = o + 1;
-				$display("o: ", out_bits, vect.randomized_data[o]);
 			end
 			clk = 1;
 			#1;

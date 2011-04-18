@@ -13,10 +13,10 @@ parameter frame_num = 1;
 parameter subchannel_index = 'b00001;
 parameter input_data_sz = 80;
 
-reg [input_data_sz-1:0] input_data =      'h45_29_C4_79_AD_0F_55_28_AD_87;
+reg [0:input_data_sz-1] input_data =      'h45_29_C4_79_AD_0F_55_28_AD_87;
 
 /* NOTE—The last hex value represents 2 bits only. */
-reg [input_data_sz-1:0] randomized_data = 'hD4_BA_A1_12_F2_74_96_30_27_D4;
+reg [0:input_data_sz-1] randomized_data = 'hD4_BA_A1_12_F2_74_96_30_27_D4;
 //reg [159:0] randomized_data = 'hD4_BA_A1_12_F2_74_96_30_27_D4_00_00;
 
 /* Convolutionally encoded data (Hex) */

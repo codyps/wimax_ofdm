@@ -37,9 +37,14 @@ module randomizer(
 		end
 	end
 
-	always @ (negedge clk) begin
-		out_valid <= nvalid;
-		out_bits  <= nout;
+	always @ (negedge clk or posedge reset) begin
+		if (reset) begin
+			out_valid <= 0;
+			out_bits  <= 0;
+		end else begin
+			out_valid <= nvalid;
+			out_bits  <= nout;
+		end
 	end
 
 endmodule

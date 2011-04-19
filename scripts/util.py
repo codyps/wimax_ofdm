@@ -1,4 +1,10 @@
 
+#from codecs import decode
+
+#def hex_str_to_bin_list(hex_str):
+#    h = hex_str.replace('_', '')
+#    codecs.decode(h, 'hex')
+
 def hex_str_to_bin_list(hex_str):
     r = []
     for dig in hex_str:

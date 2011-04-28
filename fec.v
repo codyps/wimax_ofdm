@@ -26,7 +26,7 @@ module fec
 	wire [w-1:0] rs_out_bits;
 	wire rs_out_valid;
 
-	rs rs1 #(.w(w)) (reset, clk,
+	rs #(.w(w)) rs1 (reset, clk,
 		rs_in_bits,
 		rs_in_valid,
 		rs_out_bits,
@@ -41,7 +41,7 @@ module fec
 	wire [w-1:0] cc_out_bits;
 	wire cc_out_valid;
 
-	cc cc1 #(.w(w)) (reset, clk,
+	cc #(.w(w)) cc1 (reset, clk,
 		cc_in_bits,
 		cc_in_valid,
 		cc_out_bits,

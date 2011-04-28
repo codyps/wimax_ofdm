@@ -1,4 +1,6 @@
 
+`include "param.v"
+
 /* convolution code - this one is based on the Figure 202 of 802.16-2009,
  * labeled "1/2 rate". Seems to indicate 2 bit output per 1 bit input.
  */
@@ -64,7 +66,7 @@ endmodule
  */
 module cc
 	#(
-	parameter w = 1
+	parameter w = 1,
 	parameter in_width  = w,
 	parameter out_width = w,
   	parameter ncbps     = 768,
@@ -86,7 +88,7 @@ module cc
 	wire base_valid_out;
 
 	/* buffering/fifo */
-	reg [buf_sz-1:0] dbuf
+	reg [buf_sz-1:0] dbuf;
 	reg [baddr_sz-1:0] i_loc;
 	reg [baddr_sz-1:0] o_loc;
 

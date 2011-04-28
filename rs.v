@@ -86,7 +86,7 @@ module rs
 	generate
 		genvar i;
 		for (i = 0; i < 2*T; i = i + 1) begin : mult_gen
-			gfa_mult mult (reset, clk, gm_in, gm_out[i]);
+			gfa_mult #(.w(w)) mult (reset, clk, gm_in, gm_out[i]);
 		end
 	endgenerate
 

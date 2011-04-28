@@ -105,7 +105,7 @@ module cc
 		end else begin
 			if (base_valid_out) begin
 				dbuf[i_loc +: cc_base_o_width] <= base_out;
-				i_loc            <= i_loc + cc_base_o_width;
+				i_loc <= i_loc + cc_base_o_width;
 			end else begin
 
 			end

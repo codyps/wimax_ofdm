@@ -26,7 +26,10 @@ module gfa_mult
 endmodule
 
 /* reed solomon encoding */
-module rs_enc #(parameter w = 8) (
+module rs
+	#(
+	parameter w = 8
+	)(
 	input reset, clk,
 
 	input [w-1:0] in_bits,

@@ -62,10 +62,11 @@ endmodule
 /* Buffers the output of cc_base into something the next stage in the pipeline
  * wants. Also handles the needed discards for the requested rate.
  */
-module cc_wrap
+module cc
 	#(
-	parameter in_width  = 1,
-	parameter out_width = 1,
+	parameter w = 1
+	parameter in_width  = w,
+	parameter out_width = w,
   	parameter ncbps     = 768,
 	parameter buf_sz    = ncbps / 2,
 	parameter baddr_sz  = $clog2(buf_sz),

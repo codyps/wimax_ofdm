@@ -1,19 +1,18 @@
 
 /* 2^8 gfa mult for p(x) = x^8 + x^4 + x^3 + x^2 + 1,
  * bit serial methodology */
-module gfa_mult(
+module gfa_mult
+#(parameter w = 8)(
 	input  reset, clk,
-	input  bit_in,
-	output bit_out
+	input  [w-1:0] bit_in,
+	output [w-1:0] bit_out
 );
-
-	localparam w = 8;
 
 	reg [w-1:0] b;
 
 	always @(posedge clk or posedge reset) begin
 		if(reset) begin
-			b = {w{0}};
+			b = {w{1'b0}};
 		end else begin
 		end
 	end
@@ -26,19 +25,17 @@ module gfa_mult(
 
 endmodule
 
-
 /* reed solomon encoding */
-module rs_enc(
-	input reset, clk
+module rs_enc #(parameter w = 8) (
+	input reset, clk,
 
-	input in_bits,
+	input [w-1:0] in_bits,
 	input in_valid,
 
-	output reg out_bits,
+	output reg [w-1:0] out_bits,
 	output reg out_valid
 	);
 
-	localparam w = 8;
 	localparam T = 8;
 	//localparam log_T = 3;
 	localparam log_2T = 4;
@@ -80,10 +77,15 @@ module rs_enc(
 	reg [w-1:0] b [2*T-1:0];
 
 	/* Outputs of the multipliers */
-	wire [w-1:0] gm_out [T-1:0];
+	wire [w-1:0] gm_out [2*T-1:0];
 	reg  [w-1:0] gm_in;
 
-	gfa_mult mults [T-1:0] (reset, clk, gm_in, gm_out);
+	generate
+		genvar i;
+		for (i = 0; i < 2*T; i = i + 1) begin : mult_gen
+			gfa_mult mult (reset, clk, gm_in, gm_out[i]);
+		end
+	endgenerate
 
 	always @(posedge clk or posedge reset) begin
 		if (reset) begin
@@ -109,12 +111,18 @@ module rs_enc(
 			out_valid <= 0;
 
 			gm_in <= 0;
-			b <= {2*T{w{'b0}}};
+
+			begin : reset_ff
+				integer i;
+				for (i = 0; i < 2*T; i = i + 1) begin
+					b[i] <= {w{1'b0}};
+				end
+			end
 			shift_ct <= 0;
 		end else begin
 
 			if (start_T) begin
-				shift_ct <= {log_2T{'b1}} - 1;
+				shift_ct <= {log_2T{1'b1}} - 1;
 
 				gm_in <= 0;
 				shift_ct <= shift_ct - 1;
@@ -132,15 +140,18 @@ module rs_enc(
 				shift_ct <= shift_ct - 1;
 				out_bits <= b[2*T-1];
 				out_valid <= 1;
-			end else if begin
+			end else begin
 				gm_in <= 0;
 				out_bits <= 0;
 				out_valid <= 0;
 			end
 
-			/* I doubt this is valid verilog, but it explains the
-			 * operation */
-			b[2*T-1:1] <= gm_out ^ b[2*T-2:0];
+			begin : shift_ff
+				integer i;
+				for (i = 0; i < 2*T - 1; i = i + 1) begin
+					b[i+1] = gm_out[i] ^ b[i];
+				end
+			end
 		end
 	end
 

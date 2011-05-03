@@ -24,18 +24,18 @@ module interleaver
 	#(
 	parameter rate_w  = p_rate_id.w,
 	parameter subct_w = p_subchan_ct.w,
-	parameter blk_sz  = 1,
+	parameter ex_blk_size  = 1, /* the external block size */
 	)(
 	input reset, clk,
 	input [blk_size-1:0] in_blk,
 	input in_blk_valid,
 	input [rate_w-1:0] rate_id,
 	input [subct_w-1:0] subchan_ct,
-	output [blk_size-1:0] out_blk,
-	output out_blk_valid
+	output reg [blk_size-1:0] out_blk,
+	output reg out_blk_valid
 	);
 
-	reg [$clog2(blk_sz)-1:0] blk_sz
+	localparam max_internal_buf_sz = 1152;
 
 	localparam mod_ct = 4;
 	localparam sub_ct = 5;
@@ -45,6 +45,23 @@ module interleaver
 		{768,	384,	192,	96,	48},
 		{1152,	576,	288,	144,	72}
 	};
+
+	/* @output_buffer - data which is being shifted out. */
+	/* @input_buffer  - data which is being shifted in. */
+	reg [max_internal_buf_sz-1:0] output_buffer, input_buffer;
+
+	/* @i_blk - input to the current ir_base module */
+	reg [max_internal_buf_sz-1:0] i_blk;
+
+	/* @in_ct - number of external blocks which have been read into internal
+	 * buffers */
+	/* @out_ct - number of external blocks which need to be written out 
+	 */
+	reg [$clog2(blk_size)-1:0] in_ct, out_ct;
+
+	/* @set_output - when 1, read the output from the ir_base into the
+	 * output_buffer */
+	reg set_output;
 
 	/* presently, only QPSK is supported */
 	wire o_valid [mod_ct-1:0][sub_ct-1:0];
@@ -59,12 +76,60 @@ module interleaver
 			.blk_size(blk_szs[mod_n][sub_n]),
 			.subchan_ct(sub_n)
 		  	)(
-			.in_blk(in_blk),
+			.in_blk(i_blk),
 			.out_blk(o_blk[mod_n][sub_n])
 			);
 	end
 	end
 	endgenerate
+
+	always @(posedge clk or posedge reset)
+	if (reset) begin
+		in_ct  = 0;
+		i_blk = 0;
+		set_output = 0;
+		input_buffer = 0;
+	end else begin
+		if (valid_in) begin
+			/* store the current input data into the internal
+			 * buffer */
+			/* XXX: this multiplication always has an equivalent
+			 * shift, is the synthesizer smart enough? */
+			input_buffer[ex_blk_sz * in_ct :+ ex_blk_sz] = in_blk;
+			in_ct = in_ct + 1;
+
+			if (in_ct >= cur_internal_blk_sz) begin
+				/* setup the current ir_base so that on the
+				 * negedge we will have the interleaved results */
+				/* XXX: as in_blk_sz is non-constant, this is
+				 * not valid verilog. */
+				i_blk = input_buffer[ex_blk_sz * in_ct :- in_blk_sz];
+				set_output = 1;
+			end else begin
+				set_output = 0;
+			end
+		end
+
+	end
+
+	always @(negedge clk or posedge reset)
+	if (reset) begin
+		out_blk = 0;
+		out_blk_valid = 0;
+		out_ct = 0;
+	end else begin
+		if (out_ct) begin
+			/* shift out data */
+			out_ct = out_ct - 1;
+			out_blk = outpuf_buffer[ex_blk_sz * out_ct :- ex_blk_sz];
+		end
+
+		if (set_output) begin
+			out_ct = in_blk_sz;
+			outpuf_buffer[0 :+ in_blk_sz] = o_blk[rate_id][subchan_ct];
+		end
+	end
+
 
 endmodule
 

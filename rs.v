@@ -68,7 +68,6 @@ module rs
 	 * multiplication: multiplication modulo the generator polynomial
 	 */
 
-
 	reg in_data;
 	reg in_data_valid;
 

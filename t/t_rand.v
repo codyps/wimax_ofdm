@@ -58,7 +58,7 @@ module rand_test();
 		#1
 		reset = 1;
 		#1
-		
+
 		reset = 0;
 
 		/* device is now reset, iv = 0 */

@@ -1,0 +1,16 @@
+PROJECT ALREADY UNDERWAY: Supervised by Prof. Bushnell (started Spring 2011)
+
+Project Title: 802.16-2009 OFDM PHY - Digital Realm Transmitter Implementation
+
+PROJECT DESCRIPTION:  We propose creating the digital portion of a WIMAX PHY
+in full verilog code such that it may be adopted for use within an FPGA or a
+custom ASIC.
+
+PROJECT PERSONNEL:
+Cody Schafer	cschafer@rutgers.edu
+<3 other people who dropped the course>
+
+TEAMMATE RESPONSIBILITIES:
+Cody Schafer: Design, implement, and debug all code. Create documentation for
+the completed system for consumption by OEMs.
+

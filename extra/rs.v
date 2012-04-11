@@ -1,37 +1,15 @@
 
-/* 2^8 gfa mult for p(x) = x^8 + x^4 + x^3 + x^2 + 1,
- * bit serial methodology */
-module gfa_mult
-#(parameter w = 1)(
-	input  reset, clk,
-	input  [w-1:0] bit_in,
-	output [w-1:0] bit_out
-);
+`include "gf.v"
 
-	reg [w-1:0] b;
 
-	always @(posedge clk or posedge reset) begin
-		if(reset) begin
-			b = {w{1'b0}};
-		end else begin
-		end
-	end
-
-	always @(negedge clk or posedge reset) begin
-		if (reset) begin
-		end else begin
-		end
-	end
-
-endmodule
-
-module rs_b
+module rs
 	#(
 	parameter w = 1,
 	parameter m = 8,
 	parameter logm = /* $clog2(m) */ 3,
 	parameter T = 8,
-	parameter log2T = /* $clog2(2*T) */ 4
+	parameter log2T = /* $clog2(2*T) */ 4,
+	parameter p = 0/* the primitive polynomial */
 	)(
 	input reset, clk,
 
@@ -41,6 +19,12 @@ module rs_b
 	output reg out_bits,
 	output reg out_valid
 	);
+
+	localparam g = {
+		{ },
+		{ },
+	};
+
 
 	reg [1:0] state;
 	localparam S_INIT = 0; /* shifting in the first 8 bits,
@@ -67,17 +51,15 @@ module rs_b
 	/* expected to overflow upon exceeding 2T */
 	reg [log2T-1:0] ct_2T;
 
-	generate
-		genvar i;
-		for(i = 0; i < 2*T; i = i + 1) begin : mutls
-			gf_mult #(.a(g[i])) gm (reset, vclk, vin, m_out[i]);
-		end
-	endgenerate
-
+	/* the next x values. */
 	wire [m-1:0] xn [2*T-2:0];
 
 	generate
 		genvar i;
+		for(i = 0; i < 2*T; i = i + 1) begin : mutls
+			gf_mult #(.p(p), .a(g[i])) gm (reset, vclk, vin, m_out[i]);
+		end
+
 		for(i = 0; i < 2*T - 1; i = i + 1) begin : xnext
 			assign xn[i] = x[i+1] ^ m_out[i];
 		end
@@ -127,10 +109,11 @@ module rs_b
 			out_bits = x[0][m-1];
 			x[0] = { x[0][m-2:0], 0 };
 			if (~ct_2T) begin : back_to_init
+				integer i;
+
 				state = S_INIT;
 				out_valid = 0;
 
-				integer i;
 				for(i = 0; i < 2*T; i = i + 1) begin
 					x[i] = 0;
 				end
@@ -140,6 +123,7 @@ module rs_b
 		if (was_valid || (state == S_SHCK)) begin
 			ct_8 = ct_8 + 1;
 			if (~ct_8) begin : shift_x
+				integer i;
 
 				/* the first 8 bits have been shifted in, advance
 				* state */
@@ -148,7 +132,6 @@ module rs_b
 				end
 
 				/* Needed as X is an array */
-				integer i;
 				for(i = 0; i < 2*T; i = i + 1) begin
 					x[i] = xn[i];
 				end

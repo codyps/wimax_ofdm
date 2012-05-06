@@ -2,3 +2,6 @@
 *.aux
 *.blg
 *.out
+*_latexmk
+/doc.ps
+/rand.eps

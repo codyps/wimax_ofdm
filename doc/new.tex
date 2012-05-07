@@ -18,7 +18,8 @@
 \usepackage{mathtools} %amsmath minus some quirks
 %\usepackage[usenames,dvipsnames]{xcolor}
 \usepackage{color}
-\usepackage{listings}
+%\usepackage{listings}
+\usepackage{listingsutf8}
 \usepackage{frame}
 \usepackage{float}
 \usepackage{verbatim}
@@ -34,6 +35,8 @@
 \begin{document}
 
 \lstset{breaklines=true,
+	extendedchars=\true,
+	inputencoding=utf8/latin1,
 	title=\lstname,
 	frame=shadowbox,
 	rulesepcolor=\color{gray},
@@ -45,8 +48,13 @@
 % Title page.
 \input{./title.tex}
 
+\tableofcontents
+
 % What is it, What are we doing, 
 \input{./intro.tex}
+
+% Overarching design and spec items.
+\input{./design_and_spec.tex}
 
 % Actually done
 \section{Implimented Modules}
@@ -54,7 +62,7 @@
 \input{./impl/rand.tex}	
 \input{./impl/reed-solomon.tex}
 \input{./impl/fec-to-interleave.tex}
-%\input{./impl/interleave.tex} % Broken.
+\input{./impl/interleave.tex} % Broken.
 
 % Planned but incomplete.
 \section{Planned Modules}
@@ -70,6 +78,8 @@
 
 % Notes on where improvements could be made.
 \input{./conclution.tex}
+
+\appendix
 
 % Appendix containing code.
 \input{./code.tex}

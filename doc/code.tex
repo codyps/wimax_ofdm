@@ -1,1 +1,32 @@
-\todo{Appendix with Code}
+\section{Code Listings}
+
+\lstinputlisting[language=Verilog]{../param.v}
+\lstinputlisting[language=Verilog]{../common_widths.v}
+
+\lstinputlisting[language=Verilog]{../func/gen_rand_iv.v}
+\lstinputlisting[language=Verilog]{../rand.v}
+
+\lstinputlisting[language=Verilog]{../gf.v}
+\lstinputlisting[language=Verilog]{../rs.v}
+\lstinputlisting[language=Verilog]{../cc.v}
+
+\lstinputlisting[language=Verilog]{../fec.v}
+
+\subsection{Interleaving}
+
+The following is a partial implimentation of the 802.16-ODFM interleaver implimented in incomplete verilog. Due to inflexibility in the use of generate blocks, this does not fully support all possible interleaver setups, leading to the development of a tool to generate the interleaver verilog code.
+\lstinputlisting[language=Verilog]{../interleaver.v}
+
+The following generates verilog code for implimenting a particular (adjustable) interleaver. Changing the items in the `param' dictionary allow generation of all possible interleavers.
+\lstinputlisting[language=Python]{../scripts/ir_gen.py}
+
+This is the sample output of that generator run un-eddited.
+\lstinputlisting[language=Verilog]{../scripts/ir_gen_output.v}
+
+
+\subsection{Testbenches}
+
+\lstinputlisting[language=Verilog,label=lst:vectors]{../t/vect/1.v}
+\lstinputlisting[language=Verilog,label=lst:vectors]{../t/vect/2.v}
+\lstinputlisting[language=Verilog,label=lst:test-rand]{../t/t_rand.v}
+\lstinputlisting[language=Verilog,label=lst:test-cc]{../t/t_cc.v}

@@ -1,5 +1,8 @@
-/* FEC is composed of 2 portions, reed solomon and convolution code,
- * applied in that order. On non-subchannelized data, RS is bypassed */
+/* NOTE: unfinished code */
+
+/* FEC is composed of 2 portions, reed solomon and
+* convolution code, applied in that order. On
+* non-subchannelized data, RS is bypassed */
 
 `include "rs.v"
 `include "cc.v"

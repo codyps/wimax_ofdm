@@ -1,0 +1,46 @@
+% IFFT INPUT BUFFER.
+
+\subsection{Sub-carrier to IFFT Buffer}
+\label{sec:ifft-buffer}
+\begin{description}
+	\item[Estimated gates] 2000
+	\item[Estimated data bitstream delay] UNKNOWN -- FIXME.
+\end{description}
+Insertion into this buffer is ordered but will have random
+jumps around different UL \& DL bursts.
+
+Block Size = blk\_siz = 200 (the total number of used
+subcarriers)
+
+Buffers blk\_size items each of which has width 2 bits.
+QPSK utilizes both I and Q, amplitude and phase, each with
+a granularity of 2. This means that each item (a pair of I
+\& Q) has 4 possible values and thus 2 bits are needed for
+each.
+
+\todo[inline]{Pilot insertion input needs to be defined}
+\begin{table*}\begin{tabularx}{\linewidth}{c|c|c|X}
+	\label{tbl:ifft-buffer-io}
+			
+	Name & Width & Direction & Description \\ \hline
+
+	\wire{reset} & 1 & I & Resets the device state. \\
+
+	\wire{clk}   & 1 & I & Clocking. \\
+
+	\wire{in\_blk} & $??$ & I & Input data from the Pilot Insertion. \\
+
+	\wire{in\_blk\_valid} & 1 & I & When high, indicates that the input block is
+	valid and should be processed. \\
+
+	\wire{out\_blk} & $200 \cdot 2 \cdot 16$ & O & Output data to the IFFT. Width of
+	numbers is 16 bits, processing both Q and I. \\
+
+	\wire{out\_blk\_valid} & 1 & O & Indicates the output block
+	\wire{out\_blk} is valid and should be imediately copied (it will be
+	replaced by the next block on the next clock cycle).
+
+\end{tabularx}
+\caption{Sub-carrier to IFFT Buffer input/output description.}
+\end{table*}
+

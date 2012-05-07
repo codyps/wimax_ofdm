@@ -1,0 +1,29 @@
+
+% CONSTELLATION MAPPING
+
+\subsection{Constellation Mapping}
+\label{sec:constellation}
+
+
+\begin{description}
+	\item[Estimated gates] 4000
+	\item[Estimated data bitstream delay] $N_{cpc}$, the number of bits per constellation. 4 in the case of QPSK.
+\end{description}
+
+%\begin{table*} \begin{tabularx}{\linewidth}{c|c|c|X}
+%	\label{tbl:mapping-io}
+% Name & Width & Direction & Description \\ \hline
+%	\wire{reset} & 1 & I & When low, the chip is reset. When high, normal operation. \\
+%	\wire{clk}   & 1 & I & Clocks all syncronous operations. \\
+%	\wire{in\_bits} & 1 & I & The input bitstream \\
+%	\wire{in\_valid} & 1 & I & Indicates that \wire{in\_bits} is valid and should be read. \\
+%	\wire{out\_Q} & 16 & O & output of Q's. Represents an analog value \\
+%	\wire{out\_I} & 16 & O & output of I's. Represents an analog value \\
+%	\wire{out\_valid} & 1 & O & Indicates both \wire{out\_Q} and \wire{out_I} are valid and should be processed or buffered imediately. \\
+%	\wire{subchan\_data} & 6 & I & Indicates the mapping of subchannels, see \autoref{tbl:subchan} for explanation of values. \\
+%\end{tabularx}
+%\caption{Constellation Mapping input output description}
+%\end{table*}
+
+The Constellation mapping module takes our bitstream and converts it to a form for an analog radio transmitter. $I$ is used to control the `real' portion of the final output signal while $Q$ controls the `imaginary' component. By placing the $Q$ and $I$ as axis in a 2 dimentional grid, outputs of particular positions are taken to represnt particular binary numbers. In BPSK, only 2 outputs are possible, thus the number of bits in the constellation (a particular set of positions on the 2 dimentional grid) is 2. For QPSK, the number of bits per constellation is 4. For this reason, the constellation mapper needs to wait for enough bits to accumulate before it can output 
+See \autoref{tbl:mapping-io} for the description of inputs and outputs.

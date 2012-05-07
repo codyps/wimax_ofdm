@@ -1,0 +1,49 @@
+% IFFT
+
+\subsection{IFFT}
+\label{sec:ifft}
+\begin{description}
+	\item[Estimated gates] 10,000
+	\item[Estimated data bitstream delay] UNKNOWN -- FIXME.
+\end{description}
+
+The IFFT must process 256 complex numbers with a depth of 16 bits for each
+component (16 bits for the Real component and an another 16 bits for the
+imaginary).
+
+See \autoref{tbl:ifft-io} for a description of the inputs and outputs.
+	
+	Buffers blk\_size items each of which has width 2 bits.
+	QPSK utilizes both I and Q, amplitude and phase, each with
+	a granularity of 2. This means that each item (a pair of I
+	\& Q) has 4 possible values and thus 2 bits are needed for
+	each.
+
+	The IFFT takes in 256-bit complex samples and outputs to the Cyclic Prefix.
+
+\begin{table*}
+	\begin{tabularx}{\linewidth}{c|c|c|X}
+		\label{tbl:ifft-io}
+			
+	Name & Width & Direction & Description \\ \hline
+
+	\wire{reset} & 1 & I & Resets the device state. \\
+
+	\wire{clk}   & 1 & I & Clocking. \\
+
+	\wire{in\_blk\_valid} & 1 & I & When high, indicates that the input block is
+	valid and should be processed. \\
+
+	\wire{in\_blk} & $200 \cdot 2 \cdot 16$ & I & Input data for the IFFT. Width of
+	numbers is 16 bits, processing both Q and I. \\
+
+	\wire{out\_blk} & $256 \cdot 2 \cdot 16$ & O & Output data after IFFT is preformed. Width of
+	numbers is 16 bits, processing both Q and I. \\
+
+	\wire{out\_blk\_valid} & 1 & O & Indicates the output block
+	\wire{out\_blk} is valid and should be imediately copied (it will be
+	replaced by the next block on the next clock cycle).
+
+\end{tabularx}
+\caption{IFFT input/output description.}
+\end{table*}

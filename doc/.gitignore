@@ -1,3 +1,4 @@
+*.synctex.gz
 *.bbl
 *.aux
 *.blg
@@ -5,3 +6,4 @@
 *_latexmk
 /doc.ps
 /rand.eps
+

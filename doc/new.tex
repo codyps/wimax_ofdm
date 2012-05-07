@@ -2,7 +2,6 @@
 \documentclass{article}
 \usepackage[utf8]{inputenc}
 \usepackage[normalem]{ulem}
-\usepackage{amsmath}
 \usepackage{xkeyval}
 \usepackage[bookmarksnumbered]{hyperref}
 %\hypersetup{pdfborder=0 0 0}
@@ -14,16 +13,66 @@
 %\usepackage{fullpage}
 %\usepackage{natbib}
 \usepackage[all]{hypcap}
+\usepackage{verbatim}
+\usepackage{graphicx}
+\usepackage{mathtools} %amsmath minus some quirks
+%\usepackage[usenames,dvipsnames]{xcolor}
+\usepackage{color}
+\usepackage{listings}
+\usepackage{frame}
+\usepackage{float}
+\usepackage{verbatim}
+\usepackage{cmap}
+\usepackage{hyperref}
+\usepackage{wrapfig}
 
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+
+%\newcommand{\comment}[1]{}
 \newcommand{\wire}{\texttt}
 
 \begin{document}
 
+\lstset{breaklines=true,
+	title=\lstname,
+	frame=shadowbox,
+	rulesepcolor=\color{gray},
+	tabsize=8,
+	basicstyle=\footnotesize,
+	numbers=left,                   % where to put the line-numbers
+	numberstyle=\tiny\color{gray}}
+
+% Title page.
 \input{./title.tex}
 
+% What is it, What are we doing, 
 \input{./intro.tex}
 
+% Actually done
+\section{Implimented Modules}
+
+\input{./impl/rand.tex}	
+\input{./impl/reed-solomon.tex}
+\input{./impl/fec-to-interleave.tex}
+%\input{./impl/interleave.tex} % Broken.
+
+% Planned but incomplete.
+\section{Planned Modules}
+\input{./plan/constellation.tex}
+\input{./plan/pilot.tex}
+\input{./plan/pilot-to-ifft.tex}
+\input{./plan/ifft.tex}
+%\input{./plan/cyclic-prefix.tex} % Broken.
+\input{./planned.tex}
+
+% Required in example.
 \input{./health.tex}
+
+% Notes on where improvements could be made.
+\input{./conclution.tex}
+
+% Appendix containing code.
+\input{./code.tex}
 
 \input{./bibl.tex}
 

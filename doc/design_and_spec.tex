@@ -108,7 +108,15 @@ transmitter which are not exposed for use by the MAC or any other interfacing
 hardware.
 
 \autoref{tbl:internal-common-wire} shows some of the common signals for
-the internal interfaces.
+the internal interfaces. \autoref{fig:flow-basic} shows the basic flow of information through the internal modules of the transmitter. Issues regarding timing, data path widths, buffering, and some minor data stream modifications are omited.
+
+\begin{figure}
+	\begin{center}
+		\includegraphics[width=\linewidth]{flow_basic}
+		\caption{Basic flow of data through the transmitter}
+		\label{fig:flow-basic}
+	\end{center}
+\end{figure}
 
 \begin{table*}
 \begin{tabulary}{\linewidth}{c|C|L}
@@ -133,3 +141,12 @@ Each block of the transmitter connected via direct wiring (without a
 buffer) is given the same clock. Each block reads its inputs on alternating
 clock edges such that two adjacent units read and write on different edges.
 This is done so that outputted data does not change while being read.
+
+
+\begin{figure}
+	\begin{center}
+		\includegraphics[width=\linewidth]{transmitter}
+		\caption{More detailed diagram of the tranmitter}
+		\label{fig:flow-2}
+	\end{center}
+\end{figure}

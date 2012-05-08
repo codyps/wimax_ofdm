@@ -6,4 +6,6 @@
 *_latexmk
 /doc.ps
 /rand.eps
-
+/doc.pdf
+/new.pdf
+*.toc

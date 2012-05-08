@@ -3,7 +3,6 @@
 *.lxt
 *.aux
 *.dvi
-*.pdf
 *.log
 *~
 .*.swp

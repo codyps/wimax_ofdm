@@ -7,7 +7,7 @@
 \end{description}
 
 \begin{table*} \begin{tabularx}{\linewidth}{c|c|c|X}
-	\label{tbl:fec-buf-io}
+
 	Name & Width & Direction & Description \\ \hline
 
 	\wire{reset} & 1 & I & Active low reset. \\
@@ -31,7 +31,7 @@
 	the current data block has been processed completely and a new data
 	block is required. \\
 
-\end{tabularx} \caption{FEC output buffer description} \end{table*}
+\end{tabularx} \caption{FEC output buffer description} 	\label{tbl:fec-buf-io} \end{table*}
 
 \autoref{tbl:fec-buf-io} describes the inputs and outputs of this logic
 block.

@@ -35,42 +35,41 @@ The total time would include clocks to set and check valid lines and would
 total to about 1050 clocks. 
 
 \begin{table}
-\begin{tabulary}{\linewidth}{C|C}
+	\begin{tabulary}{\linewidth}{C|C}
+		Value of \wire{param\_G} & Ratio of CP time to ``useful'' time. \\ \hline
+
+		0b00 & 1/4 \\
+		0b01 & 1/8 \\
+		0b10 & 1/16 \\
+		0b11 & 1/32
+
+	\end{tabulary}
+	\caption{Values of OFDM parameter G as presented on \wire{param\_G}}
 	\label{tbl:param-g-vals}
-	Value of \wire{param\_G} & Ratio of CP time to
-	``useful'' time. \\ \hline
 
-	0b00 & 1/4 \\
-	0b01 & 1/8 \\
-	0b10 & 1/16 \\
-	0b11 & 1/32 \\
-
-\end{tabulary}
-\caption{Values of OFDM parameter G as presented on
-\wire{param\_G}}
 \end{table}
 
 \begin{table*}
-\begin{tabularx}{\linewidth}{c|c|c|X}
-	\label{tbl:cp-io}
-	Name & Direction & Width & Description \\ \hline
+	\begin{tabularx}{\linewidth}{c|c|c|X}
+		Name & Direction & Width & Description \\ \hline
 
-	\wire{param\_G} & I & 2 & The meanings of valid values
-	are listed in \autoref{tbl:param-g-vals}. Indicates the
-	fraction of CP time to ``useful'' time.
-	\\
+		\wire{param\_G} & I & 2 & The meanings of valid values
+		are listed in \autoref{tbl:param-g-vals}. Indicates the
+		fraction of CP time to ``useful'' time.
+		\\
 
-	\wire{cp\_in\_bits} & I & 1 & Input bitstream. \\
+		\wire{cp\_in\_bits} & I & 1 & Input bitstream. \\
 	
-	\wire{cp\_in\_valid} & I & 1 & Indicates the input
-	bitstream \wire{cp\_in\_bits} is valid. \\
+		\wire{cp\_in\_valid} & I & 1 & Indicates the input
+		bitstream \wire{cp\_in\_bits} is valid. \\
 
-	\wire{cp\_out\_bits} & O & 1 & Output bitstream. \\
-
-	\wire{cp\_out\_valid} & O & 1 & Indicates the output
-	bitstream \wire{cp\_out\_bits} is valid.
-\end{tabularx}
-\caption{Cyclic Prefix Inputs and Outputs}
+		\wire{cp\_out\_bits} & O & 1 & Output bitstream. \\
+	
+		\wire{cp\_out\_valid} & O & 1 & Indicates the output
+		bitstream \wire{cp\_out\_bits} is valid.
+	\end{tabularx}
+	\caption{Cyclic Prefix Inputs and Outputs}
+	\label{tbl:cp-io}	
 \end{table*}
 
 \autoref{tbl:cp-io} lists the inputs and outputs to the cyclic

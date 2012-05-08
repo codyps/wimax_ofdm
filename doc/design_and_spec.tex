@@ -41,7 +41,7 @@ The frequency of \textbf{mac\_clk\_in} must be less than or equal to half
 of the \textbf{phy\_clock}.
 
 The \textbf{phy\_ready} line is a signal to the mac that it is ready for a
-new frame to be inputed, and should not be ignored.
+new frame to be inputted, and should not be ignored.
 
 The structure of individual frames detailed in section 8.3.5 of IEEE
 802.16-2009.  Each frame contains a header, up to 4 DL sub-frames (each with
@@ -51,7 +51,7 @@ parameters, some fields are constrained further than mentioned within the
 standard.
 
 \begin{description}
-	\item[Frame Header - Rate\_ID] is fixed at '1' indicating QPSK
+	\item[Frame Header - Rate\_ID] is fixed at '1' indicating CPS
 		modulation with a code rate of $\frac{1}{2}$.
 	
 \end{description}
@@ -108,7 +108,7 @@ transmitter which are not exposed for use by the MAC or any other interfacing
 hardware.
 
 \autoref{tbl:internal-common-wire} shows some of the common signals for
-the internal interfaces. \autoref{fig:flow-basic} shows the basic flow of information through the internal modules of the transmitter. Issues regarding timing, data path widths, buffering, and some minor data stream modifications are omited.
+the internal interfaces. \autoref{fig:flow-basic} shows the basic flow of information through the internal modules of the transmitter. Issues regarding timing, data path widths, buffering, and some minor data stream modifications are omitted.
 
 \begin{figure}
 	\begin{center}
@@ -146,7 +146,7 @@ This is done so that outputted data does not change while being read.
 \begin{figure}
 	\begin{center}
 		\includegraphics[width=\linewidth]{transmitter}
-		\caption{More detailed diagram of the tranmitter}
+		\caption{More detailed diagram of the transmitter}
 		\label{fig:flow-2}
 	\end{center}
 \end{figure}

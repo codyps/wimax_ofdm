@@ -4,7 +4,7 @@
 \label{sec:ifft-buffer}
 \begin{description}
 	\item[Estimated gates] 2000
-	\item[Estimated data bitstream delay] UNKNOWN -- FIXME.
+	\item[Estimated data bitstream delay] 1
 \end{description}
 Insertion into this buffer is ordered but will have random
 jumps around different UL \& DL bursts.
@@ -28,7 +28,7 @@ each.
 
 	\wire{clk}   & 1 & I & Clocking. \\
 
-	\wire{in\_blk} & $??$ & I & Input data from the Pilot Insertion. \\
+	\wire{in\_blk} & $200 \cdot 2 \cdot 16$ & I & Input data from the Pilot Insertion. \\
 
 	\wire{in\_blk\_valid} & 1 & I & When high, indicates that the input block is
 	valid and should be processed. \\

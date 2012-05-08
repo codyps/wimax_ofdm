@@ -18,7 +18,7 @@ The randomizer operates as a shift register with an initial value
 determined by the PDU (packet data unit, one half of a frame) header
 and whether it is a UL (uplink) or DL (downlink) PDU.
 
-Internally, the randomizer is implimented as a shift register with a single feedback. 
+Internally, the randomizer is implemented as a shift register with a single feedback. 
 \autoref{tbl:rand-io} describes the inputs and outputs of the
 randomizer. \autoref{fig:rand-block} shows the block representation of the randomizer.
 
@@ -27,7 +27,7 @@ randomizer. \autoref{fig:rand-block} shows the block representation of the rando
 	Name & Width & Direction & Description \\ \hline
 	
 	\wire{reset}     & 1  & I & Resets all internal state
-	imediately. The internal register is loaded from
+	immediately. The internal register is loaded from
 	\wire{iv}. Active low. \\
 
 	\wire{clk}       & 1  & I & Clock. \\

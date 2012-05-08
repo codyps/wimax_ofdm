@@ -16,7 +16,7 @@
 		\wire{in\_blk\_valid} & 1 & I & Indicates a block of input data on \wire{in\_blk} is valid and should be processed. \\
 		\wire{rate\_id} & 3 & I & The modulation type. Possible values can be found in \autoref{tbl:rate-id}. \\
 		\wire{subchan\_ct} & 3 & I & Indicates whether the number of subchannels is 1, 2, 4, 8, or 16. These are paired with values 0, 1, 2, 3, and 4, 
-			respectively. The result of other values is undefined. This input allows determintion on how many bits in \wire{in\_blk} should be processed. \\
+			respectively. The result of other values is undefined. This input allows determination on how many bits in \wire{in\_blk} should be processed. \\
 		\wire{out\_blk} & 384 & O & Interleaved block which is then outputted. \\
 		\wire{out\_blk\_valid} & 1 & O & When high, indicates that \wire{out\_blk} contains valid data which should be processed by the next item in the pipeline. 
 \end{tabularx} \caption{Interleaver I/O description} \end{table*}
@@ -82,10 +82,10 @@ MSB for the constellation mapping.
 	The Interleaver operation can be verified by inputting a known block
 	of bits and observing the output. The standard document provides a few of these for our use.
 
-	The verilog code for this module was generated via a python script which directly impliments the permutation equations (\autoref{lst:interleave-gen}). Additionally, a partial non-generated implimentation was created, the equations for which are verified by the same script which generates interleaver code.
+	The verilog code for this module was generated via a python script which directly implements the permutation equations (\autoref{lst:interleave-gen}). Additionally, a partial non-generated implementation was created, the equations for which are verified by the same script which generates interleaver code.
 
-	\subsubsection{Implimentation Notes}
+	\subsubsection{Implementation Notes}
 
-Due to the complexity of the permutation, code was written which generates the verilog implimentation for all posible variations in $N_{cpc}$. In a further iteration of the transmitter, a multiplexer would be used to switch to the appropriate interleaver for each type of modulation. A partial implimentation of this multiplexing was written.
+Due to the complexity of the permutation, code was written which generates the verilog implementation for all possible variations in $N_{cpc}$. In a further iteration of the transmitter, a multiplexer would be used to switch to the appropriate interleaver for each type of modulation. A partial implementation of this multiplexing was written.
 
-The interleaving operation is such that bits much later in the bitstream a swaped with those much earlier in the bitstream. Due to this, the entire OFDM symbol ($N_{cbps}$ bits) must be read into the module prior to a single 1 clock operation to swap the bytes as required. This leads to a rather high cost in delay for this module.
+The interleaving operation is such that bits much later in the bitstream a swapped with those much earlier in the bitstream. Due to this, the entire OFDM symbol ($N_{cbps}$ bits) must be read into the module prior to a single 1 clock operation to swap the bytes as required. This leads to a rather high cost in delay for this module.

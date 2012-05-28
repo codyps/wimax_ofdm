@@ -1,4 +1,12 @@
+*.synctex.gz
 *.bbl
 *.aux
 *.blg
 *.out
+*_latexmk
+/doc.ps
+/rand.eps
+/doc.pdf
+/new.pdf
+*.toc
+*.tex.bak

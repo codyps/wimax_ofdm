@@ -164,7 +164,7 @@ module rs_a
 	 * = 255, K = 239, T = 8) code using GF(2^8),
 	 *
 	 * Can be viewed as multiplication by the generator:
-	 *  c = g · i
+	 *  c = g * i
 	 *  where c x = a valid code word (a poly)
 	 *  	  g x = the generator polynomial
 	 *  	  i x = the information poly.
@@ -177,7 +177,8 @@ module rs_a
 	 */
 
 	/* Code generator polynomial
-	 * g(x) = (x + λ^0)(x + λ^1)(x + λ^2)…(x + λ^(2T – 1)), λ = 02HE
+	*  y = lambda
+	 * g(x) = (x + y^0)(x + y^1)(x + y^2)...(x + y^(2T - 1)), y = 02HE
 	 */
 
 	/* Galios field operations:

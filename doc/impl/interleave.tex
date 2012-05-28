@@ -1,0 +1,91 @@
+
+\subsection{Interleaver}
+\label{sec:interleaver}
+\begin{description}
+	\item[Estimated gates] 2000
+	\item[Estimated data bitstream delay] About 392 clocks.
+\end{description}
+	
+\begin{table*}
+	\begin{tabularx}{\linewidth}{c|c|c|X}
+		\label{tbl:interleaver-io}
+		Name & Width & Direction & Description \\ \hline
+		\wire{reset} & 1 & I & resets the device state. \\
+		\wire{clk}   & 1 & I & clocking. \\
+		\wire{in\_blk} & 384 & I & Block of input data. \\
+		\wire{in\_blk\_valid} & 1 & I & Indicates a block of input data on \wire{in\_blk} is valid and should be processed. \\
+		\wire{rate\_id} & 3 & I & The modulation type. Possible values can be found in \autoref{tbl:rate-id}. \\
+		\wire{subchan\_ct} & 3 & I & Indicates whether the number of subchannels is 1, 2, 4, 8, or 16. These are paired with values 0, 1, 2, 3, and 4, 
+			respectively. The result of other values is undefined. This input allows determination on how many bits in \wire{in\_blk} should be processed. \\
+		\wire{out\_blk} & 384 & O & Interleaved block which is then outputted. \\
+		\wire{out\_blk\_valid} & 1 & O & When high, indicates that \wire{out\_blk} contains valid data which should be processed by the next item in the pipeline. 
+\end{tabularx} \caption{Interleaver I/O description} \end{table*}
+
+\begin{table*}
+	\begin{tabularx}{\linewidth}{X|X|X|X|X|X}
+		Subchannels & 16 & 8 & 4 & 2 & 1 \\ \hline
+		BPSK   & 192  & 96  & 48  & 24  & 12 \\
+		QPSK   & 384  & 192 & 96  & 48  & 24 \\
+		16-QAM & 768  & 384 & 192 & 96  & 48 \\
+		64-QAM & 1152 & 576 & 288 & 144 & 72
+	\end{tabularx} 
+	\caption{Values of $N_{cbps}$. Note
+	that other than the values listed for QPSK, none of these items are
+	supported by this device.}
+	\label{tbl:Ncbps}
+\end{table*}
+
+All encoded data bits will be interleaved by this block interleaver. The
+block size is defined by the number of coded bits per allocated subchannels 
+per OFDM symbol ($N_{cbps}$). $N_{cbps}$ is determined by a
+combination of the number of subchannels and the modulation used, see
+\autoref{tbl:Ncbps} for a listing of possible values.
+
+Interleaving is a two step type operation. The first step ensures adjacent 
+coded bits are mapped onto nonadjacent subcarriers and the second step 
+ensures bits are mapped alternately onto less and more significant bits of
+the constellation. The second step is done to avoid long runs of lowly
+reliable bits.
+ 
+The permutations are dependent on the number of coded bits per subcarrier
+($N_{cpc}$), which is defined by the type of modulation and the index of the
+coded bit before permutation (k).
+
+For our implementation, as we are only using QPSK modulation,
+$N_{cpc} = 2$.
+
+k : index of coded bit before first permutation
+
+$m_{k}$ : index after first permutation
+
+$j_{k}$ : index after second permutation 
+
+First permutation equation :
+\begin{equation}
+m_k = (N_{cbps}/12)*k_{mod12}+floor(k/12)
+\end{equation}
+
+Second permutation equation :
+\begin{equation}
+s=ceil(N_{cpc}/2)
+\end{equation}
+
+\begin{eqnarray}
+j_k = s*floor(m_{k}/s)+(m_{k}+N_{cbps}- \nonumber \\
+	floor(12*m_k/N_{cbps}))_{mod(s)}
+\end{eqnarray}
+
+After the interleaving the first bit out of the interleaver would map to the
+MSB for the constellation mapping. 
+
+	\subsubsection{Testing and Verification}
+	The Interleaver operation can be verified by inputting a known block
+	of bits and observing the output. The standard document provides a few of these for our use.
+
+	The verilog code for this module was generated via a python script which directly implements the permutation equations (\autoref{lst:interleave-gen}). Additionally, a partial non-generated implementation was created, the equations for which are verified by the same script which generates interleaver code.
+
+	\subsubsection{Implementation Notes}
+
+Due to the complexity of the permutation, code was written which generates the verilog implementation for all possible variations in $N_{cpc}$. In a further iteration of the transmitter, a multiplexer would be used to switch to the appropriate interleaver for each type of modulation. A partial implementation of this multiplexing was written.
+
+The interleaving operation is such that bits much later in the bitstream a swapped with those much earlier in the bitstream. Due to this, the entire OFDM symbol ($N_{cbps}$ bits) must be read into the module prior to a single 1 clock operation to swap the bytes as required. This leads to a rather high cost in delay for this module.

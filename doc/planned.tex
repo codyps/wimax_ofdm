@@ -1,0 +1,144 @@
+
+%% FRAME
+
+\subsection{Frame Handler}
+\begin{description}
+	\item[Estimated gates] 2000
+	\item[Estimated bitstream delay] 2 clock cycles for a bit to be
+		processed 
+\end{description}
+
+Is given a bitstream directly from the MAC device, expected to be able to
+clock in this bit stream at the rate defined by the MAC. Data and
+parsed configuration is sent to the Burst Handler (\autoref{sec:burst})
+to be processed and outputed.
+
+Inputs and outputs are listed in \autoref{tbl:frame-io}.
+
+\begin{table} \begin{center} \begin{tabularx}{\linewidth}{c|c}
+	\label{tbl:rate-id}
+	\wire{rate\_id[3]} & Modulation RS-CC rate \\ \hline
+	0 & BPSK-1/2 \\
+	1 & QPSK-1/2 \\
+	2 & QPSK-3/4 \\
+	3 & 16-QAM-1/2 \\
+	4 & 16-QAM-3/4 \\
+	5 & 64-QAM-2/3 \\
+	6 & 64-QAM-3/4 \\
+	7 & Reserved
+\end{tabularx} \caption{Possible values for \wire{rate\_id}. Note that
+All values but 1 (QPSK-1/2) are unsupported by this device.}
+\end{center} \end{table}
+
+\begin{table*}
+	\label{tbl:subchan}
+	
+	\caption{Possible values for \wire{subchan\_data}.}
+\end{table*}
+
+\begin{table*} \begin{tabularx}{\linewidth}{c|c|c|X} \label{tbl:frame-io}
+	Name & Width & Direction & Description \\ \hline
+
+	\wire{clk} & 1 & I & Clocks the logic block.\\
+
+	\wire{reset} & 1 & I & Active low reset to initial state. \\
+
+
+	\wire{frame\_in\_bits} & 1 & I & Input bitstream, clocked via
+	\wire{frame\_in\_clk}. \\
+
+	\wire{frame\_in\_clk} & 1 & I & Positive edge indicates that data on
+	\wire{frame\_in\_bits} should be read. \\
+	
+	\wire{frame\_in\_valid} & 1 & I & Set high while the current series
+	of bits is part of the same frame. \\
+
+	\wire{burst\_reset} & 1 & O & reset line to the burst handler
+	(\autoref{sec:burst}). \\
+
+	\wire{burst\_bits} & 1 & O & Bits to the burst handler. \\
+
+	\wire{burst\_valid} & 1 & O & indicates the bitstream
+	\wire{burst\_bits} is valid and should be processed. \\
+
+
+	\wire{frame\_num} & 4 & O & The frame number parsed from the header
+	structures. \\
+
+	\wire{iuc} & 4 & O & The UIUC or DIUC field, parsed from the header
+	stuctures. Only valid for the currently outputed burst. \\
+
+	\wire{subchan\_data} & 6 & O & See \autoref{tbl:frame-io}.
+	\autoref{tbl:subchan} describes valid values. Per burst. \\
+
+	\wire{rate\_id} & 3 & O & See \autoref{tbl:rate-id}. Per burst. \\
+
+\end{tabularx} \caption{Frame Handler interface description} \end{table*}
+
+%% BURST
+
+\subsection{Burst Handler} \label{sec:burst}
+\begin{description}
+	\item[Estimated gates] 2000 
+	\item[Estimated data bitstream delay] 2 clock cycles for a bit to be
+		processed, could be cut to zero by bypassing.
+\end{description}
+
+Bursts are composed of multiple OFDM symbols. OFDM symbols are composed of
+multiple sub-channels.\autoref{tbl:burst-io} shows the burst interface inputs and outputs.
+Across a single burst initialization of the pipeline hardware will not
+change.
+
+\begin{table*} \begin{tabularx}{\linewidth}{c|c|c|X}
+	\label{tbl:burst-io}
+	Name & Width & Direction & Description \\ \hline
+	
+	\wire{reset} & 1 & I & Imediately resets the burst handler. Active
+	low. \\
+
+	\wire{clk} & 1 & I & Clocking. \\
+
+	\wire{iuc} & 4 & I & The UIUC or DIUC field (depending on uplink
+	or downlink state). Used by randomizer. \\
+	
+	\wire{bsid} & 4 & I & Used by randomizer. \\
+	
+	\wire{frame\_num} & 4 & I & Used by randomizer. \\
+
+	\wire{burst\_in\_bits} & 1 & I & Input bitstream. \\
+
+	\wire{burst\_in\_valid} & 1 &  I & Indicates the input bitstream
+	\wire{burst\_in\_bits} is valid. \\
+
+	\wire{rand\_iv} & 15 & O & The initialization for
+	the randomizer's internal register. \\
+
+	\wire{rand\_reload} & 1 & O & Instructs the randomizer to reload
+	it's internal register with a new one outputed on
+	\wire{rand\_iv}. \\
+
+	\wire{burst\_out\_bits} & 1 & O & Output bitstream. Sent to the
+	randomizer for first portion of processing. \\
+
+	\wire{burst\_out\_valid} & 1 & O & Indicates output is valid.
+	Also attached to the randomizer. \\
+
+	\wire{subchan\_data\_in} & 6 & I & See \autoref{tbl:frame-io}.
+	\autoref{tbl:subchan} describes valid values. \\
+
+	\wire{subchan\_data\_out} & 6 & O & Output pair of
+	\wire{subchan\_data\_in}, simple pass through. \\
+
+	\wire{subchan\_ct} & 4 & O & Indicates the number of subchannels in
+	use. Calculated from \wire{subchan\_data\_in}. \\
+
+	\wire{rate\_id\_in} & 3 & I  & See \autoref{tbl:rate-id}. \\
+
+	\wire{rate\_id\_out} & 3 & O & Pass-through pair of
+	\wire{rate\_id\_in}. \\
+
+\end{tabularx}
+\caption{Interface definition for the Burst Handler.}
+\end{table*}
+
+

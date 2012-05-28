@@ -8,6 +8,13 @@ TRASH  := $(TARGET).pdf \
 	  $(TARGET).out \
 	  transmiter.dot.eps
 
+LATEX    = pdflatex
+G_EXT    = pdf
+BIBTEX   = bibtex
+GRAPHICS = t_block rand
+
+G_OUT = $(GRAPHICS:=.$(G_EXT))
+
 .PHONY: all clean
 .SUFFIXES:
 .SECONDARY:
@@ -17,18 +24,26 @@ all : $(TARGET).pdf
 clean :
 	rm -f $(TRASH)
 
+%.pdf : %.eps
+	ps2pdf $< $@
+
 %.eps : %.dia
 	dia -e $@ $<
 
+%.pdf : %.ps
+	ps2pdf $<
 
-%.pdf : %.dvi
-	dvipdf $< $@
+%.ps : %.dvi
+	dvips -Ppdf $< -o $@
 
-%.dvi : %.tex %.bib t_block.eps rand.eps
-	latex -interaction=nonstopmode $*
-	bibtex $*
-	latex -interaction=nonstopmode $*
-	latex -interaction=nonstopmode $*
+#%.pdf : %.dvi
+#	dvipdf $< $@
+
+%.dvi : %.tex %.bib $(G_OUT)
+	$(LATEX) -interaction=nonstopmode $*
+	$(BIBTEX) $*
+	$(LATEX) -interaction=nonstopmode $*
+	$(LATEX) -interaction=nonstopmode $*
 
 dot : transmiter.dot.eps
 
